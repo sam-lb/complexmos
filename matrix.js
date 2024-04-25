@@ -504,6 +504,78 @@ class Matrix {
 		throw new Error("Trace is only defined for square matrices.");
 	}
 
+    rowSum(i) {
+        // get the sum of the ith row
+        let total = 0;
+        const row = this.getRow(i);
+        return row.reduce((x, y) => x + y, 0);
+    }
+
+    columnSum(j) {
+        // get the sum of the jth column
+        let total = 0;
+        const col = this.getColumn(j)
+        return col.reduce((x, y) => x + y, 0);
+    }
+
+    rowAbsoluteSum(i) {
+        // get the sum of the absolute values of the ith row
+        let total = 0;
+        const row = this.getRow(i);
+        return row.reduce((x, y) => Math.abs(x) + Math.abs(y), 0);
+    }
+
+    columnAbsoluteSum(j) {
+        // get the sum of the absolute values of the jth column
+        let total = 0;
+        const col = this.getColumn(j)
+        return col.reduce((x, y) => Math.abs(x) + Math.abs(y), 0);
+    }
+
+    rowSums() {
+        // get the sum of every row
+        const totals = [];
+        for (let i=0; i<this.rows; i++) {
+            totals.push(this.rowSum(i));
+        }
+        return totals;
+    }
+
+    columnSums() {
+        // get the sum of every column
+        const totals = [];
+        for (let j=0; j<this.cols; j++) {
+            totals.push(this.columnSum(j));
+        }
+        return totals;
+    }
+
+    rowAbsoluteSums() {
+        // get the absolute sum of every row
+        const totals = [];
+        for (let i=0; i<this.rows; i++) {
+            totals.push(this.rowAbsoluteSum(i));
+        }
+        return totals;
+    }
+
+    columnAbsoluteSums() {
+        // get the absolute sum of every column
+        const totals = [];
+        for (let j=0; j<this.cols; j++) {
+            totals.push(this.columnAbsoluteSum(j));
+        }
+        return totals;
+    }
+
+    norm() {
+        /*
+        compute the 1-norm of the matrix
+        |A| = sup_{x of norm 1} |Ax| = max_{x of norm 1} |Ax| (since R^n is proper)
+        */
+       return Math.max(...this.columnAbsoluteSums());
+    }
+
 	toString() {
 		// return the string representation of the matrix
 		let str = "", seg;
@@ -523,7 +595,6 @@ class Matrix {
 	}
 
 	toLatex(openDelim="$$", closeDelim="$$") {
-		//\begin{pmatrix}1&2&3\\ 4&5&6\\ 7&8&9\end{pmatrix}
 		// return the pmatrix form of the matrix
 		let str = openDelim + "\\begin{pmatrix}";
 		for (let i=0; i<this.rows; i++) {
@@ -547,3 +618,16 @@ class Matrix {
 	}
 
 }
+
+function matrix(arr) {
+    // utility function for easy matrix creation
+	return new Matrix(arr);
+}
+
+
+
+const mat = matrix([
+    [1, 2, 3],
+    [6, 5, 4],
+    [7, 9, 8],
+]);
