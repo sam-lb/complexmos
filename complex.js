@@ -230,7 +230,6 @@ class Vector {
 		Compute (Hermitian) dot product
 		Equivalent to standard dot product in the case of real vectors
 		*/
-		// console.log(Z);
 		const result = complex(0, 0);
 		for (let i=0; i<this.dimension; i++) {
 			result.iadd(Complex.mult(this.get(i), Z.get(i).conj()));

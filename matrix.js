@@ -3,7 +3,7 @@ const config = {
 };
 
 const cheapNumberRound = (x) => {
-	// mmmmmmmmm this is cheap but basically check if x is within EPSILON of floor(x) or ceil(x), if so return the one of these it's close to
+	// check if x is within EPSILON of floor(x) or ceil(x), if so return the one of these it's close to
 	let u = Math.ceil(x), l = Math.floor(x);
 	if (Math.abs(x-u) < config.EPSILON) return u;
 	if (Math.abs(x-l) < config.EPSILON) return l;
