@@ -152,6 +152,52 @@ class Complex {
 		return this.mult(a).add(b).div(this.mult(c).add(d));
 	}
 
+	sin() {
+		/*
+		Calculate the sine of the complex number
+		*/
+		const i = complex(0, 1);
+		const rotated = this.mult(i);
+		return rotated.exp().sub( rotated.scale(-1).exp() ).div(i.scale(2));
+	}
+
+	cos() {
+		/*
+		Calculate the cosine of the complex number
+		*/
+		const i = complex(0, 1);
+		const rotated = this.mult(i);
+		return rotated.exp().add( rotated.scale(-1).exp() ).scale(0.5);
+	}
+
+	tan() {
+		/*
+		Calculate the tangent of the complex number
+		*/
+		return this.sin().div(this.cos())
+	}
+
+	sinh() {
+		/*
+		Calculate the hyperbolic sine of the complex number
+		*/
+		return this.exp().sub(this.scale(-1).exp()).scale(0.5);
+	}
+
+	cosh() {
+		/*
+		Calculate the hyperbolic cosine of the complex number
+		*/
+		return this.exp().add(this.scale(-1).exp()).scale(0.5);
+	}
+
+	tanh() {
+		/*
+		Calculate the hyperbolic tangent of the complex number
+		*/
+		return this.sinh().div(this.cosh())
+	}
+
 	/* ---------- Static functions -------------------- */
 
 	static norm_(z) {
@@ -170,6 +216,10 @@ class Complex {
 		return z1.add(z2);
 	}
 
+	static sub(z1, z2) {
+		return z1.sub(z2);
+	}
+
 	static mult(z1, z2) {
 		return z1.mult(z2);
 	}
@@ -180,9 +230,44 @@ class Complex {
 
 	static sin_(z) {
 		/*
-		Return the principle branch of sin(z)
+		Return the sine of z
 		*/
 		return z.sin();
+	}
+
+	static cos_(z) {
+		/*
+		Return the cosine of z
+		*/
+		return z.cos();
+	}
+
+	static tan_(z) {
+		/*
+		Return the tangent of z		
+		*/
+		return z.tan();
+	}
+
+	static sinh(z) {
+		/*
+		Return the hyperbolic sine of z
+		*/
+		return z.sinh();
+	}
+
+	static cosh(z) {
+		/*
+		Return the hyperbolic cosine of z
+		*/
+		return z.cosh();
+	}
+
+	static tanh(z) {
+		/*
+		Return the hyperbolic tangent of z
+		*/
+		return z.tanh();
 	}
 
 	/* --------------- In-place operations --------------------- */
@@ -190,6 +275,11 @@ class Complex {
 	iadd(z) {
 		this.re += z.re;
 		this.im += z.im;
+	}
+
+	isub(z) {
+		this.re -= z.re;
+		this.im -= z.im;
 	}
 
 
