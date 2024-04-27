@@ -307,12 +307,34 @@ class Vector {
 		return this.values[index];
 	}
 
+	scale(z) {
+		/*
+		Scale each component by the complex number z
+		*/
+		const result = [];
+		for (let i=0; i<this.dimension; i++) {
+			result.push(Complex.mult(this.get(i), z));
+		}
+		return vector(result);
+	}
+
+	realScale(k) {
+		/*
+		Scale each component by the real number k
+		*/
+		const result = [];
+		for (let i=0; i<this.dimension; i++) {
+			result.push(this.get(i).scale(k));
+		}
+		return vector(result);
+	}
+
 	add(Z) {
 		const result = [];
 		for (let i=0; i<this.dimension; i++) {
 			result.push(Complex.add_(this.get(i), Z.get(i)));
 		}
-		return result;
+		return vector(result);
 	}
 	
 	dot(Z) {
@@ -341,9 +363,24 @@ class Vector {
 		return Math.acos( this.dot(Z).re / (this.norm() * Z.norm()) );
 	}
 
+	static lerp(Z1, Z2, t) {
+		/*
+		Linearly interpolate
+		*/
+		return Z1.realScale(1 - t).add(Z2.scale(t));
+	}
+
 }
 
 
 function vector(...values) {
-	return new Vector(values);
+	/*
+	Utility function for easy instantiation of Vector objects.
+	Allows components to be passed individually or in an array
+	*/
+	if (values[0] instanceof Complex) {
+		return new Vector(values);
+	} else {
+		return new Vector(values[0]);
+	}
 }
