@@ -13,3 +13,7 @@ library for working with real matrices
 ### geometry.js
 
 library for working with real Euclidean geometry. depends on `complex.js`
+
+### parsing
+
+Utilities for processing expressions written in LaTeX
