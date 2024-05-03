@@ -80,6 +80,17 @@ class LinkedList {
         }
     }
 
+    search(value) {
+        let node = this.head;
+        while (node !== null) {
+            if (node.value === value) {
+                return node;
+            }
+            node = node.next;
+        }
+        return null;
+    }
+
     toString() {        
         if (this.head === null) {
             return "LinkedList([])";
@@ -93,6 +104,33 @@ class LinkedList {
             result = result.slice(0, -2) + "]";
             return result;
         }
+    }
+
+}
+
+
+class Trie {
+
+    static TERMINATOR = "<end>";
+
+    constructor() {
+        this.root = null();
+    }
+
+    insertKey() {
+
+    }
+
+    containsKey() {
+
+    }
+
+    containsPrefix() {
+
+    }
+
+    remove() {
+
     }
 
 }
