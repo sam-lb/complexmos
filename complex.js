@@ -291,6 +291,26 @@ function complex(real, imaginary) {
 }
 
 
+function integrateOverParameter(f, a=0, b=1, samples=100) {
+	/*
+	return the integral of the Complex-valued function f, using the specified number of samples
+	*/
+	const step = (b - a) / samples;
+	let t = a + step / 2; // midpoint approximation
+	let result = complex(0, 0);
+	for (let i=0; i<samples; i++) {
+		result.iadd(f(t).scale(step));
+		t += step;
+	}
+	return result;
+}
+
+function integrateOverComplexVariable() {
+
+
+}
+
+
 
 class Vector {
 
