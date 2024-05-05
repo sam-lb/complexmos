@@ -175,7 +175,7 @@ class Plot {
             const end = this.unitsToPixels(complex(this.bounds.xMax, y));
             line(start.re, start.im, end.re, end.im);
         }
-        for (let i=0; i<this.gridlineCount.im+2; i++) {
+        for (let i=0; i<this.gridlineCount.im+3; i++) {
             // vertical gridlines
             const x = minBoundX + i * this.gridlineSpacing;
             const start = this.unitsToPixels(complex(x, this.bounds.yMin));
@@ -430,13 +430,7 @@ class DomainColoring extends Plottable {
 function setup() {
 	const canvas = createCanvas(windowWidth*.7, windowHeight);
 	canvas.parent("canvas-div");
-    const size = 3;
-    plot = new Plot(width, height, {
-        xMin: -size,
-        xMax: size,
-        yMin: -size,
-        yMax: size,
-    });
+    plot = new Plot(width, height);
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
     //     {start: 0, stop: 2 * Math.PI},

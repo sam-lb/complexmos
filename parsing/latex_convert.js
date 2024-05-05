@@ -1,21 +1,3 @@
-
-
-document.querySelector("#minput-field").focus();
-
-
-function handleKeydown() {
-    if (window.event.keyCode === 13) {
-        handleSubmit();
-    }
-}
-
-
-function handleSubmit() {
-    const latex = document.querySelector("#minput-field").value;
-    cleanLatex(latex);
-}
-
-
 function clearFractions(text, depth=0) {
     /*
     convert \frac{num}{denom} to ((num)/(denom))
@@ -60,12 +42,12 @@ sum(k, [1,...,infinity], 1/k^2)
 prod(p, [2, 3, 5, 7, 11, 13], 1/(1-1/p))
 */
 function cleanLatex(text) {
-    text = text.replace(/\\cdot/g, "*").replace(/\\operatorname{(.*?)}/g, (tot, group1)=>group1);
-    text = clearFractions(text);
-    text = text.replace(/(\\left)|(\\right)/g, "");
-    text = text.replace(/\\/g, "");
-    text = text.replace(/{/g, "(").replace(/}/g, ")");
-    console.log(text);
+    text = text.replace(/\s/g, "");                                                                 // remove whitespace
+    text = text.replace(/\\cdot/g, "*").replace(/\\operatorname{(.*?)}/g, (tot, group1)=>group1);   // remove operator wrappers
+    text = clearFractions(text);                                                                    // convert latex fractions to a/b
+    text = text.replace(/(\\left)|(\\right)/g, "");                                                 // remove \left and \right
+    text = text.replace(/\\/g, "");                                                                 // remove backslashes
+    text = text.replace(/{/g, "(").replace(/}/g, ")");                                              // replace curly brackets with parentheses
     return text;
 }
 

@@ -1,6 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8"/>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
         <title>testing</title>
     </head>
 
@@ -9,9 +10,17 @@
             <label for="minput-field">enter string</label>
             <input type="text" id="minput-field" onkeydown="handleKeydown();"">
             <button onclick="handleSubmit();">submit</button>
+
+            <div id="error-output">
+
+            </div>
         </div>
 
+        <script src="errors.js"></script>
+        <script src="../complex.js"></script>
         <script src="latex_convert.js"></script>
         <script src="trie.js"></script>
+        <script src="tokenizer.js"></script>
+        <script src="test.js"></script>
     </body>
 </html>
