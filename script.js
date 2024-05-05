@@ -365,12 +365,7 @@ class DomainColoring extends Plottable {
         super();
         this.fn = fn;
         if (bounds === null) {
-            this.bounds = {
-                xMin: -1,
-                xMax: 1,
-                yMin: -1,
-                yMax: 1,
-            };
+            this.bounds = plot.bounds
         } else {
             this.bounds = bounds;
         }
@@ -394,19 +389,14 @@ class DomainColoring extends Plottable {
             for (let j=0; j<this.samples.im-1; j++) {
                 const square = [
                     complex(x, y),
-                    complex(x + step.re, y),
-                    complex(x + step.re, y + step.im),
-                    complex(x, y + step.im),
+                    complex(x + step.re + 0.01, y),
+                    complex(x + step.re + 0.01, y + step.im + 0.01),
+                    complex(x, y + step.im + 0.01),
                 ];
-                const centroid = Euclid.centroid(square);
-                const color1 = color(angleTransform(centroid.arg()), 100, 100);
+                const centroid = complex(x + step.re / 2, y + step.im / 2);
+                const color1 = color(angleTransform(this.fn(centroid).arg()), 100, 100);
 
-                this.polygons.push(new Polygon([
-                    this.fn(square[0]),
-                    this.fn(square[1]),
-                    this.fn(square[2]),
-                    this.fn(square[3]),
-                ], color1));
+                this.polygons.push(new Polygon(square, color1));
 
                 x += step.re;
             }
@@ -437,50 +427,46 @@ function setup() {
     // );
     // plot.addPlottable(circ);
 
-    // const dcPlot = new DomainColoring(
-    //     (z) => {
-    //         return z.mobius(
-    //             complex(1, 0),
-    //             complex(0, -1),
-    //             complex(1, 0),
-    //             complex(0, 1),
+    /** Domain coloring example */
+    const dcPlot = new DomainColoring(
+        (z) => {
+            return z.mobius(
+                complex(1, 0),
+                complex(0, -1),
+                complex(1, 0),
+                complex(0, 1),
+            );
+        },
+    );
+    plot.addPlottable(dcPlot);
+
+    /** Fourier Series Example */
+    // fetch("./data/points.json")
+    //     .then((response) => response.json())
+    //     .then((json) => {
+    //         const points = json.points1;
+    //         const result = [];
+    //         for (let i=0; i<points["x"].length; i++) {
+    //             result.push(complex(points["x"][i], points["y"][i]));
+    //         }
+    //         const f = parameterizePoints(result);
+    //         const para = new Parametric(
+    //             f,
+    //             {start: 0, stop: 1},
     //         );
-    //     },
-    //     {
-    //         xMin: -3,
-    //         xMax: 3,
-    //         yMin: 0,
-    //         yMax: 3
-    //     }
-    // );
-    // plot.addPlottable(dcPlot);
 
-    fetch("./data/points.json")
-        .then((response) => response.json())
-        .then((json) => {
-            const points = json.points1;
-            const result = [];
-            for (let i=0; i<points["x"].length; i++) {
-                result.push(complex(points["x"][i], points["y"][i]));
-            }
-            const f = parameterizePoints(result);
-            const para = new Parametric(
-                f,
-                {start: 0, stop: 1},
-            );
+    //         const fourierTest = new Parametric(
+    //             fourierSeries(f, 4),
+    //             {start: 0, stop: 1},
+    //             200
+    //         );
 
-            const fourierTest = new Parametric(
-                fourierSeries(f, 4),
-                {start: 0, stop: 1},
-                200
-            );
-
-            for (let point of result) {
-                plot.addPlottable(new Point(point));
-            }
-            plot.addPlottable(para);
-            plot.addPlottable(fourierTest);
-        });
+    //         for (let point of result) {
+    //             plot.addPlottable(new Point(point));
+    //         }
+    //         plot.addPlottable(para);
+    //         plot.addPlottable(fourierTest);
+    //     });
 
     lastMouseX = mouseX;
     lastMouseY = mouseY;
