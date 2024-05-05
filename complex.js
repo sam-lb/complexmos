@@ -200,15 +200,15 @@ class Complex {
 
 	/* ---------- Static functions -------------------- */
 
-	static norm_(z) {
+	static norm(z) {
 		return z.norm();
 	}
 
-	static normSq_(z) {
+	static normSq(z) {
 		return z.normSq();
 	}
 
-	static inv_(z) {
+	static inv(z) {
 		return z.conj().scale(1 / z.normSq());
 	}
 
@@ -224,25 +224,25 @@ class Complex {
 		return z1.mult(z2);
 	}
 
-	static div_(z1, z2) {
+	static div(z1, z2) {
 		return z1.div(z2);
 	}
 
-	static sin_(z) {
+	static sin(z) {
 		/*
 		Return the sine of z
 		*/
 		return z.sin();
 	}
 
-	static cos_(z) {
+	static cos(z) {
 		/*
 		Return the cosine of z
 		*/
 		return z.cos();
 	}
 
-	static tan_(z) {
+	static tan(z) {
 		/*
 		Return the tangent of z		
 		*/
@@ -293,7 +293,9 @@ function complex(real, imaginary) {
 
 function integrateOverParameter(f, a=0, b=1, samples=100) {
 	/*
-	return the integral of the Complex-valued function f, using the specified number of samples
+	return the line integral of the Complex-valued function f
+	parameterized by the real parameter t on [a, b],
+	using the specified number of samples
 	*/
 	const step = (b - a) / samples;
 	let t = a + step / 2; // midpoint approximation
@@ -305,9 +307,20 @@ function integrateOverParameter(f, a=0, b=1, samples=100) {
 	return result;
 }
 
-function integrateOverComplexVariable() {
-
-
+function integrateOverComplexVariable(f, z0, z1, samples=100) {
+	/*
+	return the line integral of the Complex-valued function f
+	on the line between z0 and z1, using the specified number of intervals
+	*/
+	const step = Complex.sub(z1, z0).scale(1 / samples);
+	const stepNorm = step.norm();
+	let z = Complex.add(z0, step.scale(0.5));
+	let result = complex(0, 0);
+	for (let i=0; i<samples; i++) {
+		result.iadd(f(z).scale(stepNorm));
+		z.iadd(step);
+	}
+	return result;
 }
 
 
@@ -352,7 +365,7 @@ class Vector {
 	add(Z) {
 		const result = [];
 		for (let i=0; i<this.dimension; i++) {
-			result.push(Complex.add_(this.get(i), Z.get(i)));
+			result.push(Complex.add(this.get(i), Z.get(i)));
 		}
 		return vector(result);
 	}
