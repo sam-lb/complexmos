@@ -24,6 +24,7 @@ class Plot {
 
     constructor(displayWidth, displayHeight, bounds=null) {
         this.gridlineSpacing = 1;
+        this.boundsChangedSinceLastDraw = false;
         this.configureWindow(displayWidth, displayHeight, bounds, bounds === null);
         this.plottables = [];
         this.needsUpdate = true;
@@ -96,6 +97,7 @@ class Plot {
         if (fitToSquare) this.fitBoundsToSquare();
 
         this.needsUpdate = true;
+        this.boundsChangedSinceLastDraw = true;
 
         console.log("Window configuration");
         console.log("window bounds", this.bounds);
@@ -194,6 +196,7 @@ class Plot {
         for (let plottable of this.plottables) {
             plottable.draw();
         }
+        this.boundsChangedSinceLastDraw = false;
     }
 
     update() {
@@ -366,8 +369,10 @@ class DomainColoring extends Plottable {
         this.fn = fn;
         if (bounds === null) {
             this.bounds = plot.bounds
+            this.fixedBounds = false;
         } else {
             this.bounds = bounds;
+            this.fixedBounds = true;
         }
         this.samples = complex(100, 100);
         this.generatePolygons();
@@ -407,6 +412,13 @@ class DomainColoring extends Plottable {
     }
 
     draw() {
+        if (plot.boundsChangedSinceLastDraw && !this.fixedBounds) {
+            // TODO: This can be optimized to only recalculate the new polygons
+            // by checking the difference between this.bounds and plot.bounds
+            this.bounds = plot.bounds;
+            this.generatePolygons();
+        }
+
         for (let poly of this.polygons) {
             poly.draw();
         }
