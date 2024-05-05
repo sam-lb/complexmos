@@ -28,6 +28,14 @@ class Euclid {
 		return p1.add(p2).scale(0.5);
 	}
 
+	static lerp(p1, p2, t) {
+		/*
+		Computes linear interpolation between p1 and p2
+		t is on [0, 1]: lerp(p1, p2, 0) = p1, lerp(p1, p2, 1) = p2
+		*/
+		return Complex.add( p1.scale(1 - t), p2.scale(t) );
+	}
+
 	static circleCenter(p1, p2, p3) {
 		/*
 		Computes the center of the circle passing through the three points p1, p2, p3

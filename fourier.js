@@ -6,7 +6,12 @@ function parameterizePoints(points) {
     Return a parameteric function consisting of straight lines connecting points
     Note: does NOT necessarily produce a constant time parameterization
     */
-
+    const N = points.length;
+    const segmentLength = 1 / (N - 1);
+    return (t) => {
+        const index = (t === 1) ? N - 2 : Math.floor(t / segmentLength);
+        return Euclid.lerp(points[index], points[index+1], (t - (t % segmentLength)) / segmentLength);
+    };
 }
 
 
