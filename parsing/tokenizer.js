@@ -55,7 +55,7 @@ function tokenize(text, tracker, scope) {
                 }
             }
             if (matchFound) {
-                identifiers.unshift(possibleIdentifier);
+                identifiers.push(possibleIdentifier);
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
                 tracker.error(`Undefined identifier ${buffer}`);
