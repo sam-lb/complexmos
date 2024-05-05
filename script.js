@@ -222,6 +222,25 @@ class Plottable {
 }
 
 
+class Point extends Plottable {
+
+    constructor(position) {
+        super();
+        this.position = position;
+    }
+
+    draw() {
+        push();
+        fill(0);
+        noStroke();
+        const convertedPos = plot.unitsToPixels(this.position);
+        circle(convertedPos.re, convertedPos.im, 5);
+        pop();
+    }
+
+}
+
+
 class Circle extends Plottable {
 
     constructor(center, radius) {
@@ -418,23 +437,41 @@ function setup() {
     // );
     // plot.addPlottable(circ);
 
-    const dcPlot = new DomainColoring(
-        (z) => {
-            return z.mobius(
-                complex(1, 0),
-                complex(0, -1),
-                complex(1, 0),
-                complex(0, 1),
+    // const dcPlot = new DomainColoring(
+    //     (z) => {
+    //         return z.mobius(
+    //             complex(1, 0),
+    //             complex(0, -1),
+    //             complex(1, 0),
+    //             complex(0, 1),
+    //         );
+    //     },
+    //     {
+    //         xMin: -3,
+    //         xMax: 3,
+    //         yMin: 0,
+    //         yMax: 3
+    //     }
+    // );
+    // plot.addPlottable(dcPlot);
+
+    fetch("./data/points.json")
+        .then((response) => response.json())
+        .then((json) => {
+            const points = json.points1;
+            const result = [];
+            for (let i=0; i<points["x"].length; i++) {
+                result.push(complex(points["x"][i], points["y"][i]));
+            }
+            const para = new Parametric(
+                parameterizePoints(result),
+                {start: 0, stop: 1},
             );
-        },
-        {
-            xMin: -3,
-            xMax: 3,
-            yMin: 0,
-            yMax: 3
-        }
-    );
-    plot.addPlottable(dcPlot);
+            for (let point of result) {
+                plot.addPlottable(new Point(point));
+            }
+            plot.addPlottable(para);
+        });
 
     lastMouseX = mouseX;
     lastMouseY = mouseY;
