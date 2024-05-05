@@ -284,13 +284,14 @@ class Circle extends Plottable {
 
 class Parametric extends Plottable {
 
-    constructor(fn, range=null) {
+    constructor(fn, range=null, pointCount=null) {
         /**
          * fn: parameterization U->C of curve in C, U subs R
          * U = [range.start, range.stop]
          */
         super();
         this.fn = fn;
+        this.pointCount = (pointCount === null) ? 100 : pointCount;
         this.setRange(range);
     }
 
@@ -301,8 +302,7 @@ class Parametric extends Plottable {
 
     generatePoints() {
         this.points = [];
-        const pointCount = 100;
-        for (let t of linspace(this.range.start, this.range.stop, pointCount)) {
+        for (let t of linspace(this.range.start, this.range.stop, this.pointCount)) {
             this.points.push(
                 this.fn(t)
             );
@@ -476,8 +476,9 @@ function setup() {
             );
 
             const fourierTest = new Parametric(
-                fourierSeries(f, 5),
+                fourierSeries(f, 4),
                 {start: 0, stop: 1},
+                200
             );
 
             for (let point of result) {

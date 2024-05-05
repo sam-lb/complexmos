@@ -9,8 +9,12 @@ function parameterizePoints(points) {
     const N = points.length;
     const segmentLength = 1 / (N - 1);
     return (t) => {
-        const index = (t === 1) ? N - 2 : Math.floor(t / segmentLength);
-        return Euclid.lerp(points[index], points[index+1], t / segmentLength - Math.floor(t / segmentLength));
+        if (t === 1) {
+            return points[N - 1];
+        } else {
+            const index = Math.floor(t / segmentLength);
+            return Euclid.lerp(points[index], points[index+1], t / segmentLength - Math.floor(t / segmentLength));
+        }
     };
 }
 
