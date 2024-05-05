@@ -18,7 +18,7 @@ function fourierCoefficients(f, N) {
     Coefficients from -N, -N+1, ... , N-1, N
     */
     const coefs = [];
-    for (int n=-N; n<=N; n++) {
+    for (let n=-N; n<=N; n++) {
         const F = (t) => {
             return Complex.mult(f(t), Complex.exp( complex(0, -2 * Math.PI * n) ));
         };
