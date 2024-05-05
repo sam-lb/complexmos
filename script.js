@@ -125,6 +125,15 @@ class Plot {
         });
     }
 
+    zoom(factor) {
+        this.configureWindow(null, null, {
+            xMin: this.bounds.xMin * factor,
+            xMax: this.bounds.xMax * factor,
+            yMin: this.bounds.yMin * factor,
+            yMax: this.bounds.yMax * factor,
+        });
+    }
+
     unitsToPixels(z) {
         return complex(
             (z.re - this.offset.re) * this.pixelsPerUnit.re + this.halfDimensions.re,
@@ -374,7 +383,7 @@ class DomainColoring extends Plottable {
             this.bounds = bounds;
             this.fixedBounds = true;
         }
-        this.samples = complex(100, 100);
+        this.samples = complex(400, 400);
         this.generatePolygons();
     }
 
@@ -386,6 +395,12 @@ class DomainColoring extends Plottable {
         );
         const angleTransform = (angle) => {
             return 360 * ((angle + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI); // modulo is not true remainder in JS
+        }
+        const normTransform = (norm) => {
+            // return 25 + (150 / Math.PI) * Math.atan(Math.sqrt(norm));
+            return 25 + 75 * (
+                Math.floor((2 / Math.PI * Math.atan(Math.sqrt(norm))) / 0.2) * 0.2
+            );
         }
         this.polygons = [];
         push();
@@ -399,7 +414,8 @@ class DomainColoring extends Plottable {
                     complex(x, y + step.im + 0.01),
                 ];
                 const centroid = complex(x + step.re / 2, y + step.im / 2);
-                const color1 = color(angleTransform(this.fn(centroid).arg()), 100, 100);
+                const output = this.fn(centroid);
+                const color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
 
                 this.polygons.push(new Polygon(square, color1));
 
@@ -440,16 +456,22 @@ function setup() {
     // plot.addPlottable(circ);
 
     /** Domain coloring example */
-    const dcPlot = new DomainColoring(
-        (z) => {
-            return z.mobius(
-                complex(1, 0),
-                complex(0, -1),
-                complex(1, 0),
-                complex(0, 1),
-            );
-        },
-    );
+    // const f = (z) => {
+    //     return z.mobius(
+    //         complex(1, 0),
+    //         complex(0, -1),
+    //         complex(1, 0),
+    //         complex(0, 1),
+    //     );
+    // };
+    const f = (z) => {
+        // return Complex.exp(z);
+        // return z;
+        // return Complex.sqrt(z);
+        // return Complex.mult(z, z);
+        return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+    };
+    const dcPlot = new DomainColoring(f);
     plot.addPlottable(dcPlot);
 
     /** Fourier Series Example */

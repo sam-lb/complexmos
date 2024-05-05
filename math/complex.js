@@ -198,6 +198,24 @@ class Complex {
 		return this.sinh().div(this.cosh())
 	}
 
+	// vec2 complexPow(vec2 z1, vec2 z2) {
+	// 	float sub_ang = atan(z1.y, z1.x);
+	// 	float ang = 0.5 * z2.y * log(z1.x * z1.x + z1.y * z1.y) + z2.x * sub_ang;
+	// 	float norm = exp(-z2.y * sub_ang) * pow( z1.x * z1.x + z1.y * z1.y, 0.5 * z2.x );
+	// 	return vec2( norm * cos(ang), norm * sin(ang) );
+	//   }
+
+	pow(z) {
+		/*
+		Calculate the zth power of the complex number
+		*/
+		const subAng = Math.atan2(this.im, this.re);
+		const normSq = this.normSq();		
+		const ang = 0.5 * z.im * Math.log(normSq) + z.re * subAng;
+		const norm = Math.exp(-z.im * subAng) * Math.pow(normSq, 0.5 * z.re);
+		return complex(norm * Math.cos(ang), norm * Math.sin(ang));
+	}
+
 	/* ---------- Static functions -------------------- */
 
 	static norm(z) {
@@ -228,8 +246,20 @@ class Complex {
 		return z1.div(z2);
 	}
 
+	static pow(z1, z2) {
+		return z1.pow(z2);
+	}
+
 	static exp(z) {
 		return z.exp();
+	}
+
+	static ln(z) {
+		return z.ln();
+	}
+
+	static sqrt(z) {
+		return z.sqrt();
 	}
 
 	static sin(z) {
