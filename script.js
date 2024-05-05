@@ -430,7 +430,13 @@ class DomainColoring extends Plottable {
 function setup() {
 	const canvas = createCanvas(windowWidth*.7, windowHeight);
 	canvas.parent("canvas-div");
-    plot = new Plot(width, height);
+    const size = 3;
+    plot = new Plot(width, height, {
+        xMin: -size,
+        xMax: size,
+        yMin: -size,
+        yMax: size,
+    });
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
     //     {start: 0, stop: 2 * Math.PI},
@@ -463,14 +469,22 @@ function setup() {
             for (let i=0; i<points["x"].length; i++) {
                 result.push(complex(points["x"][i], points["y"][i]));
             }
+            const f = parameterizePoints(result);
             const para = new Parametric(
-                parameterizePoints(result),
+                f,
                 {start: 0, stop: 1},
             );
+
+            const fourierTest = new Parametric(
+                fourierSeries(f, 5),
+                {start: 0, stop: 1},
+            );
+
             for (let point of result) {
                 plot.addPlottable(new Point(point));
             }
             plot.addPlottable(para);
+            plot.addPlottable(fourierTest);
         });
 
     lastMouseX = mouseX;

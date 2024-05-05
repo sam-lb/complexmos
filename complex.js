@@ -228,6 +228,10 @@ class Complex {
 		return z1.div(z2);
 	}
 
+	static exp(z) {
+		return z.exp();
+	}
+
 	static sin(z) {
 		/*
 		Return the sine of z

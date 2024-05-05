@@ -25,7 +25,7 @@ function fourierCoefficients(f, N) {
     const coefs = [];
     for (let n=-N; n<=N; n++) {
         const F = (t) => {
-            return Complex.mult(f(t), Complex.exp( complex(0, -2 * Math.PI * n) ));
+            return Complex.mult(f(t), Complex.exp( complex(0, -2 * Math.PI * n * t) ));
         };
         coefs.push(
             integrateOverParameter(F, 0, 1)
@@ -42,7 +42,7 @@ function fourierSeries(f, N) {
         for (let n=-N; n<=N; n++) {
             const coef = coefs[n + N];
             result.iadd(
-                Complex.mult(coef, Complex.exp( complex(0, 2 * Math.PI * n) ))
+                Complex.mult(coef, Complex.exp( complex(0, 2 * Math.PI * n * t) ))
             );
         }
         return result;
