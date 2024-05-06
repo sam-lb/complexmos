@@ -464,14 +464,14 @@ function setup() {
     // plot.addPlottable(circ);
 
     /** Domain coloring example */
-    // const f = (z) => {
-    //     return z.mobius(
-    //         complex(1, 0),
-    //         complex(0, -1),
-    //         complex(1, 0),
-    //         complex(0, 1),
-    //     );
-    // };
+    const f = (z) => {
+        return z.mobius(
+            complex(1, 0),
+            complex(0, -1),
+            complex(1, 0),
+            complex(0, 1),
+        );
+    };
     // const f = (z) => {
     //     // return Complex.exp(z);
     //     // return z;
@@ -479,25 +479,25 @@ function setup() {
     //     // return Complex.mult(z, z);
     //     return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
     // };
-    // const dcPlot = new DomainColoring(f);
-    // plot.addPlottable(dcPlot);
+    const dcPlot = new DomainColoring(f);
+    plot.addPlottable(dcPlot);
 
-    const maxPoints = 50000;
-    let point = complex(0, 0);
-    const vertices = [];
-    const p = 5;
-    for (let j=0; j<p; j++) {
-        vertices.push(complex(0, j / p * 2 * Math.PI).exp());
-    }
-    const phi = 2 / (1 + Math.sqrt(5));
-    for (let i=0; i<maxPoints; i++) {
-        point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
-        plot.addPlottable(new Point(
-            point
-        ));
-    }
-    vertices.push(vertices[0]);
-    plot.addPlottable(new Parametric(parameterizePoints(vertices)));
+    // const maxPoints = 50000;
+    // let point = complex(0, 0);
+    // const vertices = [];
+    // const p = 5;
+    // for (let j=0; j<p; j++) {
+    //     vertices.push(complex(0, j / p * 2 * Math.PI).exp());
+    // }
+    // const phi = 2 / (1 + Math.sqrt(5));
+    // for (let i=0; i<maxPoints; i++) {
+    //     point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
+    //     plot.addPlottable(new Point(
+    //         point
+    //     ));
+    // }
+    // vertices.push(vertices[0]);
+    // plot.addPlottable(new Parametric(parameterizePoints(vertices)));
 
     /** Fourier Series Example */
     // fetch("./data/points.json")
