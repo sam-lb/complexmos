@@ -4,7 +4,7 @@ const tracker = new ErrorTracker("error-output", "Tokenization successful!");
 
 const scope = {
     "builtin": [
-        "sin", "sinh", "max", "x"
+        "sin", "sinh", "max", "x", "y", "z", "xy"
     ],
 };
 
