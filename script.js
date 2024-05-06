@@ -464,34 +464,39 @@ function setup() {
     // plot.addPlottable(circ);
 
     /** Domain coloring example */
-    const f = (z) => {
-        return z.mobius(
-            complex(1, 0),
-            complex(0, -1),
-            complex(1, 0),
-            complex(0, 1),
-        );
-    };
     // const f = (z) => {
-    //     // return Complex.exp(z);
-    //     // return z;
-    //     // return Complex.sqrt(z);
-    //     // return Complex.mult(z, z);
-    //     return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+    //     return z.mobius(
+    //         complex(1, 0),
+    //         complex(0, -1),
+    //         complex(1, 0),
+    //         complex(0, 1),
+    //     );
     // };
+    const f = (z) => {
+        // return Complex.exp(z);
+        // return z;
+        // return Complex.sqrt(z);
+        // return Complex.mult(z, z);
+        // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+        return Complex.cos(z);
+    };
     const dcPlot = new DomainColoring(f);
     plot.addPlottable(dcPlot);
 
-    // const maxPoints = 50000;
+    /** Example: chaos game */
+    // const maxPoints = 100000;
     // let point = complex(0, 0);
     // const vertices = [];
-    // const p = 5;
+    // const p = 4;
+    // const rad = Poincare.regPolyDist(p, 100);
     // for (let j=0; j<p; j++) {
-    //     vertices.push(complex(0, j / p * 2 * Math.PI).exp());
+    //     vertices.push(complex(0, j / p * 2 * Math.PI).exp().scale(rad));
     // }
     // const phi = 2 / (1 + Math.sqrt(5));
     // for (let i=0; i<maxPoints; i++) {
-    //     point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
+    //     // point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
+    //     point = Poincare.segment(phi, point, vertices[randInt(0, p-1)]);
+
     //     plot.addPlottable(new Point(
     //         point
     //     ));
