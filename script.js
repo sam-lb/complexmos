@@ -18,6 +18,13 @@ function roundTo(x, places) {
 	return Math.round(x * Math.pow(10, places)) / Math.pow(10, places);
 }
 
+function randInt(a, b) {
+    /*
+    Generate random integer between a and b
+    */
+   return Math.floor(a + (b - a + 1) * 0.9999 *Math.random());
+}
+
 
 
 class Plot {
@@ -239,6 +246,7 @@ class Point extends Plottable {
     constructor(position) {
         super();
         this.position = position;
+        this.radius = 1;
     }
 
     draw() {
@@ -246,7 +254,7 @@ class Point extends Plottable {
         fill(0);
         noStroke();
         const convertedPos = plot.unitsToPixels(this.position);
-        circle(convertedPos.re, convertedPos.im, 5);
+        circle(convertedPos.re, convertedPos.im, this.radius);
         pop();
     }
 
@@ -383,7 +391,7 @@ class DomainColoring extends Plottable {
             this.bounds = bounds;
             this.fixedBounds = true;
         }
-        this.samples = complex(400, 400);
+        this.samples = complex(100, 100);
         this.generatePolygons();
     }
 
@@ -464,15 +472,32 @@ function setup() {
     //         complex(0, 1),
     //     );
     // };
-    const f = (z) => {
-        // return Complex.exp(z);
-        // return z;
-        // return Complex.sqrt(z);
-        // return Complex.mult(z, z);
-        return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-    };
-    const dcPlot = new DomainColoring(f);
-    plot.addPlottable(dcPlot);
+    // const f = (z) => {
+    //     // return Complex.exp(z);
+    //     // return z;
+    //     // return Complex.sqrt(z);
+    //     // return Complex.mult(z, z);
+    //     return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+    // };
+    // const dcPlot = new DomainColoring(f);
+    // plot.addPlottable(dcPlot);
+
+    const maxPoints = 50000;
+    let point = complex(0, 0);
+    const vertices = [];
+    const p = 5;
+    for (let j=0; j<p; j++) {
+        vertices.push(complex(0, j / p * 2 * Math.PI).exp());
+    }
+    const phi = 2 / (1 + Math.sqrt(5));
+    for (let i=0; i<maxPoints; i++) {
+        point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
+        plot.addPlottable(new Point(
+            point
+        ));
+    }
+    vertices.push(vertices[0]);
+    plot.addPlottable(new Parametric(parameterizePoints(vertices)));
 
     /** Fourier Series Example */
     // fetch("./data/points.json")
