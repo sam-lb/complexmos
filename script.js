@@ -62,10 +62,10 @@ class Plot {
         if (bounds === null) {
             if (this.bounds === undefined) {
                 bounds = {
-                    xMin: -2,
-                    xMax: 2,
-                    yMin: -2,
-                    yMax: 2
+                    xMin: -4,
+                    xMax: 4,
+                    yMin: -4,
+                    yMax: 4
                 };
                 fitToSquare = true;
             } else {
@@ -454,7 +454,8 @@ class DomainColoring extends Plottable {
 
 
 function setup() {
-	const canvas = createCanvas(windowWidth*.7, windowHeight);
+    const canvasDiv = document.querySelector("#canvas-div");
+	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	canvas.parent("canvas-div");
     plot = new Plot(width, height);
     // const circ = new Parametric(
@@ -560,7 +561,8 @@ function mouseReleased() {
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth * 0.7, windowHeight);
+    const canvasDiv = document.querySelector("#canvas-div");
+    resizeCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
     plot.configureWindow(width, height);
 }
 

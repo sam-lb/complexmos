@@ -1,3 +1,51 @@
-canvas {
-    border: 1px solid black;
-}  
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    margin: 0;
+    height: 0;
+}
+
+#header-div {
+    height: 10vh;
+    background-color:darkslategray;
+    box-shadow: inset 0px 0px 2px 0px black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: lightgray;
+    font-size: x-large;
+}
+
+#app-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+#ui-container {
+    text-align: center;
+    overflow: auto;
+    padding: 5px;
+    flex: 1;
+    box-shadow: inset 0px 0px 4px 0px black;
+    height: 90vh;
+}
+
+#canvas-wrapper {
+    position: relative;
+    flex: 3;
+}
+
+#canvas-div {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#canvas-overlay {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+}

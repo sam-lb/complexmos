@@ -8,14 +8,26 @@
   </head>
 
   <body>
-    <div class="main-div">
-      <div id="canvas-div"></div>
+    <div id="main-div">
+      <div id="header-div">
+        COMPLEXMOS
+      </div>
+      <div id="app-div">
+        <div id="ui-container">
+          ui elements go here
+        </div>
 
-      <div>
-        <button onclick="plot.zoom(0.5)">+</button>
-        <button onclick="plot.zoom(2)">-</button>
+        <div id="canvas-wrapper">
+          <div id="canvas-div"></div>
+          <div id="canvas-overlay">
+            <button onclick="plot.zoom(0.5)">+</button>
+            <button onclick="plot.zoom(2)">-</button>
+          </div>
+        </div>
       </div>
     </div>
+
+
     <script src="parsing/errors.js"></script>
     <script src="parsing/evaluator.js"></script>
     <!-- <script src="parsing/latex_convert.js"></script> -->
