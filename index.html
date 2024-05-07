@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="http://localhost:8000/mathquill/mathquill-basic.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> <!-- I hate jquery dependency but mathquill needs it for some reason -->
+    <script src="http://localhost:8000/mathquill/mathquill-basic.js"></script>
     <meta charset="utf-8"/>
     <title>testing</title>
   </head>
@@ -15,6 +18,9 @@
       <div id="app-div">
         <div id="ui-container">
           ui elements go here
+          <div id="math-input-container">
+            
+          </div>
         </div>
 
         <div id="canvas-wrapper">

@@ -26,7 +26,7 @@ body {
 #ui-container {
     text-align: center;
     overflow: auto;
-    padding: 5px;
+    padding-top: 5px;
     flex: 1;
     box-shadow: inset 0px 0px 4px 0px black;
     height: 90vh;
@@ -48,4 +48,46 @@ body {
     position: absolute;
     left: 1%;
     top: 1%;
+}
+
+/* MathQuill stuff */
+
+.math-input-container {
+    width: 100%;
+    position: relative;
+}
+
+.math-input-div {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.math-input-side-menu {
+    flex: 1;
+    background-color:cadetblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.math-input-div:hover {
+    box-shadow: 0px 0px 5px black;
+}
+
+.math-input {
+    flex: 4;
+    position: relative;
+	width: 100%;
+	height: 100%;
+	padding: 3px;
+	box-sizing: border-box;
+	margin: 0px;
+	background-color: white;
+	font-size: 16pt;
+}
+
+*:focus {
+    outline: none;
+    box-shadow: none;
 }

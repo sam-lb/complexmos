@@ -2,6 +2,70 @@ p5.disableFriendlyErrors = true; // ridiculous that this is on by default
 let plot, lastMouseX, lastMouseY;
 
 
+/** MathQuill handling */
+
+
+const MQ = MathQuill.getInterface(2);
+const opsString = "sin cos";
+const fields = {};
+
+MQ.config({
+    autoCommands: "pi sqrt",
+    supSubsRequireOperand: true,
+    charsThatBreakOutOfSupSub: "",
+    autoOperatorNames: opsString,
+    handlers: {
+        // downOutOf: (mathField) => { advance(mathField.id, 1); },
+        // upOutOf: (mathField) => { advance(mathField.id, -1); },
+        // deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
+    }
+});
+
+function addField(parent=null) {
+    /** add new math input field. parent: parent element */
+    
+
+    const newDiv = document.createElement("div");
+    newDiv.setAttribute("class", "math-input-div");
+
+    const newMenu = document.createElement("div");
+    newMenu.setAttribute("class", "math-input-side-menu");
+    newMenu.innerHTML = "grob";
+    const newSpan = document.createElement("span");
+    newSpan.setAttribute("class", "math-input");
+    newDiv.appendChild(newMenu);
+    newDiv.appendChild(newSpan);
+
+    const newField = MQ.MathField(newSpan, {});
+    // newSpan.setAttribute("onkeyup", `handle(${newField.id});`);
+
+    if (parent === null) {
+        const container = document.querySelector("#math-input-container");
+        container.appendChild(newDiv);
+    } else {
+        const lastDiv = document.querySelector(`#${parent}`);
+        lastDiv.after(newDiv);
+    }
+
+    // fields[newField.id] = {
+    //     field: newField,
+    //     last: parent.field,
+    //     next: parent.next,
+    //     element: newSpan,
+    //     object_ids: [],
+    // };
+
+    // fields[parent.field.id].next = newField;
+
+    // advance(parent.field.id, 1);
+}
+
+addField();
+
+
+/** ******************************** */
+
+
 
 function linspace(min, max, n) {
 	/* Returns n equally spaced values between min and max (including endpoints) */
