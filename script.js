@@ -73,7 +73,7 @@ function deleteField(id) {
         fields[entry.last.id]["next"] = null;
         } // they'll never both be null, that would mean there are no fields left
     }
-    advance(id, -1);
+    advance(id, (entry.last === null) ? 1 : -1);
 
     entry.container.parentNode.removeChild(entry.container);
     delete fields[id];
@@ -103,6 +103,7 @@ MQ.config({
     charsThatBreakOutOfSupSub: "",
     autoOperatorNames: opsString,
     handlers: {
+        enter: (mathField) => { advance(mathField.id, 1); },
         downOutOf: (mathField) => { advance(mathField.id, 1); },
         upOutOf: (mathField) => { advance(mathField.id, -1); },
         deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
