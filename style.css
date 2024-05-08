@@ -79,6 +79,7 @@ body {
     flex: 4;
     display: block;
     position: relative;
+    max-width: 80%;
 	padding: 3px;
 	box-sizing: border-box;
 	margin: 0px;
