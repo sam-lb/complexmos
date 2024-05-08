@@ -92,9 +92,33 @@ class Matrix {
 		return a * d - b * c;
 	}
 
-	static rotationMatrix(angle) {
-		// find the rotation matrix for the angle
+	static rotationMatrix2D(angle) {
+		/** Generate a 2d rotation matrix for the given angle */
 		return new Matrix([[Math.cos(angle), -Math.sin(angle)], [Math.sin(angle), Math.cos(angle)]]);
+	}
+
+	static rotationMatrix3D(angleX, angleY, angleZ) {
+		/** Generate a 3d rotation matrix for the given Euler angles */
+		const sinX = Math.sin(angleX), cosX = Math.cos(angleX);
+		const sinY = Math.sin(angleY), cosY = Math.cos(angleY);
+		const sinZ = Math.sin(angleZ), cosZ = Math.cos(angleZ);
+		const rotX = new Matrix([
+			[1, 0, 0],
+			[0, cosX, -sinX],
+			[0, sinX, cosX],
+		]);
+		const rotY = new Matrix([
+			[cosY, 0, sinY],
+			[0, 1, 0],
+			[-sinY, 0, cosY],
+		]);
+		const rotZ = new Matrix([
+			[cosZ, -sinZ, 0],
+			[sinZ, cosZ, 0],
+			[0, 0, 1],
+		]);
+
+		return Matrix.multiply(Matrix.multiply(rotX, rotY), rotZ);
 	}
 
 	static multiply(mat1, mat2) {
