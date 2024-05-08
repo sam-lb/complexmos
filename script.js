@@ -9,18 +9,6 @@ const MQ = MathQuill.getInterface(2);
 const opsString = "sin cos";
 const fields = {};
 
-MQ.config({
-    autoCommands: "pi sqrt",
-    supSubsRequireOperand: true,
-    charsThatBreakOutOfSupSub: "",
-    autoOperatorNames: opsString,
-    handlers: {
-        // downOutOf: (mathField) => { advance(mathField.id, 1); },
-        // upOutOf: (mathField) => { advance(mathField.id, -1); },
-        // deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
-    }
-});
-
 function addField(parent=null) {
     /** add new math input field. parent: parent element */
     
@@ -30,37 +18,96 @@ function addField(parent=null) {
 
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
-    newMenu.innerHTML = "grob";
+    newMenu.innerHTML = Object.keys(fields).length + 1;
     const newSpan = document.createElement("span");
     newSpan.setAttribute("class", "math-input");
     newDiv.appendChild(newMenu);
     newDiv.appendChild(newSpan);
 
     const newField = MQ.MathField(newSpan, {});
+    newDiv.setAttribute("id", `math-input-div-${newField.id}`);
     // newSpan.setAttribute("onkeyup", `handle(${newField.id});`);
 
     if (parent === null) {
         const container = document.querySelector("#math-input-container");
         container.appendChild(newDiv);
+
+        fields[newField.id] = {
+            id: newField.id,
+            field: newField,
+            last: null,
+            next: null,
+            container: newDiv,
+        };
     } else {
-        const lastDiv = document.querySelector(`#${parent}`);
+        const lastDiv = document.querySelector(`#math-input-div-${parent.id}`);
         lastDiv.after(newDiv);
+
+        fields[newField.id] = {
+            id: newField.id,
+            field: newField,
+            last: parent.field,
+            next: parent.next,
+            container: newDiv,
+        };
+        fields[parent.field.id].next = newField;
+
+        advance(parent.field.id, 1);
     }
 
-    // fields[newField.id] = {
-    //     field: newField,
-    //     last: parent.field,
-    //     next: parent.next,
-    //     element: newSpan,
-    //     object_ids: [],
-    // };
-
-    // fields[parent.field.id].next = newField;
-
-    // advance(parent.field.id, 1);
+    return newField.id;
 }
 
-addField();
+function deleteField(id) {
+    if (Object.keys(fields).length === 1) return; // at least one field has to remain
+    const entry = fields[id];
+    if (entry.next !== null) {
+        if (entry.last !== null) {
+        fields[entry.next.id]["last"] = entry.last;
+        fields[entry.last.id]["next"] = entry.next;
+        } else {
+        fields[entry.next.id]["last"] = null;
+        }
+    } else {
+        if (entry.last !== null) {
+        fields[entry.last.id]["next"] = null;
+        } // they'll never both be null, that would mean there are no fields left
+    }
+    advance(id, -1);
+
+    entry.container.parentNode.removeChild(entry.container);
+    delete fields[id];
+}
+
+function advance(id, direction) {
+    const entry = fields[id];
+    if (direction === -1 && entry.last !== null) {
+        entry.last.focus();
+        entry.last.moveToRightEnd();
+    } else if (direction === 1) {
+        if (entry.next !== null) {
+            entry.next.focus();
+            entry.next.moveToRightEnd();
+        } else {
+            addField(entry);
+        }
+    }
+}
+
+const firstField = addField();
+fields[firstField].field.focus();
+
+MQ.config({
+    autoCommands: "pi sqrt",
+    supSubsRequireOperand: true,
+    charsThatBreakOutOfSupSub: "",
+    autoOperatorNames: opsString,
+    handlers: {
+        downOutOf: (mathField) => { advance(mathField.id, 1); },
+        upOutOf: (mathField) => { advance(mathField.id, -1); },
+        deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
+    }
+});
 
 
 /** ******************************** */
