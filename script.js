@@ -766,7 +766,7 @@ function setup() {
     //     });
 
     /** Example: icosphere model */
-    const icosphereTris = icosphere();
+    const icosphereTris = icosphere(2);
     const sphere = new Model(icosphereTris);
     plot.addPlottable(sphere);
 
