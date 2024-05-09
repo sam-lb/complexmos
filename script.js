@@ -151,6 +151,7 @@ class Plot {
         this.boundsChangedSinceLastDraw = false;
         this.configureWindow(displayWidth, displayHeight, bounds, bounds === null);
         this.plottables = [];
+        this.polygons = [];
         this.needsUpdate = true;
 
         this.mode = (mode === null) ? Plot.modes.PLANE : mode;
@@ -270,8 +271,11 @@ class Plot {
             });
         } else {
             this.setCamera({
-                pitch: (this.camera.pitch - offset.im) % (2 * Math.PI),
-                yaw: (this.camera.yaw + offset.re) % (0.5 * Math.PI),
+                // pitch: (this.camera.pitch + offset.im) % (2 * Math.PI),
+                // yaw: (this.camera.yaw - offset.re) % (0.5 * Math.PI),
+
+                pitch: Math.max(Math.min(this.camera.pitch + offset.im, 0.5 * Math.PI), -0.5 * Math.PI),
+                yaw: Math.max(Math.min(this.camera.yaw - offset.re, Math.PI), -Math.PI),
             });
         }
     }
@@ -310,13 +314,22 @@ class Plot {
         );
     }
 
-    coordinateTransform(z) {
-        if (this.mode === Plot.modes.PLANE) {
-            return this.unitsToPixels(z);
+    applyCamera(z) {
+        if (this.mode === Plot.modes.SPHERE) {
+            if (z instanceof Complex) {
+                z = this.inverseStereoProject(z);
+            } else {
+                z = matrix(z).transpose();
+            }
+            return Matrix.multiply(this.rotationMatrix, z);
         } else {
-            z = this.perspectiveProject(Matrix.multiply(this.rotationMatrix, this.inverseStereoProject(z)));
-            return this.unitsToPixels(z);
+            return z;
         }
+    }
+
+    coordinateTransform(z) {
+        if (this.mode === Plot.modes.SPHERE) z = this.perspectiveProject(z);
+        return this.unitsToPixels(z);
     }
 
     pixelsToUnits(z) {
@@ -384,9 +397,52 @@ class Plot {
         this.drawGridlines();
         this.drawAxes();
 
+        this.polygons = [];
+
         for (let plottable of this.plottables) {
-            plottable.draw();
+            plottable.update();
+            this.polygons = this.polygons.concat(plottable.getPolygons());
         }
+
+        if (this.mode === Plot.modes.SPHERE) {
+            this.polygons.sort((poly1, poly2) => {
+                return this.applyCamera(poly2.centroid).get(1, 0) - this.applyCamera(poly1.centroid).get(1, 0);
+            });
+        }
+
+        push();
+        for (let poly of this.polygons) {
+            if (poly.vertices.length === 1) {
+                // point
+                fill(0);
+                noStroke();
+                const point = this.coordinateTransform(this.applyCamera(poly.vertices[0]));
+                circle(point.re, point.im, 1);
+            } else if (poly.vertices.length === 2) {
+                // line
+                stroke(0);
+                const point1 = this.coordinateTransform(this.applyCamera(poly.vertices[0]));
+                const point2 = this.coordinateTransform(this.applyCamera(poly.vertices[1]));
+                line(point1.re, point1.im, point2.re, point2.im);
+            } else {
+                // polygon
+                if (poly.outline) {
+                    stroke(0);
+                } else {
+                    noStroke();
+                }
+                fill(poly.fillColor);
+
+                beginShape();
+                for (let vert of poly.vertices) {
+                    const point = this.coordinateTransform(this.applyCamera(vert));
+                    vertex(point.re, point.im);
+                }
+                endShape(CLOSE);
+            }
+        }
+        pop();
+
         this.boundsChangedSinceLastDraw = false;
     }
 
@@ -410,7 +466,11 @@ class Plottable {
         Plottable.id++;
     }
 
-    draw() {
+    getPolygons() {
+
+    }
+
+    update() {
 
     }
 
@@ -425,13 +485,8 @@ class Point extends Plottable {
         this.radius = 1;
     }
 
-    draw() {
-        push();
-        fill(0);
-        noStroke();
-        const convertedPos = plot.coordinateTransform(this.position);
-        circle(convertedPos.re, convertedPos.im, this.radius);
-        pop();
+    getPolygons() {
+        return [new Polygon([this.position])];
     }
 
 }
@@ -459,20 +514,14 @@ class Circle extends Plottable {
         }
     }
 
-    draw() {
-        push();
-
-        stroke(0);
-        strokeWeight(1);
-        noFill();
-        beginShape();
-        for (let point of this.points) {
-            const convertedPoint = plot.coordinateTransform(point);
-            vertex(convertedPoint.re, convertedPoint.im);
+    getPolygons() {
+        const polygons = [];
+        for (let i=1; i<this.points.length; i++) {
+            polygons.push(new Polygon(
+                [this.points[i-1], this.points[i]]
+            ));
         }
-        endShape(CLOSE);
-
-        pop();
+        return polygons;
     }
 
 }
@@ -505,20 +554,14 @@ class Parametric extends Plottable {
         }
     }
 
-    draw() {
-        push();
-
-        stroke(0);
-        strokeWeight(1);
-        noFill();
-        beginShape();
-        for (let point of this.points) {
-            const convertedPoint = plot.coordinateTransform(point);
-            vertex(convertedPoint.re, convertedPoint.im);
+    getPolygons() {
+        const polygons = [];
+        for (let i=1; i<this.points.length; i++) {
+            polygons.push(new Polygon(
+                [this.points[i-1], this.points[i]]
+            ));
         }
-        endShape();
-
-        pop();
+        return polygons;
     }
 
 }
@@ -530,26 +573,22 @@ class Polygon {
         this.vertices = vertices;
         this.fillColor = fillColor;
         this.outline = outline;
-    }
 
-    draw() {
-        push();
-
-        if (this.outline) {
-            stroke(0);
+        if (vertices[0] instanceof Complex) {
+            this.centroid = Euclid.centroid(vertices);
         } else {
-            noStroke();
+            let totalX = 0, totalY = 0, totalZ = 0;
+            for (let vert of vertices) {
+                totalX += vert[0];
+                totalY += vert[1];
+                totalZ += vert[2];
+            }
+            this.centroid = [
+                totalX / this.vertices.length,
+                totalY / this.vertices.length,
+                totalZ / this.vertices.length,
+            ];
         }
-        fill(this.fillColor);
-
-        beginShape();
-        for (let vert of this.vertices) {
-            vert = plot.coordinateTransform(vert);
-            vertex(vert.re, vert.im);
-        }
-        endShape(CLOSE);
-
-        pop();
     }
 
 }
@@ -611,17 +650,34 @@ class DomainColoring extends Plottable {
         pop();
     }
 
-    draw() {
+    getPolygons() {
+        return this.polygons;
+    }
+
+    update() {
         if (plot.boundsChangedSinceLastDraw && !this.fixedBounds) {
             // TODO: This can be optimized to only recalculate the new polygons
             // by checking the difference between this.bounds and plot.bounds
             this.bounds = plot.bounds;
             this.generatePolygons();
         }
+    }
 
-        for (let poly of this.polygons) {
-            poly.draw();
+}
+
+
+class Model extends Plottable {
+
+    constructor(triangles) {
+        super();
+        this.triangles = [];
+        for (let triangle of triangles) {
+            this.triangles.push(new Polygon(triangle, color(255, 255, 255), true));
         }
+    }
+
+    getPolygons() {
+        return this.triangles;
     }
 
 }
@@ -649,30 +705,30 @@ function setup() {
     //         complex(0, 1),
     //     );
     // };
-    const f = (z) => {
-        // return Complex.exp(z);
-        // return z;
-        // return Complex.sqrt(z);
-        // return Complex.mult(z, z);
-        // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-        return Complex.cos(z);
-    };
-    const dcPlot = new DomainColoring(f);
-    plot.addPlottable(dcPlot);
+    // const f = (z) => {
+    //     // return Complex.exp(z);
+    //     // return z;
+    //     // return Complex.sqrt(z);
+    //     // return Complex.mult(z, z);
+    //     // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+    //     return Complex.cos(z);
+    // };
+    // const dcPlot = new DomainColoring(f);
+    // plot.addPlottable(dcPlot);
 
     /** Example: chaos game */
-    // const maxPoints = 100000;
+    // const maxPoints = 10000;
     // let point = complex(0, 0);
     // const vertices = [];
-    // const p = 4;
+    // const p = 5;
     // const rad = Poincare.regPolyDist(p, 100);
     // for (let j=0; j<p; j++) {
     //     vertices.push(complex(0, j / p * 2 * Math.PI).exp().scale(rad));
     // }
     // const phi = 2 / (1 + Math.sqrt(5));
     // for (let i=0; i<maxPoints; i++) {
-    //     // point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
-    //     point = Poincare.segment(phi, point, vertices[randInt(0, p-1)]);
+    //     point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
+    //     // point = Poincare.segment(phi, point, vertices[randInt(0, p-1)]);
 
     //     plot.addPlottable(new Point(
     //         point
@@ -708,6 +764,11 @@ function setup() {
     //         plot.addPlottable(para);
     //         plot.addPlottable(fourierTest);
     //     });
+
+    /** Example: icosphere model */
+    const icosphereTris = icosphere();
+    const sphere = new Model(icosphereTris);
+    plot.addPlottable(sphere);
 
     lastMouseX = mouseX;
     lastMouseY = mouseY;
