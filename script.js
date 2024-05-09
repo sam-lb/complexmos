@@ -340,6 +340,26 @@ class Plot {
         );
     }
 
+    setMode(mode) {
+        this.mode = mode;
+
+        if (mode === Plot.modes.PLANE) {
+            if (this.savedBounds !== undefined) this.configureWindow(null, null, this.savedBounds);
+        } else {
+            this.savedBounds = this.bounds;
+            this.configureWindow(null, null, {
+                xMin: -2.5,
+                xMax: 2.5,
+                yMin: -1.5,
+                yMax: 1.5,
+            });
+            this.fitBoundsToSquare();
+        }
+
+        this.boundsChangedSinceLastDraw = true;
+        this.needsUpdate = true;
+    }
+
     calculateRotationMatrix() {
         this.rotationMatrix = Matrix.rotationMatrix3D(this.camera.pitch, this.camera.roll, this.camera.yaw);
     }
@@ -736,6 +756,7 @@ function setup() {
 	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	canvas.parent("canvas-div");
     plot = new Plot(width, height, null, Plot.modes.SPHERE);
+    tabSwitch(plot.mode-1);
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
     //     {start: 0, stop: 2 * Math.PI},
@@ -847,6 +868,20 @@ function windowResized() {
     const canvasDiv = document.querySelector("#canvas-div");
     resizeCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
     plot.configureWindow(width, height);
+}
+
+function tabSwitch(tab) {
+    const plane = document.querySelector("#ui-header-plane");
+    const sphere = document.querySelector("#ui-header-sphere");
+    if (tab === 0) {
+        plane.style.backgroundColor = "white";
+        sphere.style.backgroundColor = "lightgray";
+        plot.setMode(Plot.modes.PLANE);
+    } else {
+        plane.style.backgroundColor = "lightgray";
+        sphere.style.backgroundColor = "white";
+        plot.setMode(Plot.modes.SPHERE);
+    }
 }
 
 function draw() {
