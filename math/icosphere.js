@@ -7,12 +7,6 @@ function icosphere(subdivisions=0) {
     const scale = 1 / (2 * Math.sin(2 * Math.PI / 5));
     const phi = scale * (1 + Math.sqrt(5)) / 2;
 
-    /**
-     * [-s,s,-s,s,0,0,0,0,phi,phi,-phi,-phi]
-     * [phi,phi,-phi,-phi,-s,s,-s,s,0,0,0,0]
-     * [0,0,0,0,phi,phi,-phi,-phi,-s,s,-s,s]
-     */
-
     const vertices = [
         [-scale, phi, 0], [scale, phi, 0], [-scale, -phi, 0], [scale, -phi, 0],
         [0, -scale, phi], [0, scale, phi], [0, -scale, -phi], [0, scale, -phi],
