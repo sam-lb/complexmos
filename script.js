@@ -611,6 +611,52 @@ class DomainColoring extends Plottable {
     }
 
     generatePolygons() {
+        if (plot.mode === Plot.modes.PLANE) {
+            this.generatePolygonsPlane();
+        } else {
+            this.generatePolygonsSphere();
+        }
+    }
+
+    generatePolygonsSphere() {
+        this.polygons = icosphere(4);
+        const threshold = 1000;
+        const angleTransform = (angle) => {
+            return 360 * ((angle + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI); // modulo is not true remainder in JS
+        };
+        const normTransform = (norm) => {
+            return 25 + 75 * (
+                (2 / Math.PI) * Math.atan(norm)
+            );
+        };
+        const parabolaStep = (x) => {
+            return x * x * x * (10 - 15 * x + 6 * x * x);
+        };
+        const highlightPoles = (norm) => {
+            return 100 - 50 * Math.max(0, Math.min(1, 0.5 * (Math.sign(norm - threshold) + 1) * parabolaStep(norm - threshold)));
+        };
+
+        push();
+        colorMode(HSB);
+        for (let i=0; i<this.polygons.length; i++) {
+            this.polygons[i] = new Polygon(this.polygons[i]);
+            const centroid = this.polygons[i].centroid;
+
+            // scale slightly from center
+            this.polygons[i].vertices = [
+                ssub(1, sscale(1.1, ssub(-1, this.polygons[i].vertices[0], centroid)), centroid),
+                ssub(1, sscale(1.1, ssub(-1, this.polygons[i].vertices[1], centroid)), centroid),
+                ssub(1, sscale(1.1, ssub(-1, this.polygons[i].vertices[2], centroid)), centroid),
+            ];
+
+            const output = this.fn(stereographic(centroid));
+            const norm = output.norm();
+            this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
+        }
+        pop();
+    }
+
+    generatePolygonsPlane() {
         let x = this.bounds.xMin, y = this.bounds.yMin;
         const step = complex(
             (this.bounds.xMax - this.bounds.xMin) / (this.samples.re - 1),
@@ -618,13 +664,13 @@ class DomainColoring extends Plottable {
         );
         const angleTransform = (angle) => {
             return 360 * ((angle + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI); // modulo is not true remainder in JS
-        }
+        };
         const normTransform = (norm) => {
             // return 25 + (150 / Math.PI) * Math.atan(Math.sqrt(norm));
             return 25 + 75 * (
                 Math.floor((2 / Math.PI * Math.atan(Math.sqrt(norm))) / 0.2) * 0.2
             );
-        }
+        };
         this.polygons = [];
         push();
         colorMode(HSB);
@@ -705,16 +751,16 @@ function setup() {
     //         complex(0, 1),
     //     );
     // };
-    // const f = (z) => {
-    //     // return Complex.exp(z);
-    //     // return z;
-    //     // return Complex.sqrt(z);
-    //     // return Complex.mult(z, z);
-    //     // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-    //     return Complex.cos(z);
-    // };
-    // const dcPlot = new DomainColoring(f);
-    // plot.addPlottable(dcPlot);
+    const f = (z) => {
+        // return Complex.exp(z);
+        // return z;
+        // return Complex.sqrt(z);
+        // return Complex.mult(z, z);
+        // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+        return Complex.cos(z);
+    };
+    const dcPlot = new DomainColoring(f);
+    plot.addPlottable(dcPlot);
 
     /** Example: chaos game */
     // const maxPoints = 10000;
@@ -766,9 +812,9 @@ function setup() {
     //     });
 
     /** Example: icosphere model */
-    const icosphereTris = icosphere(2);
-    const sphere = new Model(icosphereTris);
-    plot.addPlottable(sphere);
+    // const icosphereTris = icosphere(3);
+    // const sphere = new Model(icosphereTris);
+    // plot.addPlottable(sphere);
 
     lastMouseX = mouseX;
     lastMouseY = mouseY;

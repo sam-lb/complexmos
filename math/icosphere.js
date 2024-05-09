@@ -19,6 +19,14 @@ function ssub(s, X, Y) {
     ];
 }
 
+function sscale(s, X) {
+    return [
+        s * X[0],
+        s * X[1],
+        s * X[2],
+    ];
+}
+
 
 
 function icosphere(subdivisions=0) {
