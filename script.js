@@ -141,12 +141,27 @@ function randInt(a, b) {
 
 class Plot {
 
-    constructor(displayWidth, displayHeight, bounds=null) {
+    static modes = {
+        PLANE: 1,
+        SPHERE: 2,
+    };
+
+    constructor(displayWidth, displayHeight, bounds=null, mode=null) {
         this.gridlineSpacing = 1;
         this.boundsChangedSinceLastDraw = false;
         this.configureWindow(displayWidth, displayHeight, bounds, bounds === null);
         this.plottables = [];
         this.needsUpdate = true;
+
+        this.mode = (mode === null) ? Plot.modes.PLANE : mode;
+        this.camera = {
+            alpha: 1,
+            beta: 0.2,
+            pitch: 0,
+            roll: 0,
+            yaw: 0,
+        };
+        this.calculateRotationMatrix();
     }
 
     configureWindow(newWidth=null, newHeight=null, bounds=null) {
@@ -222,6 +237,7 @@ class Plot {
         console.log("window bounds", this.bounds);
         console.log("offset", this.offset);
         console.log("window size", this.dimensions);
+        console.log("gridline count", this.gridlineCount);
     }
 
     fitBoundsToSquare() {
@@ -235,13 +251,29 @@ class Plot {
         });
     }
 
+    setCamera(camera) {
+        this.camera.alpha = (camera.alpha === undefined) ? this.camera.alpha : camera.alpha;
+        this.camera.beta = (camera.beta === undefined) ? this.camera.beta : camera.beta;
+        this.camera.pitch = (camera.pitch === undefined) ? this.camera.pitch : camera.pitch;
+        this.camera.yaw = (camera.yaw === undefined) ? this.camera.yaw : camera.yaw;
+        this.camera.roll = (camera.roll === undefined) ? this.camera.roll : camera.roll;
+        this.needsUpdate = true;
+    }
+
     pan(offset) {
-        this.configureWindow(null, null, {
-            xMin: this.bounds.xMin + offset.re,
-            xMax: this.bounds.xMax + offset.re,
-            yMin: this.bounds.yMin + offset.im,
-            yMax: this.bounds.yMax + offset.im
-        });
+        if (this.mode === Plot.modes.PLANE) {
+            this.configureWindow(null, null, {
+                xMin: this.bounds.xMin + offset.re,
+                xMax: this.bounds.xMax + offset.re,
+                yMin: this.bounds.yMin + offset.im,
+                yMax: this.bounds.yMax + offset.im
+            });
+        } else {
+            this.setCamera({
+                pitch: (this.camera.pitch - offset.im) % (2 * Math.PI),
+                yaw: (this.camera.yaw + offset.re) % (0.5 * Math.PI),
+            });
+        }
     }
 
     zoom(factor) {
@@ -260,12 +292,43 @@ class Plot {
         );
     }
 
+    inverseStereoProject(z) {
+        const normSq = z.normSq();
+        return matrix([
+            (2 * z.re) / (1 + normSq),
+            (2 * z.im) / (1 + normSq),
+            (normSq - 1) / (1 + normSq),
+        ]).transpose();
+    }
+
+    perspectiveProject(Z) {
+        const values = Z.getColumn(0);
+        const x = values[0], y = values[1], z = values[2];
+        const denom = (this.camera.alpha + this.camera.beta * y);
+        return complex(
+            x / denom, z / denom,
+        );
+    }
+
+    coordinateTransform(z) {
+        if (this.mode === Plot.modes.PLANE) {
+            return this.unitsToPixels(z);
+        } else {
+            z = this.perspectiveProject(Matrix.multiply(this.rotationMatrix, this.inverseStereoProject(z)));
+            return this.unitsToPixels(z);
+        }
+    }
+
     pixelsToUnits(z) {
         // note: this is NOT an exact inverse of unitsToPixels!!!
         return complex(
             z.re / this.pixelsPerUnit.re,
             -z.im / this.pixelsPerUnit.im
         );
+    }
+
+    calculateRotationMatrix() {
+        this.rotationMatrix = Matrix.rotationMatrix3D(this.camera.pitch, this.camera.roll, this.camera.yaw);
     }
 
     addPlottable(plottable) {
@@ -305,7 +368,7 @@ class Plot {
             const end = this.unitsToPixels(complex(this.bounds.xMax, y));
             line(start.re, start.im, end.re, end.im);
         }
-        for (let i=0; i<this.gridlineCount.im+3; i++) {
+        for (let i=0; i<this.gridlineCount.im+4; i++) {
             // vertical gridlines
             const x = minBoundX + i * this.gridlineSpacing;
             const start = this.unitsToPixels(complex(x, this.bounds.yMin));
@@ -329,6 +392,7 @@ class Plot {
 
     update() {
         if (this.needsUpdate) {
+            if (this.mode === Plot.modes.SPHERE) this.calculateRotationMatrix();
             this.draw();
             this.needsUpdate = false;
         }
@@ -365,7 +429,7 @@ class Point extends Plottable {
         push();
         fill(0);
         noStroke();
-        const convertedPos = plot.unitsToPixels(this.position);
+        const convertedPos = plot.coordinateTransform(this.position);
         circle(convertedPos.re, convertedPos.im, this.radius);
         pop();
     }
@@ -403,7 +467,7 @@ class Circle extends Plottable {
         noFill();
         beginShape();
         for (let point of this.points) {
-            const convertedPoint = plot.unitsToPixels(point);
+            const convertedPoint = plot.coordinateTransform(point);
             vertex(convertedPoint.re, convertedPoint.im);
         }
         endShape(CLOSE);
@@ -449,7 +513,7 @@ class Parametric extends Plottable {
         noFill();
         beginShape();
         for (let point of this.points) {
-            const convertedPoint = plot.unitsToPixels(point);
+            const convertedPoint = plot.coordinateTransform(point);
             vertex(convertedPoint.re, convertedPoint.im);
         }
         endShape();
@@ -480,7 +544,7 @@ class Polygon {
 
         beginShape();
         for (let vert of this.vertices) {
-            vert = plot.unitsToPixels(vert);
+            vert = plot.coordinateTransform(vert);
             vertex(vert.re, vert.im);
         }
         endShape(CLOSE);
@@ -569,7 +633,7 @@ function setup() {
     const canvasDiv = document.querySelector("#canvas-div");
 	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	canvas.parent("canvas-div");
-    plot = new Plot(width, height);
+    plot = new Plot(width, height, null, Plot.modes.SPHERE);
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
     //     {start: 0, stop: 2 * Math.PI},

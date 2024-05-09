@@ -10,6 +10,16 @@ const cheapNumberRound = (x) => {
 	return x;
 };
 
+function arrayDot(arr1, arr2) {
+	// evaluate the dot product of two arrays
+	if (arr1.length !== arr2.length) throw "Arrays must be the same length to dot.";
+	let res = 0;
+	for (let i=0; i<arr1.length; i++) {
+		res += arr1[i] * arr2[i];
+	}
+	return res;
+}
+
 
 class Matrix {
 
@@ -385,6 +395,11 @@ class Matrix {
 	getRow(i) {
 		// return the ith row
 		return this.mat[i];
+	}
+
+	get(i, j) {
+		/** Return the element in the ith row and jth column */
+		return this.mat[i][j];
 	}
 
 	rowSwap(i1, i2) {
