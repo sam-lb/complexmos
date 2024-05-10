@@ -107,6 +107,7 @@ body {
 	margin: 0px;
 	background-color: white;
 	font-size: 16pt;
+    margin-right: 5px;
 }
 
 *:focus {
