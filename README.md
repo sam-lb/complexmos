@@ -2,21 +2,33 @@
 
 collection of math libraries for use with JavaScript
 
-### complex.js
+### math
+
+Library of math functions
+
+#### complex.js
 
 library for working with complex numbers, functions, and vectors in $\mathbb{C}^n$. Includes simple integration routines.
 
-### fourier.js
+#### fourier.js
 
-library for computing fourier coefficients (depends on `complex.js`).
+library for computing fourier coefficients and series
 
-### matrix.js
+#### geometry.js
 
-library for working with real matrices
+library for working with Euclidean and Hyperbolic geometry
 
-### geometry.js
+#### icosphere.js
 
-library for working with real Euclidean geometry. depends on `complex.js`
+functions for generating icospheres
+
+#### matrix.js
+
+library for working with matrices in $\mathbb{R}^{n\times n}$
+
+#### projection.js
+
+functions for immersion and submersion between submanifolds of $\mathbb{R}^n$
 
 ### parsing
 
