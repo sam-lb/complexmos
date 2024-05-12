@@ -20,7 +20,7 @@ function handleSubmit() {
     const latex = document.querySelector("#minput-field").value;
     const text = cleanLatex(latex);
     const tokens = tokenize(text, tracker, scope);
-    console.log(tokens);
+    console.log(tokens?.tokens);
 
     if (tokens !== null) {
         tracker.clear();

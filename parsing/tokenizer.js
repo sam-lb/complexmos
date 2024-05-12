@@ -172,5 +172,8 @@ function tokenize(text, tracker, scope) {
     if (!clearIdentifierBuffer()) return null;
     if (!clearNumberBuffer()) return null;
     
-    return tokens;
+    return {
+        tokens: tokens,
+        expressionType: null,
+    };
 }
