@@ -3,9 +3,39 @@ document.querySelector("#minput-field").focus();
 const tracker = new ErrorTracker("error-output", "Tokenization successful!");
 
 const scope = {
-    "builtin": [
-        "sin", "sinh", "max", "x", "y", "z", "xy"
-    ],
+    "builtin": {
+        "sin": {
+            dataType: dataTypes.function,
+            value: Complex.sin,
+            arguments: [dataTypes.number],
+        },
+        "sinh": {
+            dataType: dataTypes.function,
+            value: Complex.sinh,
+            arguments: [dataTypes.number],
+        },
+        "matmul": {
+            dataType: dataTypes.function,
+            value: Matrix.multiply,
+            arguments: [dataTypes.matrix, dataTypes.matrix],
+        },
+        "x": {
+            dataType: dataTypes.number,
+            value: 0,
+        },
+        "y": {
+            dataType: dataTypes.number,
+            value: 1,
+        },
+        "z": {
+            dataType: dataTypes.number,
+            value: 2,
+        },
+        "xy": {
+            dataType: dataTypes.array,
+            value: [],
+        },
+    }
 };
 
 

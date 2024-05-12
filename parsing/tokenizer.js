@@ -21,7 +21,7 @@ const expressionTypes = {
     expression: 3,
 };
 
-const identifierDataTypes = {
+const dataTypes = {
     number: 0,
     matrix: 1,
     function: 2,
@@ -52,7 +52,7 @@ class Token {
 
 
 function buildSearchTrieFromScope(scope) {
-    return new Trie(scope["builtin"]);
+    return new Trie(Object.keys(scope["builtin"]));
 }
 
 
