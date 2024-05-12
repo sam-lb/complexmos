@@ -13,6 +13,22 @@ const EQUALS = "=";
 const RESERVED = "@";
 
 
+
+const expressionTypes = {
+    constantAssignment: 0,
+    functionAssignment: 1,
+    literal: 2,
+    expression: 3,
+};
+
+const identifierDataTypes = {
+    number: 0,
+    matrix: 1,
+    function: 2,
+    array: 3,
+};
+
+
 class Token {
 
     static types = {
@@ -35,6 +51,11 @@ class Token {
 }
 
 
+function buildSearchTrieFromScope(scope) {
+    return new Trie(scope["builtin"]);
+}
+
+
 function tokenize(text, tracker, scope) {
     if (text.length === 0) {
         tracker.error("Cannot tokenize empty string");
@@ -46,7 +67,7 @@ function tokenize(text, tracker, scope) {
         return null;
     }
 
-    const identifierLookup = new Trie(scope["builtin"]);
+    const identifierLookup = buildSearchTrieFromScope(scope);
     let buffer = "";
     let numBuffer = "";
     let readingDecimalPart = false;
