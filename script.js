@@ -158,9 +158,9 @@ class Plot {
         this.camera = {
             alpha: 1,
             beta: 0.2,
-            pitch: 0,
+            pitch: .786,
             roll: 0,
-            yaw: 0,
+            yaw: .672,
         };
         this.calculateRotationMatrix();
     }
