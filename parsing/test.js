@@ -39,6 +39,30 @@ const scope = {
 };
 
 
+let dictionary;
+fetch("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt")
+    .then(resp => resp.text())
+    .then(text => {
+        dictionary = new Trie(text.split("\n"));
+        document.querySelector("#prefix-search").disabled = false;
+    });
+
+
+function prefixSearch() {
+    if (window.event.keyCode === 13) {
+        const prefix = document.querySelector("#prefix-search").value;
+        const results = dictionary.prefixSearch(prefix);
+
+        let htmlString = "";
+        for (let result of results) {
+            htmlString += `<li>${result}</li>`;
+        }
+        document.querySelector("#results-count").innerHTML = `${results.length} results found for prefix '${prefix}'`;
+        document.querySelector("#results-list").innerHTML = htmlString;
+    }
+}
+
+
 function handleKeydown() {
     if (window.event.keyCode === 13) {
         handleSubmit();

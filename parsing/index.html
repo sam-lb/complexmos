@@ -8,11 +8,23 @@
     <body>
         <div id="content">
             <label for="minput-field">enter string</label>
-            <input type="text" id="minput-field" onkeydown="handleKeydown();"">
+            <input type="text" id="minput-field" onkeydown="handleKeydown();">
             <button onclick="handleSubmit();">submit</button>
 
             <div id="error-output">
 
+            </div>
+
+            <br/><br/>
+            <label for="prefix-search">enter prefix to search</label>
+            <input type="text" id="prefix-search" onkeydown="prefixSearch();" disabled>
+            <br/><br/>
+
+            <div id="prefix-search-results">
+                results (max count=100):
+                <div id="results-count"></div>
+                <ul id="results-list">
+                </ul>
             </div>
         </div>
 

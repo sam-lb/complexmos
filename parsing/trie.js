@@ -124,6 +124,8 @@ class Trie {
 
     constructor(keysArray=null) {
         this.root = null;
+        this.maxDepth = 0;
+        this.size = 0;
 
         if (keysArray !== null) {
             for (let key of keysArray) {
@@ -136,6 +138,8 @@ class Trie {
         if (this.root === null) {
             this.root = new LinkedList();
         }
+
+        this.maxDepth = Math.max(this.maxDepth, key.length);
 
         let list = this.root;
         for (let i=0; i<key.length; i++) {
@@ -151,6 +155,7 @@ class Trie {
 
             if (i === key.length - 1 && list.search(Trie.TERMINATOR) === null) {
                 list.push(Trie.TERMINATOR);
+                this.size++;
             }
         }
     }
@@ -196,7 +201,50 @@ class Trie {
             if (node === null) return false;
             list = node.child;
         }
-        return list.remove(Trie.TERMINATOR);
+        const removalResult = list.remove(Trie.TERMINATOR);
+        if (removalResult) this.size--;
+        return removalResult;
+    }
+
+    prefixSearch(prefix, maxResults=100) {
+        /**
+         * Search the trie for keys with the given prefix.
+         * Returns no more than maxResults keys
+         */
+        if (this.root === null) return [];
+
+        let list = this.root, node;
+        for (let character of prefix) {
+            node = list.search(character);
+            if (node === null) return []; // prefix not in trie
+            list = node.child;
+        }
+
+        const results = [];
+        if (list.search(Trie.TERMINATOR) !== null) results.push(prefix); 
+
+        // depth-first search for matching keys
+        const queue = [{node: list.head, suffix: ""}];
+        let current;
+        while (results.length < maxResults && queue.length > 0) {
+            current = queue.pop();
+            let currentNode = current.node, currentSuffix = current.suffix;
+            while (currentNode !== null) {
+                if (currentNode.value === Trie.TERMINATOR) {
+                    currentNode = currentNode.next;
+                    continue;
+                }
+                const searchResult = currentNode.child.search(Trie.TERMINATOR);
+                if (searchResult !== null) results.push(prefix + currentSuffix + currentNode.value);
+                queue.unshift({
+                    node: currentNode.child.head,
+                    suffix: currentSuffix + currentNode.value,
+                });
+                currentNode = currentNode.next;
+                if (results.length === maxResults) break;
+            }
+        }
+        return results;
     }
 
 }

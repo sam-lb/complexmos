@@ -11,3 +11,21 @@ body {
     width: fit-content;
     display: none;
 }
+
+
+#prefix-search-results {
+    max-height: 20vh;
+    overflow-y: auto;
+    border: 1px solid black;
+    padding: 10px;
+    margin: 0;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    border: 1px solid black;
+    padding: 3px;
+}
