@@ -779,6 +779,7 @@ function setup() {
         // return Complex.mult(z, z);
         // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
         return Complex.cos(z);
+        // return Complex.sqrt(z.mult(z).scale(-4).sub(complex(1, 0))).sub(Complex.mult(complex(0, 2), z));
     };
     const dcPlot = new DomainColoring(f);
     plot.addPlottable(dcPlot);
