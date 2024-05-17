@@ -217,6 +217,38 @@ class Matrix {
 		return Matrix.cheapMatrixRound(newMat);
 	}
 
+	static columnNorm(mat, j) {
+		let squaredTotal = 0;
+		for (let i=0; i<mat.rows; i++) {
+			squaredTotal += mat.get(i, j) * mat.get(i, j);
+		}
+		return Math.sqrt(squaredTotal);
+	}
+
+	static householderReflection(vec) {
+		/**
+		 * compute the householder reflection matrix for v
+		 * v should be of shape (n, 1)
+		 */
+		if (vec.cols !== 1) {
+			throw new Error("Can only compute Householder matrix for column vectors");
+		}
+		const normalized = Matrix.scale(vec, Matrix.columnNorm(vec, 0));
+		return Matrix.sub(Matrix.identity(vec.rows), Matrix.scale(Matrix.multiply(normalized, Matrix.transpose(normalized)), 2));		
+	}
+
+	static QRDecomposition(mat) {
+		/**
+		 * Calculates the QR decomposition (https://en.wikipedia.org/wiki/QR_decomposition)
+		 * Uses householder reflections
+		 */
+		if (mat.rows >= mat.cols) {
+			
+		} else {
+			throw new Error("mat must satisfy #rows >= #cols to compute QR decomposition");
+		}
+	}
+
 	static LUDecomposition(mat) {
 		// get the L and U triangular matrices where mat=LU
 		// (this implements the Doolittle algorithm)
