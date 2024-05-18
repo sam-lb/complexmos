@@ -249,6 +249,10 @@ class Matrix {
 		}
 	}
 
+	static eigenpairs(mat) {
+		/** computes the eigenvalues and eigenvectors of the given matrix */
+	}
+
 	static LUDecomposition(mat) {
 		// get the L and U triangular matrices where mat=LU
 		// (this implements the Doolittle algorithm)
