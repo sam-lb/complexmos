@@ -275,6 +275,24 @@ class Matrix {
 		};
 	}
 
+	static eigenvalues(mat) {
+		/**
+		 * compute eigenvalues of the matrix
+		 */
+		if (!mat.isSquare) throw new Error("can't compute eigenvalues of non-square matrix");
+		let A = mat.copy();
+		for (let i=0; i<10; i++) {
+			// 10 iterations because I don't want to worry too much about convergence and add so much complexity
+			const decomposition = Matrix.QRDecomposition(A);
+			A = Matrix.multiply(decomposition.R, decomposition.Q);
+		}
+		const result = [];
+		for (let i=0; i<mat.rows; i++) {
+			result.push(A.get(i, i));
+		}
+		return result;
+	}
+
 	static eigenpairs(mat) {
 		/** computes the eigenvalues and eigenvectors of the given matrix */
 	}
