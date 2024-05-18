@@ -483,17 +483,20 @@ class Matrix {
 		throw new Error("Column is invalid.");
 	}
 
-	subMatrix(iMin, iMax, jMin, jMax) {
-		// return the submatrix within the given bounds
-		if (iMin >= iMax || jMin >= jMax) throw new Error("Min values must be less than max values.");
-		if (!(0 <= iMin && 0 <= jMin && iMax < this.rows && jMax < this.cols)) throw new Error("i values must be 0 <= i < rows, j must be 0 <= j < cols.");
-		let result = [], row = [];
-		for (let i=iMin; i<=iMax; i++) {
-			row = [];
-			for (let j=jMin; j<=jMax; j++) {
+	subMatrix(i1, i2, j1, j2) {
+		/**
+		 * return the submatrix [ a_ij ] with i1 <= i < i2, j1 <= j < j2
+		 * */
+		if (!(0 <= i1 && i1 <= this.rows && 0 <= j1 && j1 <= this.cols)) throw new Error("submatrix index out of range");
+		if (i1 > i2 || j1 > j2) throw new Error("invalid submatrix indices");
+
+		const result = [];
+		for (let i=i1; i<i2; i++) {
+			const row = [];
+			for (let j=j1; j<j2; j++) {
 				row.push(this.mat[i][j]);
 			}
-			result.push(row.slice());
+			result.push(row);
 		}
 		return new Matrix(result);
 	}
