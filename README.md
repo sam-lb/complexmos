@@ -24,7 +24,7 @@ functions for generating icospheres
 
 #### matrix.js
 
-library for working with matrices in $\mathbb{R}^{n\times n}$. Complex matrices are not supported.
+library for working with matrices in $\mathbb{R}^{m\times n}$. Complex matrices are not supported.
 
 #### projection.js
 
