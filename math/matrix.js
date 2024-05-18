@@ -253,6 +253,27 @@ class Matrix {
 		/** computes the eigenvalues and eigenvectors of the given matrix */
 	}
 
+	static exp(mat) {
+		/**
+		 * computes e to the power of mat
+		 * defined by the power series for exp(x)
+		 * exp(A) = \sum_{k=0}^{\infty} A^k/k!
+		 */
+	}
+
+	static log(mat) {
+		/**
+		 * computes the matrix logarithm
+		 * https://en.wikipedia.org/wiki/Logarithm_of_a_matrix
+		 */
+	}
+
+	static pow(mat) {
+		/**
+		 * computes the matrix exponential
+		 */
+	}
+
 	static LUDecomposition(mat) {
 		// get the L and U triangular matrices where mat=LU
 		// (this implements the Doolittle algorithm)
