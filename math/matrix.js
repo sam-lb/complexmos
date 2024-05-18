@@ -233,7 +233,8 @@ class Matrix {
 		if (vec.cols !== 1) {
 			throw new Error("Can only compute Householder matrix for column vectors");
 		}
-		const normalized = Matrix.scale(vec, Matrix.columnNorm(vec, 0));
+		const normalized = Matrix.scale(vec, 1 / Matrix.columnNorm(vec, 0));
+		normalized.show();
 		return Matrix.sub(Matrix.identity(vec.rows), Matrix.scale(Matrix.multiply(normalized, Matrix.transpose(normalized)), 2));		
 	}
 
