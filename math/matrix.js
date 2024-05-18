@@ -225,17 +225,28 @@ class Matrix {
 		return Math.sqrt(squaredTotal);
 	}
 
-	static householderReflection(vec) {
+	static householderReflection(mat) {
 		/**
 		 * compute the householder reflection matrix for v
 		 * v should be of shape (n, 1)
 		 */
-		if (vec.cols !== 1) {
-			throw new Error("Can only compute Householder matrix for column vectors");
+		if (mat.cols !== 1) throw new Error("Can only compute Householder matrix for column vectors");
+		const alpha = mat.get(0, 0);
+		let scale = (mat.rows === 1) ? 0 : Matrix.columnNorm(mat.submatrix(1, mat.rows, 0, 1), 0);
+		scale *= scale;
+		let v = mat.copy();
+
+		let tau;
+		if (scale === 0) {
+			tau = 0;			
+		} else {
+			const t = Math.sqrt(alpha * alpha + scale);
+			v.mat[0][0] = (alpha <= 0) ? alpha - t : -scale / (alpha + t);
+			tau = 2 * v.get(0, 0) * v.get(0, 0) / (scale + v.get(0, 0) * v.get(0, 0));
+			v = Matrix.scale(v, 1 / v.get(0, 0));
 		}
-		const normalized = Matrix.scale(vec, 1 / Matrix.columnNorm(vec, 0));
-		normalized.show();
-		return Matrix.sub(Matrix.identity(vec.rows), Matrix.scale(Matrix.multiply(normalized, Matrix.transpose(normalized)), 2));		
+
+		return Matrix.sub(Matrix.identity(mat.rows), Matrix.scale(Matrix.multiply(v, Matrix.transpose(v)), tau));
 	}
 
 	static QRDecomposition(mat) {
@@ -243,11 +254,25 @@ class Matrix {
 		 * Calculates the QR decomposition (https://en.wikipedia.org/wiki/QR_decomposition)
 		 * Uses householder reflections
 		 */
-		if (mat.rows >= mat.cols) {
-			
-		} else {
-			throw new Error("mat must satisfy #rows >= #cols to compute QR decomposition");
+		let R = mat.copy();
+		let Q = Matrix.identity(mat.rows);
+
+		for (let j=0; j<mat.cols; j++) {
+			const reflect = Matrix.householderReflection(R.submatrix(j, mat.rows, j, j + 1));
+			const H = Matrix.identity(mat.rows);
+			for (let a=j; a<mat.rows; a++) {
+				for (let b=j; b<mat.rows; b++) {
+					H.mat[a][b] = reflect.get(a - j, b - j);
+				}
+			}
+			R = Matrix.multiply(H, R);
+			Q = Matrix.multiply(H, Q);
 		}
+
+		return {
+			Q: Matrix.transpose(Q.submatrix(0, mat.cols, 0, mat.cols)),
+			R: R.submatrix(0, mat.cols, 0, mat.cols),
+		};
 	}
 
 	static eigenpairs(mat) {
@@ -483,7 +508,7 @@ class Matrix {
 		throw new Error("Column is invalid.");
 	}
 
-	subMatrix(i1, i2, j1, j2) {
+	submatrix(i1, i2, j1, j2) {
 		/**
 		 * return the submatrix [ a_ij ] with i1 <= i < i2, j1 <= j < j2
 		 * */
