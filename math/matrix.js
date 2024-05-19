@@ -10,16 +10,6 @@ const cheapNumberRound = (x) => {
 	return x;
 };
 
-function arrayDot(arr1, arr2) {
-	// evaluate the dot product of two arrays
-	if (arr1.length !== arr2.length) throw "Arrays must be the same length to dot.";
-	let res = 0;
-	for (let i=0; i<arr1.length; i++) {
-		res += arr1[i] * arr2[i];
-	}
-	return res;
-}
-
 
 class Matrix {
 
@@ -132,15 +122,20 @@ class Matrix {
 	}
 
 	static multiply(mat1, mat2) {
-		if (mat1.cols !== mat2.rows) throw new Error("Invalid matrix dimension for multiplication. must be m x r and r x n");
-		let res = Matrix.emptyMatrix(mat1.rows, mat2.cols), row;
-		for (let i=0; i<res.rows; i++) {
-			row = mat1.getRow(i);
-			for (let j=0; j<res.cols; j++) {
-				res.mat[i][j] = arrayDot(row, mat2.getColumn(j));
+		if (mat1.cols !== mat2.rows) throw new Error("Incompatible matrix dimensions. must be m x r and r x n");
+		const res = [];
+		for (let i=0; i<mat1.rows; i++) {
+			const row = [];
+			for (let j=0; j<mat1.cols; j++) {
+				let dot = 0;
+				for (let k=0; k<mat2.rows; k++) {
+					dot += mat1.mat[i][k] * mat2.mat[k][j];
+				}
+				row.push(dot);
 			}
+			res.push(row);
 		}
-		return Matrix.cheapMatrixRound(res);
+		return new Matrix(res);
 	}
 
 	static scale(mat, k) {
