@@ -48,6 +48,10 @@ class Token {
         this.type = type;
     }
 
+    toString() {
+        return `{${this.data}}`
+    }
+
 }
 
 
@@ -72,6 +76,8 @@ function tokenize(text, tracker, scope) {
     let numBuffer = "";
     let readingDecimalPart = false;
     const tokens = [];
+    let expectFunctionCall = false;
+    let lastToken = null;
 
     const clearIdentifierBuffer = (precedesImplicit=false) => {
         const bufEmpty = buffer.length === 0;
@@ -100,6 +106,15 @@ function tokenize(text, tracker, scope) {
                 tokens.push(new Token("*", Token.types.operator));
             }
             if (!precedesImplicit) tokens.pop();
+        }
+        for (let i=0; i<identifiers.length; i++) {
+            const isFunction = scope.builtin[identifiers[i]].dataType === dataTypes.function;
+            if (i === identifiers.length - 1) {
+                expectFunctionCall = isFunction;
+            } else {
+                tracker.error("Function calls require parentheses.");
+                return false;
+            }
         }
         return true;
     };
@@ -178,9 +193,17 @@ function tokenize(text, tracker, scope) {
         } else if (character === ARG_AND_ITEM_SEP) {
 
         } else if (character === OPEN_PAREN) {
-
+            if (!clearIdentifierBuffer()) return null;
+            if (!clearNumberBuffer()) return null;
+            if (tokens.length > 0 && !expectFunctionCall) {
+                tokens.push(new Token("*", Token.types.operator));
+            }
+            tokens.push(new Token("(", Token.types.openParen));
+            expectFunctionCall = false;
         } else if (character === CLOSE_PAREN) {
-            
+            if (!clearIdentifierBuffer()) return null;
+            if (!clearNumberBuffer()) return null;
+            tokens.push(new Token(")", Token.types.closeParen));
         } else if (character === OPEN_BRACKET) {
 
         } else if (character === CLOSE_BRACKET) {
@@ -189,9 +212,18 @@ function tokenize(text, tracker, scope) {
             tracker.error(`Unexpected token ${character}`);
             return null;
         }
+        if (expectFunctionCall) {
+            tracker.error(`Function calls require parentheses`);
+            return null;
+        }
+        lastToken = tokens[tokens.length-1];
     }
     if (!clearIdentifierBuffer()) return null;
     if (!clearNumberBuffer()) return null;
+    if (expectFunctionCall) {
+        tracker.error(`Function calls require parentheses`);
+        return null;
+    }
     
     return {
         tokens: tokens,

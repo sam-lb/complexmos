@@ -21,20 +21,24 @@ const scope = {
         },
         "x": {
             dataType: dataTypes.number,
-            value: 0,
+            value: complex(2, 0),
         },
         "y": {
             dataType: dataTypes.number,
-            value: 1,
+            value: complex(1, 0),
         },
         "z": {
             dataType: dataTypes.number,
-            value: 2,
+            value: complex(2, 0),
         },
         "xy": {
             dataType: dataTypes.array,
             value: [],
         },
+        "i": {
+            dataType: dataTypes.number,
+            value: complex(0, 1),
+        }
     }
 };
 
@@ -76,9 +80,14 @@ function handleSubmit() {
     const latex = document.querySelector("#minput-field").value;
     const text = cleanLatex(latex);
     const tokens = tokenize(text, tracker, scope);
-    console.log(tokens?.tokens);
 
     if (tokens !== null) {
+        let tokenString = "";
+        for (let token of tokens.tokens) {
+            tokenString += token.toString() + ",";
+        }
+        console.log(tokenString);
+
         tracker.clear();
     }
 }
