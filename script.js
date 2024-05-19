@@ -299,28 +299,10 @@ class Plot {
         );
     }
 
-    inverseStereoProject(z) {
-        const normSq = z.normSq();
-        return matrix([
-            (2 * z.re) / (1 + normSq),
-            (2 * z.im) / (1 + normSq),
-            (normSq - 1) / (1 + normSq),
-        ]).transpose();
-    }
-
-    perspectiveProject(Z) {
-        const values = Z.getColumn(0);
-        const x = values[0], y = values[1], z = values[2];
-        const denom = (this.camera.alpha + this.camera.beta * y);
-        return complex(
-            x / denom, z / denom,
-        );
-    }
-
     applyCamera(z) {
         if (this.mode === Plot.modes.SPHERE) {
             if (z instanceof Complex) {
-                z = this.inverseStereoProject(z);
+                z = inverseStereoProject(z);
             } else {
                 z = matrix(z).transpose();
             }
@@ -331,7 +313,7 @@ class Plot {
     }
 
     coordinateTransform(z) {
-        if (this.mode === Plot.modes.SPHERE) z = this.perspectiveProject(z);
+        if (this.mode === Plot.modes.SPHERE) z = perspectiveProject(z, this.camera.alpha, this.camera.beta);
         return this.unitsToPixels(z);
     }
 
@@ -631,7 +613,6 @@ class DomainColoring extends Plottable {
         }
         this.samples = complex(density, density);
         this.subdivisions = Math.floor(Math.log(density * density) / Math.log(4));
-        console.log(this.subdivisions);
         this.generatePolygons();
     }
 
