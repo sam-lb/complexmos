@@ -761,11 +761,3 @@ function matrix(arr) {
     // utility function for easy matrix creation
 	return new Matrix(arr);
 }
-
-
-
-const mat = matrix([
-    [1, 2, 3],
-    [6, 5, 4],
-    [7, 9, 8],
-]);
