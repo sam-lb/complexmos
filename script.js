@@ -146,9 +146,10 @@ class Plot {
         SPHERE: 2,
     };
 
-    constructor(displayWidth, displayHeight, bounds=null, mode=null) {
+    constructor(displayWidth, displayHeight, bounds=null, mode=null, displayWindowInfo) {
         this.gridlineSpacing = 1;
         this.boundsChangedSinceLastDraw = false;
+        this.displayWindowInfo = this.displayWindowInfo;
         this.configureWindow(displayWidth, displayHeight, bounds, bounds === null);
         this.plottables = [];
         this.polygons = [];
@@ -234,11 +235,13 @@ class Plot {
         this.needsUpdate = true;
         this.boundsChangedSinceLastDraw = true;
 
-        console.log("Window configuration");
-        console.log("window bounds", this.bounds);
-        console.log("offset", this.offset);
-        console.log("window size", this.dimensions);
-        console.log("gridline count", this.gridlineCount);
+        if (this.displayWindowInfo) {
+            console.log("Window configuration");
+            console.log("window bounds", this.bounds);
+            console.log("offset", this.offset);
+            console.log("window size", this.dimensions);
+            console.log("gridline count", this.gridlineCount);
+        }
     }
 
     fitBoundsToSquare() {
@@ -755,7 +758,7 @@ function setup() {
     const canvasDiv = document.querySelector("#canvas-div");
 	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	canvas.parent("canvas-div");
-    plot = new Plot(width, height, null, Plot.modes.SPHERE);
+    plot = new Plot(width, height, null, Plot.modes.SPHERE, false);
     tabSwitch(plot.mode-1);
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),

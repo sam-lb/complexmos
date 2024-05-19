@@ -57,10 +57,10 @@ class Matrix {
 
 	static fillMatrix(m, n, v) {
 		// generate an m by n matrix, all entries having value v
-		let arr = [];
+		const arr = [];
 		for (let i=0; i<m; i++) {
 			arr[i] = [];
-			for(let j=0; j<n; j++) {
+			for (let j=0; j<n; j++) {
 				arr[i][j] = v;
 			}
 		}
@@ -69,7 +69,7 @@ class Matrix {
 
 	static identity(n) {
 		// generate the n by n identity matrix
-		let arr = [];
+		const arr = [];
 		for (let i=0; i<n; i++) {
 			arr[i] = [];
 			for (let j=0; j<n; j++) {
