@@ -211,7 +211,7 @@ class Trie {
          * Search the trie for keys with the given prefix.
          * Returns no more than maxResults keys
          */
-        if (this.root === null) return [];
+        if (this.root === null || prefix === "") return [];
 
         let list = this.root, node;
         for (let character of prefix) {

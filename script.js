@@ -619,7 +619,7 @@ class Polygon {
 
 class DomainColoring extends Plottable {
 
-    constructor(fn, bounds=null) {
+    constructor(fn, bounds=null, density=100) {
         super();
         this.fn = fn;
         if (bounds === null) {
@@ -629,7 +629,9 @@ class DomainColoring extends Plottable {
             this.bounds = bounds;
             this.fixedBounds = true;
         }
-        this.samples = complex(100, 100);
+        this.samples = complex(density, density);
+        this.subdivisions = Math.floor(Math.log(density * density) / Math.log(4));
+        console.log(this.subdivisions);
         this.generatePolygons();
     }
 
@@ -776,12 +778,12 @@ function setup() {
     //     );
     // };
     const f = (z) => {
-        // return Complex.exp(z);
+        return Complex.exp(z);
         // return z;
         // return Complex.sqrt(z);
         // return Complex.mult(z, z);
         // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-        return Complex.cos(z);
+        // return Complex.cos(z);
         // return Complex.sqrt(z.mult(z).scale(-4).sub(complex(1, 0))).sub(Complex.mult(complex(0, 2), z));
     };
     const dcPlot = new DomainColoring(f);

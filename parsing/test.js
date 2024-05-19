@@ -51,7 +51,7 @@ fetch("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt")
 function prefixSearch() {
     if (window.event.keyCode === 13) {
         const prefix = document.querySelector("#prefix-search").value;
-        const results = dictionary.prefixSearch(prefix, 100000);
+        const results = dictionary.prefixSearch(prefix, 100);
 
         let htmlString = "";
         const displayCount = Math.min(100, results.length);
