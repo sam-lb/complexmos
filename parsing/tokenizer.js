@@ -197,7 +197,6 @@ function tokenize(text, tracker, scope) {
                 tokens.push(new Token("*", Token.types.operator));
             }
         } else if (OPERATORS.includes(character)) {
-            console.log(possiblyValidLeftOperand());
             if (buffer.length > 0 || numBuffer.length > 0 || possiblyValidLeftOperand()) {
                 if (!clearIdentifierBuffer()) return null;
                 if (!clearNumberBuffer()) return null;
