@@ -61,6 +61,7 @@ function buildSearchTrieFromScope(scope) {
 
 
 function tokenize(text, tracker, scope) {
+    console.log(`tokenizing ${text}...`);
     if (text.length === 0) {
         tracker.error("Cannot tokenize empty string");
         return null;
@@ -137,7 +138,21 @@ function tokenize(text, tracker, scope) {
     };
 
     const possiblyValidLeftOperand = () => {
-        return (tokens.length > 0 && (tokens[tokens.length - 1] === CLOSE_BRACKET || tokens[tokens.length - 1] === CLOSE_PAREN));
+        return (
+            tokens.length > 0 && (tokens[tokens.length - 1].type === Token.types.closeBracket
+                                || tokens[tokens.length - 1].type === Token.types.closeParen)
+        );
+    };
+
+    const requiresImplicit = () => {
+        if (tokens.length === 0) return false;
+        const token = tokens[tokens.length-1];
+        return (
+            token.type === Token.types.closeBracket 
+            || token.type === Token.types.closeParen
+            || token.type === Token.types.identifier
+            || token.type === Token.types.number
+        );
     };
 
     // main tokenization loop
@@ -182,6 +197,7 @@ function tokenize(text, tracker, scope) {
                 tokens.push(new Token("*", Token.types.operator));
             }
         } else if (OPERATORS.includes(character)) {
+            console.log(possiblyValidLeftOperand());
             if (buffer.length > 0 || numBuffer.length > 0 || possiblyValidLeftOperand()) {
                 if (!clearIdentifierBuffer()) return null;
                 if (!clearNumberBuffer()) return null;
@@ -195,19 +211,26 @@ function tokenize(text, tracker, scope) {
         } else if (character === OPEN_PAREN) {
             if (!clearIdentifierBuffer()) return null;
             if (!clearNumberBuffer()) return null;
-            if (tokens.length > 0 && !expectFunctionCall) {
+            if (requiresImplicit() && !expectFunctionCall) {
                 tokens.push(new Token("*", Token.types.operator));
             }
-            tokens.push(new Token("(", Token.types.openParen));
+            tokens.push(new Token(OPEN_PAREN, Token.types.openParen));
             expectFunctionCall = false;
         } else if (character === CLOSE_PAREN) {
             if (!clearIdentifierBuffer()) return null;
             if (!clearNumberBuffer()) return null;
-            tokens.push(new Token(")", Token.types.closeParen));
+            tokens.push(new Token(CLOSE_PAREN, Token.types.closeParen));
         } else if (character === OPEN_BRACKET) {
-
+            if (!clearIdentifierBuffer()) return null;
+            if (!clearNumberBuffer()) return null;
+            if (requiresImplicit()) {
+                tokens.push(new Token("*", Token.types.operator));
+            }
+            tokens.push(new Token(OPEN_BRACKET, Token.types.openBracket));
         } else if (character === CLOSE_BRACKET) {
-
+            if (!clearIdentifierBuffer()) return null;
+            if (!clearNumberBuffer()) return null;
+            tokens.push(new Token(CLOSE_BRACKET, Token.types.CLOSE_BRACKET));
         } else {
             tracker.error(`Unexpected token ${character}`);
             return null;
