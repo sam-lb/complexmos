@@ -2,6 +2,10 @@ document.querySelector("#minput-field").focus();
 
 const tracker = new ErrorTracker("error-output", "Tokenization successful!");
 
+const TEST_STRINGS = [
+    "\\left[x+\\frac{1}{x},2\\right]\\left(2+3+y\\right)",
+];
+
 const scope = {
     "builtin": {
         "sin": {
