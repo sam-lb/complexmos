@@ -149,7 +149,21 @@ class Complex {
 		/*
 		Apply the Möbius transformation (az+b)/(cz+d)
 		*/
-		return this.mult(a).add(b).div(this.mult(c).add(d));
+		if (Complex.infinite(this)) {
+			if (c !== 0) {
+				return Complex.div(a, c);
+			} else {
+				return new Complex(Infinity, Infinity);
+			}
+		} else {
+			const denominator = Complex.add(Complex.mult(c, this), d);
+			if (denominator === 0) {
+				return new Complex(Infinity, Infinity);
+			} else {
+				const numerator = Complex.add(Complex.mult(a, this), b);
+				return Complex.div(numerator, denominator);
+			}
+		}
 	}
 
 	sin() {
@@ -295,6 +309,16 @@ class Complex {
 		Return the hyperbolic tangent of z
 		*/
 		return z.tanh();
+	}
+
+	static infinite(z) {
+		/**
+		 * return whether one or both of the components of z is infinite
+		 */
+		return (
+			z.re === Infinity || z.re === -Infinity 
+			|| z.im === Infinity || z.im === -Infinity
+		);
 	}
 
 	/* --------------- In-place operations --------------------- */
