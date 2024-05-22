@@ -206,7 +206,9 @@ function tokenize(text, tracker, scope) {
             }
             tokens.push(new Token(character, Token.types.operator));
         } else if (character === ARG_AND_ITEM_SEP) {
-
+            if (!clearIdentifierBuffer()) return null;
+            if (!clearNumberBuffer()) return null;
+            tokens.push(new Token(ARG_AND_ITEM_SEP, Token.types.argAndItemSep));
         } else if (character === OPEN_PAREN) {
             if (!clearIdentifierBuffer()) return null;
             if (!clearNumberBuffer()) return null;
