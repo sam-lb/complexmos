@@ -750,7 +750,7 @@ class Matrix {
 	}
 
 	show() {
-		// ahAhA this relies on the fact that the default inspect window in most browsers uses a monospaced font
+		// this relies on the fact that the default inspect window in most browsers uses a monospaced font
 		let str = this.toString();
 		console.log(str);
 	}
