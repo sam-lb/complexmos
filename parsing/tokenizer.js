@@ -50,7 +50,7 @@ class Token {
     }
 
     toString() {
-        return `{${this.data}}`
+        return `${this.data}`
     }
 
 }

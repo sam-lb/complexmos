@@ -4,6 +4,7 @@ const tracker = new ErrorTracker("error-output", "Tokenization successful!");
 
 const TEST_STRINGS = [
     "\\left[x+\\frac{1}{x},2\\right]\\left(2+3+y\\right)",
+    "\\frac{x}{.1y}",
 ];
 
 const scope = {
