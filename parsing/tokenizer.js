@@ -3,7 +3,7 @@
 const ALPHA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const NUM = "1234567890";
 const OPERATORS = "+-*/^";
-const ACCESSOR_OR_DEC = ".";
+const DECIMAL = ".";
 const OPEN_PAREN = "(";
 const CLOSE_PAREN = ")";
 const OPEN_BRACKET = "[";
@@ -41,8 +41,7 @@ class Token {
         closeBracket: 6,
         equals: 7,
         argAndItemSep: 8,
-        accessor: 9,
-        ellipsis: 10,
+        ellipsis: 9,
     };
 
     constructor(data, type) {
@@ -170,7 +169,7 @@ function tokenize(text, tracker, scope) {
                 return null;
             }
             numBuffer += character;
-        } else if (character === ACCESSOR_OR_DEC) {
+        } else if (character === DECIMAL) {
             if (numBuffer.length > 0) {                                                 // decimal point
                 if (readingDecimalPart) {
                     tracker.error("Multiple decimal points in number");
@@ -178,10 +177,8 @@ function tokenize(text, tracker, scope) {
                 }
                 numBuffer += character;
                 readingDecimalPart = true;
-            } else if (buffer.length > 0) {                                             // accessor
-
             } else {
-                tracker.error(`Unexpected token ${ACCESSOR_OR_DEC}`);
+                tracker.error(`Unexpected token ${DECIMAL}`);
                 return null;
             }
         } else if (character === "-") {
