@@ -41,6 +41,8 @@ class Token {
         closeBracket: 6,
         equals: 7,
         argAndItemSep: 8,
+        accessor: 9,
+        ellipsis: 10,
     };
 
     constructor(data, type) {
@@ -78,7 +80,6 @@ function tokenize(text, tracker, scope) {
     let readingDecimalPart = false;
     const tokens = [];
     let expectFunctionCall = false;
-    let lastToken = null;
 
     const clearIdentifierBuffer = (precedesImplicit=false) => {
         const bufEmpty = buffer.length === 0;
