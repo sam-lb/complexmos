@@ -47,16 +47,19 @@ const scope = {
 };
 
 
+const LOAD_DICTIONARY = false;
 let dictionary;
-fetch("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt")
+if (LOAD_DICTIONARY) {
+    fetch("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt")
     .then(resp => resp.text())
     .then(text => {
         dictionary = new Trie(text.split("\n"));
         document.querySelector("#prefix-search").disabled = false;
     });
-
+}
 
 function prefixSearch() {
+    if (!LOAD_DICTIONARY) return;
     if (window.event.keyCode === 13) {
         const prefix = document.querySelector("#prefix-search").value;
         const results = dictionary.prefixSearch(prefix, 100);
