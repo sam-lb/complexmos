@@ -91,9 +91,9 @@ function handleSubmit() {
     if (tokens !== null) {
         let tokenString = "";
         for (let token of tokens.tokens) {
-            tokenString += token.toString() + ",";
+            tokenString += token.toString() + ", ";
         }
-        console.log(tokenString);
+        console.log(tokenString.slice(0, -2));
 
         tracker.clear();
     }

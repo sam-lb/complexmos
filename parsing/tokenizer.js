@@ -177,6 +177,12 @@ function tokenize(text, tracker, scope) {
                 }
                 numBuffer += character;
                 readingDecimalPart = true;
+            } else if (NUM.includes(text[j+1])) {
+                numBuffer += character;
+                readingDecimalPart = true;
+            } else if (text.slice(j, j + 3) === DECIMAL.repeat(3)) {
+                tokens.push(new Token(DECIMAL.repeat(3), Token.types.ellipsis));
+                j += 2;
             } else {
                 tracker.error(`Unexpected token ${DECIMAL}`);
                 return null;
