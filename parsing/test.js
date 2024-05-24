@@ -5,6 +5,7 @@ const tracker = new ErrorTracker("error-output", "Tokenization successful!");
 const TEST_STRINGS = [
     "\\left[x+\\frac{1}{x},2\\right]\\left(2+3+y\\right)",
     "\\frac{x}{.1y}",
+    "clamp\\left(x,lower,upper\\right)=\\max\\left(lower,\\min\\left(upper,x\\right)\\right)",
 ];
 
 const scope = {
@@ -43,7 +44,30 @@ const scope = {
         "i": {
             dataType: dataTypes.number,
             value: complex(0, 1),
-        }
+        },
+        "clamp": {
+            dataType: dataTypes.function,
+            value: null,
+            arguments: [dataTypes.number, dataTypes.number, dataTypes.number],
+        },
+        "lower": {
+            dataType: dataTypes.number,
+            value: 1,
+        },
+        "upper": {
+            dataType: dataTypes.number,
+            value: 2,
+        },
+        "max": {
+            dataType: dataTypes.function,
+            value: null,
+            arguments: [dataTypes.number, dataTypes.number],
+        },
+        "min": {
+            dataType: dataTypes.function,
+            value: null,
+            arguments: [dataTypes.number, dataTypes.number],
+        },
     }
 };
 

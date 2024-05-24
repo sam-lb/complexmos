@@ -236,6 +236,10 @@ function tokenize(text, tracker, scope) {
             if (!clearIdentifierBuffer()) return null;
             if (!clearNumberBuffer()) return null;
             tokens.push(new Token(CLOSE_BRACKET, Token.types.CLOSE_BRACKET));
+        } else if (character === EQUALS) {
+            if (!clearIdentifierBuffer()) return null;
+            if (!clearNumberBuffer()) return null;
+            tokens.push(new Token(EQUALS, Token.types.equals));
         } else {
             tracker.error(`Unexpected token ${character}`);
             return null;
