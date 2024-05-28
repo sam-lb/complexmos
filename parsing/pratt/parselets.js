@@ -119,19 +119,14 @@ class NameParselet extends PrefixParselet {
 }
 
 
-class PostfixOperatorParselet extends InfixParselet {
+class NumberParselet extends PrefixParselet {
 
-    constructor(precedence) {
+    constructor() {
         super();
-        this.mPrecedence = precedence;
     }
 
-    parse(parser, left, token) {
-        return new PostfixExpression(token.mtype, left);
-    }
-
-    getPrecedence() {
-        return this.mPrecedence;
+    parse(parser, token) {
+        return new NumberExpression(parseFloat(token.text));
     }
 
 }

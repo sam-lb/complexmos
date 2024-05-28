@@ -1,5 +1,6 @@
 
 
+const num = "0123456789";
 const alnum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 
@@ -19,6 +20,23 @@ class Lexer {
             this.index++;
         }
         this.mPunctuators.push(new Token(TokenType.NAME, identifier));
+    }
+
+    getTokenNumber() {
+        let number = "";
+        let decimalEncounted = false;
+        while (this.index < this.mText.length && (num.includes(this.mText[this.index]) || this.mText[this.index] === ".")) {
+            if (this.mText[this.index] === ".") {
+                if (decimalEncounted) {
+                    console.error("two decimal points encountered in number");
+                    break;
+                }
+                decimalEncounted = true;
+            }
+            number += this.mText[this.index];
+            this.index++;
+        }
+        this.mPunctuators.push(new Token(TokenType.NUMBER, number));
     }
 
     tokenize() {
@@ -43,7 +61,10 @@ class Lexer {
                 this.mPunctuators.push(new Token(TokenType.SLASH, char));
             } else if (char === "^") {
                 this.mPunctuators.push(new Token(TokenType.CARET, char));
-            } else if (alnum.includes(char)) {
+            } else if (num.includes(char)) {
+                this.getTokenNumber();
+                continue;
+            } else if (alnum.includes(char) || char === ".") {
                 this.getTokenName();
                 continue;
             } else {

@@ -51,6 +51,20 @@ class NameExpression extends Expression {
 }
 
 
+class NumberExpression extends Expression {
+
+    constructor(number) {
+        super();
+        this.mNumber = number;
+    }
+
+    toString() {
+        return this.mNumber.toString();
+    }
+
+}
+
+
 class OperatorExpression extends Expression {
     
     constructor(left, operator, right) {
@@ -67,21 +81,6 @@ class OperatorExpression extends Expression {
 }
 
 
-class PostfixExpression extends Expression {
-
-    constructor(operator, left) {
-        super();
-        this.mOperator = operator;
-        this.mLeft = left;
-    }
-
-    toString() {
-        return `(${this.mLeft}${this.mOperator})`
-    }
-
-}
-
-
 class PrefixExpression extends Expression {
 
     constructor(operator, right) {
@@ -91,7 +90,7 @@ class PrefixExpression extends Expression {
     }
 
     toString() {
-        return `(${this.mOperator}${this.mRight})`;
+        return `(${TokenType.toStr(this.mOperator)}${this.mRight})`;
     }
 
 }
