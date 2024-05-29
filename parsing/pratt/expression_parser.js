@@ -7,6 +7,7 @@ class ExpressionParser extends Parser {
 
         this.registerPrefix(TokenType.NUMBER, new NumberParselet());
         this.registerPrefix(TokenType.NAME, new NameParselet());
+
         this.registerInfix(TokenType.ASSIGN, new AssignParselet());
         this.registerPrefix(TokenType.LEFT_PAREN, new GroupParselet());
         this.registerInfix(TokenType.LEFT_PAREN, new CallParselet());

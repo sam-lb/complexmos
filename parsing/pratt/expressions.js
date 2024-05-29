@@ -31,7 +31,7 @@ class CallExpression extends Expression {
 
     toString() {
         const args = this.mArgs.join();
-        return `${this.mFunction.toString()}(${args}`;
+        return `${this.mFunction.toString()}(${args})`;
     }
 
 }
