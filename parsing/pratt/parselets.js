@@ -32,7 +32,7 @@ class AssignParselet extends InfixParselet {
     parse(parser, left, token) {
         const right = parser.parseExpression(Precedence.ASSIGNMENT - 1);
         if (!(left instanceof NameExpression || left instanceof CallExpression)) {
-            console.error("lhs of assignment should be identifier or function name with arguments");
+            tracker.error("lhs of assignment should be identifier or function name with arguments");
         }
 
         return new AssignExpression(left.toString(), right);

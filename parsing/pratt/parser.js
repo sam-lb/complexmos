@@ -21,7 +21,7 @@ class Parser {
     parseExpression(precedence=Precedence.LOWEST) {
         let token = this.consume();
         if (!Object.keys(this.mPrefixParselets).includes(token.mtype.toString())) {
-            console.error(`couldn't parse token ${token.toString()}`);
+            tracker.error(`couldn't parse token ${token.toString()}`);
         }
 
         let left = this.mPrefixParselets[token.mtype].parse(this, token);
@@ -39,7 +39,7 @@ class Parser {
     consume(expected=null) {
         const token = this.mTokens[this.index];
         if (expected !== null && token.mtype !== expected) {
-            console.error(`consumed token ${token.mtype} does not match expected ${expected}`);
+            tracker.error(`consumed token ${token.mtype} does not match expected ${expected}`);
         }
         this.index++;
         return token;

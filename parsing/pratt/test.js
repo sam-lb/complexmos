@@ -26,15 +26,22 @@ function handleSubmit() {
     const latex = document.querySelector("#minput-field").value;
     const text = cleanLatex(latex);
 
-    // const lexer = new Lexer(text);
+    tracker.setTarget("error-output");
+
     const lexer = new Lexer(text, false);
     lexer.setScope(scope);
     
     lexer.tokenize();
     const tokens = lexer.getTokens();
-    console.log("Tokens: ", tokens);
     
     const parser = new ExpressionParser(tokens);
     const result = parser.parseExpression();
-    console.log("AST:\n\n", result, "\n\n"+result.toString());
+
+    if (tracker.hasError) {
+        console.error("error occurred");
+    } else {
+        console.log("Tokens: ", tokens);
+        console.log("AST:\n\n", result, "\n\n"+result.toString());
+        tracker.clear();
+    }
 }

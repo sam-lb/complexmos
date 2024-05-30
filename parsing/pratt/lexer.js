@@ -54,11 +54,11 @@ class Lexer {
                         identifiers.push(possibleIdentifier);
                         buffer = buffer.slice(i+1, buffer.length);
                     } else {
-                        console.error(`Undefined identifier ${buffer}`);
+                        tracker.error(`Undefined identifier ${buffer}`);
                         return;
                     }
                 } else {
-                    console.error("unexpected number following identifier");
+                    tracker.error("unexpected number following identifier");
                     return;
                 }
             }
@@ -76,7 +76,7 @@ class Lexer {
         while (this.index < this.mText.length && (num.includes(this.mText[this.index]) || this.mText[this.index] === ".")) {
             if (this.mText[this.index] === ".") {
                 if (decimalEncounted) {
-                    console.error("two decimal points encountered in number");
+                    tracker.error("two decimal points encountered in number");
                     break;
                 }
                 decimalEncounted = true;
@@ -119,7 +119,7 @@ class Lexer {
                 this.getTokenName();
                 continue;
             } else {
-                console.error(`bruh what is this character even doing in your input ${char}`);
+                tracker.error(`bruh what is this character even doing in your input ${char}`);
                 this.index++;
                 continue;
             }
@@ -147,7 +147,7 @@ class Lexer {
 
             if (token.mtype === TokenType.NAME && nextToken.mtype === TokenType.NUMBER) {
                 // this case will theoretically never happen (it'll raise an error in getTokenName()), but it's here for completeness
-                console.error("unexpected number following identifier");
+                tracker.error("unexpected number following identifier");
             } else if ( // obviously, you can reduce the number of comparisons in this condition, but it's more clear this way
                 token.mtype === TokenType.NUMBER && nextToken.mtype === TokenType.NAME ||           // nx
                 token.mtype === TokenType.NUMBER && nextToken.mtype === TokenType.LEFT_PAREN ||     // n(

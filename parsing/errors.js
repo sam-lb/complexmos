@@ -10,6 +10,10 @@ class ErrorTracker {
         this.target = errorDivID;
     }
 
+    setTarget(errorDivID) {
+        this.target = errorDivID;
+    }
+
     error(message) {
         this.hasError = true;
         this.message = message;
@@ -31,3 +35,6 @@ class ErrorTracker {
     }
 
 }
+
+
+const tracker = new ErrorTracker(null, "Parsing successful!");
