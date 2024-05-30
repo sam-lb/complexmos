@@ -20,18 +20,24 @@ class Parser {
 
     parseExpression(precedence=Precedence.LOWEST) {
         let token = this.consume();
+        if (tracker.hasError) return;
         if (!Object.keys(this.mPrefixParselets).includes(token.mtype.toString())) {
-            console.log(this.mPrefixParselets);
-            console.log(token.mtype.toString());
-            tracker.error(`couldn't parse token ${token.toString()}`);
+            if (token.mtype === TokenType.EOF) {
+                tracker.error(`Unexpected EOF while parsing`);
+            } else {
+                tracker.error(`couldn't parse token ${token.toString()}`);
+            }
+            return;
         }
 
         let left = this.mPrefixParselets[token.mtype].parse(this, token);
+        if (tracker.hasError) return;
 
         while (precedence < this.getPrecedence()) {
             token = this.consume();
             if (Object.keys(this.mInfixParselets).includes(token.mtype.toString())) {
                 left = this.mInfixParselets[token.mtype].parse(this, left, token);
+                if (tracker.hasError) return;
             }
         }
 
@@ -39,9 +45,13 @@ class Parser {
     }
 
     consume(expected=null) {
-        const token = this.mTokens[this.index];
-        if (expected !== null && token.mtype !== expected) {
+        const token = this.lookAhead(0);
+        if (token.mtype === TokenType.EOF) {
+            tracker.error("Unexpected EOF while parsing");
+            return;
+        } else if (expected !== null && token.mtype !== expected) {
             tracker.error(`consumed token ${token.mtype} does not match expected ${expected}`);
+            return;
         }
         this.index++;
         return token;
@@ -50,6 +60,8 @@ class Parser {
     lookAhead(distance) {
         if (this.index + distance < this.mTokens.length) {
             return this.mTokens[this.index + distance];
+        } else {
+            return new Token(TokenType.EOF, null);
         }
     }
 

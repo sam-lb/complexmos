@@ -8,6 +8,8 @@ const scope = {
     builtin: {
         "x": { isFunction: false, },
         "y": { isFunction: false, },
+        "xy": { isFunction: false, },
+        "x1": { isFunction: false, },
     },
     userGlobal: {
         "f": { isFunction: true, },
@@ -27,6 +29,7 @@ function handleSubmit() {
     const text = cleanLatex(latex);
 
     tracker.setTarget("error-output");
+    tracker.clear();
 
     const lexer = new Lexer(text, false);
     lexer.setScope(scope);
@@ -37,8 +40,9 @@ function handleSubmit() {
     if (tracker.hasError) {
         console.error("error occurred during tokenization");
     } else {
+        tracker.clear();
         console.log("Tokens: ", tokens);
-        
+
         const parser = new ExpressionParser(tokens);
         const result = parser.parseExpression();
 
@@ -46,7 +50,6 @@ function handleSubmit() {
             console.error("error occurred during parsing");
         } else {
             console.log("AST:\n\n", result, "\n\n"+result.toString());
-            tracker.clear();
         }
     }
 }
