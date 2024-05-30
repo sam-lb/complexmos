@@ -33,15 +33,20 @@ function handleSubmit() {
     
     lexer.tokenize();
     const tokens = lexer.getTokens();
-    
-    const parser = new ExpressionParser(tokens);
-    const result = parser.parseExpression();
 
     if (tracker.hasError) {
-        console.error("error occurred");
+        console.error("error occurred during tokenization");
     } else {
         console.log("Tokens: ", tokens);
-        console.log("AST:\n\n", result, "\n\n"+result.toString());
-        tracker.clear();
+        
+        const parser = new ExpressionParser(tokens);
+        const result = parser.parseExpression();
+
+        if (tracker.hasError) {
+            console.error("error occurred during parsing");
+        } else {
+            console.log("AST:\n\n", result, "\n\n"+result.toString());
+            tracker.clear();
+        }
     }
 }

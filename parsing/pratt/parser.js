@@ -21,6 +21,8 @@ class Parser {
     parseExpression(precedence=Precedence.LOWEST) {
         let token = this.consume();
         if (!Object.keys(this.mPrefixParselets).includes(token.mtype.toString())) {
+            console.log(this.mPrefixParselets);
+            console.log(token.mtype.toString());
             tracker.error(`couldn't parse token ${token.toString()}`);
         }
 
