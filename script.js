@@ -11,14 +11,15 @@ const fields = {};
 
 function addField(parent=null) {
     /** add new math input field. parent: parent element */
-    
 
     const newDiv = document.createElement("div");
     newDiv.setAttribute("class", "math-input-div");
 
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
-    newMenu.innerHTML = Object.keys(fields).length + 1;
+    // newMenu.innerHTML = Object.keys(fields).length + 1;
+    newMenu.innerHTML = `<div>${Object.keys(fields).length + 1}</div>
+    <div style="display:flex;"><img src="http://localhost:8000/data/settings_transparent.png" style="width:25px;height:25px;"></img></div>`;
     const newSpan = document.createElement("span");
     newSpan.setAttribute("class", "math-input");
     newDiv.appendChild(newMenu);
