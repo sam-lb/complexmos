@@ -107,20 +107,24 @@ function processExpressions(latexExprs) {
             }
         }
 
+        if (tracker.hasError) break;
+
         // tracker.setTarget(current expression id)
     }
 
     const asts = [];
-    lexer.setScope(scope); // the scope may have changed, so it doesn't hurt to do this explicitly
-    lexer.setAllowUnboundIdentifiers(false);
-    for (const expr of exprs) {
-        lexer.setText(expr);
-        lexer.tokenize();
-        const tokens = lexer.getTokens();
+    if (!tracker.hasError) {
+        lexer.setScope(scope); // the scope may have changed, so it doesn't hurt to do this explicitly
+        lexer.setAllowUnboundIdentifiers(false);
+        for (const expr of exprs) {
+            lexer.setText(expr);
+            lexer.tokenize();
+            const tokens = lexer.getTokens();
 
-        const parser = new ExpressionParser(tokens);
-        const result = parser.parseExpression();
-        asts.push(result);
+            const parser = new ExpressionParser(tokens);
+            const result = parser.parseExpression();
+            asts.push(result);
+        }
     }
 
     if (tracker.hasError) {
