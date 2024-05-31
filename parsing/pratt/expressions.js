@@ -8,14 +8,14 @@ class Expression {
 
 class AssignExpression extends Expression {
 
-    constructor(name, left) {
+    constructor(left, right) {
         super();
-        this.mName = name;
         this.mLeft = left;
+        this.mRight = right;
     }
 
     toString() {
-        return `(${this.mName} = ${this.mLeft.toString()})`
+        return `(${this.mLeft.toString()} = ${this.mRight.toString()})`
     }
 
 }

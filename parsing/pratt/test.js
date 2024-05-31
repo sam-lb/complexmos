@@ -73,7 +73,7 @@ function processExpressions(latexExprs) {
         }
     }
     
-    const lexer = new Lexer(null, false);
+    const lexer = new Lexer(null, true);
     lexer.setScope(scope);
     for (const assignment of assignments) {
         lexer.setText(assignment);

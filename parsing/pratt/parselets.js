@@ -36,7 +36,7 @@ class AssignParselet extends InfixParselet {
             return;
         }
 
-        return new AssignExpression(left.toString(), right);
+        return new AssignExpression(left, right);
     }
 
     getPrecedence() {
