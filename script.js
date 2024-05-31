@@ -372,7 +372,7 @@ class Plot {
     }
 
     drawGridlines() {
-        const minBound = (x) => { return (floor(x / this.gridlineSpacing) - 1) * this.gridlineSpacing; };
+        const minBound = (x) => floor(x/this.gridlineSpacing) * this.gridlineSpacing;
         const minBoundX = minBound(this.bounds.xMin);
         const minBoundY = minBound(this.bounds.yMin);
 
@@ -380,14 +380,14 @@ class Plot {
 
         stroke(200);
         strokeWeight(1);
-        for (let i=0; i<this.gridlineCount.im+2; i++) {
+        for (let i=0; i<this.gridlineCount.im+1; i++) {
             // horizontal gridlines
             const y = minBoundY + i * this.gridlineSpacing;
             const start = this.unitsToPixels(complex(this.bounds.xMin, y));
             const end = this.unitsToPixels(complex(this.bounds.xMax, y));
             line(start.re, start.im, end.re, end.im);
         }
-        for (let i=0; i<this.gridlineCount.im+4; i++) {
+        for (let i=0; i<this.gridlineCount.re+1; i++) {
             // vertical gridlines
             const x = minBoundX + i * this.gridlineSpacing;
             const start = this.unitsToPixels(complex(x, this.bounds.yMin));
@@ -854,7 +854,7 @@ function mouseReleased() {
 
 function windowResized() {
     const canvasDiv = document.querySelector("#canvas-div");
-    resizeCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
+    resizeCanvas(window.innerWidth * 0.75, document.querySelector("#ui-container").offsetHeight);
     plot.configureWindow(width, height);
 }
 

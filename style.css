@@ -29,6 +29,7 @@ body {
     flex: 1;
     box-shadow: inset 0px 0px 4px 0px black;
     height: 90vh;
+    flex-shrink: 0;
 }
 
 #ui-header {
@@ -93,7 +94,6 @@ body {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    /* padding-top: 5px; */
 }
 
 .math-input-div:hover {
