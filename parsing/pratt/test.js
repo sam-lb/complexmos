@@ -60,6 +60,7 @@ function processExpressions(latexExprs) {
     console.log("drog");
 
     tracker.setTarget("error-output");
+    tracker.clear();
 
     const exprs = [];
     for (const latexExpr of latexExprs) {
@@ -86,7 +87,36 @@ function processExpressions(latexExprs) {
 
         console.log(result);
         console.log(result?.toString());
+        
+        if (result !== undefined) {
+            const left = result.mLeft;
+            const isFunction = left instanceof CallExpression;
+            const ident = (isFunction) ? left.mFunction : left.mName;
+            if (scope.builtin[ident] !== undefined) {
+                tracker.error(`cannot overwrite builtin identifier ${ident}`);
+            } else if (scope.userGlobal[ident] !== undefined) {
+                tracker.error(`multiple definitions for ${ident}`);
+            } else {
+                scope.userGlobal[ident] = {
+                    isFunction: isFunction,
+                }
+            }
+        }
 
         // tracker.setTarget(current expression id)
     }
+
+    const asts = [];
+    lexer.setScope(scope); // the scope may have changed, so it doesn't hurt to do this explicitly
+    lexer.setAllowUnboundIdentifiers(false);
+    for (const expr of exprs) {
+        lexer.setText(expr);
+        lexer.tokenize();
+        const tokens = lexer.getTokens();
+
+        const parser = new ExpressionParser(tokens);
+        const result = parser.parseExpression();
+        asts.push(result);
+    }
+    console.log(asts);
 }
