@@ -55,11 +55,12 @@ class Lexer {
                 identifiers.push(possibleIdentifier);
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
-                i++; // no break statement
                 if (alnum.includes(possibleIdentifier[0]) && !num.includes(possibleIdentifier[0])) {
                     if (this.allowUnboundIdentifiers) {
-                        identifiers.push(possibleIdentifier);
-                        buffer = buffer.slice(i+1, buffer.length);
+                        // no match found in the remaining part of the buffer, so greedily make the 
+                        // unidentified characters a single identifier
+                        identifiers.push(buffer);
+                        buffer = "";
                     } else {
                         tracker.error(`Undefined identifier ${buffer}`);
                         this.kill();
