@@ -25,6 +25,12 @@ class Lexer {
         this.allowUnboundIdentifiers = allowUnboundIdentifiers;
     }
 
+    setText(mText) {
+        this.mPunctuators = [];
+        this.mText = mText;
+        this.index = 0;
+    }
+
     getTokenName() {
         // consume characters until non-identifier character is encountered, add them to buffer
         let buffer = "";
@@ -49,8 +55,9 @@ class Lexer {
                 identifiers.push(possibleIdentifier);
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
+                i++; // no break statement
                 if (alnum.includes(possibleIdentifier[0]) && !num.includes(possibleIdentifier[0])) {
-                    if (this.allowUnboundIdentifiers) {                          
+                    if (this.allowUnboundIdentifiers) {
                         identifiers.push(possibleIdentifier);
                         buffer = buffer.slice(i+1, buffer.length);
                     } else {
