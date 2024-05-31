@@ -132,11 +132,11 @@ function processExpressions(latexExprs) {
     } else {
         let astStrings = "";
         for (const ast of asts) {
-            astStrings += ast.toString();
-            astStrings += "\n";
+            astStrings += parenthesis_match(ast.toString());
+            astStrings += "<br/>";
         }
         astStrings = astStrings.slice(0, -1);
-        document.querySelector("#multiline-parser-output").innerText = `parser output:\n${astStrings}`;   
+        document.querySelector("#multiline-parser-output").innerHTML = `parser output:\n${astStrings}`;   
     }
 }
 

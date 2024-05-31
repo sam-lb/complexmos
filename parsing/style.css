@@ -44,3 +44,8 @@ hr {
     outline: none;
     border: 5px solid rgba(0, 0, 100, 0.2);
 }
+
+#multiline-parser-output {
+    border: 1px solid black;
+    padding: 10px;
+}
