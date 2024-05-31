@@ -26,40 +26,44 @@ function handleKeydown() {
 
 function handleSubmit() {
     const latex = document.querySelector("#minput-field").value;
-    processExpressions([latex]);
-    // const text = cleanLatex(latex);
+    const text = cleanLatex(latex);
 
-    // tracker.setTarget("error-output");
-    // tracker.clear();
+    tracker.setTarget("error-output");
+    tracker.clear();
 
-    // const lexer = new Lexer(text, false);
-    // lexer.setScope(scope);
+    const lexer = new Lexer(text, false);
+    lexer.setScope(scope);
     
-    // lexer.tokenize();
-    // const tokens = lexer.getTokens();
+    lexer.tokenize();
+    const tokens = lexer.getTokens();
 
-    // if (tracker.hasError) {
-    //     console.error("error occurred during tokenization");
-    // } else {
-    //     tracker.clear();
-    //     console.log("Tokens: ", tokens);
+    if (tracker.hasError) {
+        console.error("error occurred during tokenization");
+    } else {
+        tracker.clear();
+        console.log("Tokens: ", tokens);
 
-    //     const parser = new ExpressionParser(tokens);
-    //     const result = parser.parseExpression();
+        const parser = new ExpressionParser(tokens);
+        const result = parser.parseExpression();
 
-    //     if (tracker.hasError) {
-    //         console.error("error occurred during parsing");
-    //     } else {
-    //         console.log("AST:\n\n", result, "\n\n"+result.toString());
-    //     }
-    // }
+        if (tracker.hasError) {
+            console.error("error occurred during parsing");
+        } else {
+            console.log("AST:\n\n", result, "\n\n"+result.toString());
+        }
+    }
+}
+
+
+function handleSubmitMultiline() {
+    const expressions = document.querySelector("#minput-multiline-field").innerText.split("\n").filter((line) => line.length > 0);
+    console.log(expressions);
+    processExpressions(expressions);
 }
 
 
 function processExpressions(latexExprs) {
-    console.log("drog");
-
-    tracker.setTarget("error-output");
+    tracker.setTarget("multiline-error-output");
     tracker.clear();
 
     const exprs = [];
@@ -118,5 +122,11 @@ function processExpressions(latexExprs) {
         const result = parser.parseExpression();
         asts.push(result);
     }
-    console.log(asts);
+    console.log("resulting ASTs:", asts);
+}
+
+
+const multilines = document.querySelectorAll(".multiline-input");
+for (const multi of multilines) {
+    multi.contentEditable = true;
 }

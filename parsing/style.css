@@ -4,7 +4,7 @@ body {
 }
 
 
-#error-output {
+.error-output {
     padding: 10px;
     margin: 10px;
     border: 1px solid black;
@@ -28,4 +28,19 @@ ul {
 li {
     border: 1px solid black;
     padding: 3px;
+}
+
+hr {
+    margin: 30px 0px 30px 0px;
+}
+
+.multiline-input {
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.multiline-input:focus {
+    outline: none;
+    border: 5px solid rgba(0, 0, 100, 0.2);
 }

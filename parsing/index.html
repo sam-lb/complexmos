@@ -11,14 +11,25 @@
             <input type="text" id="minput-field" onkeydown="handleKeydown();">
             <button onclick="handleSubmit();">submit</button>
 
-            <div id="error-output">
+            <div id="error-output" class="error-output">
 
             </div>
 
-            <br/><br/>
+            <hr/>
+
+            <div id="multiline-test">
+                <label for="minput-multiline-field">enter one expression per line</label>
+                <div class="multiline-input" id="minput-multiline-field">
+                </div>
+                <button onclick="handleSubmitMultiline();">submit</button>
+
+                <div id="multiline-error-output" class="error-output"></div>
+            </div>
+
+            <hr/>
+
             <label for="prefix-search">enter prefix to search</label>
             <input type="text" id="prefix-search" onkeydown="prefixSearch();" disabled>
-            <br/><br/>
 
             <div id="prefix-search-results">
                 results (max displayed=100):
