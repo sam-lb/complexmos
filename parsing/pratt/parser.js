@@ -23,7 +23,7 @@ class Parser {
         if (tracker.hasError) return;
         if (!Object.keys(this.mPrefixParselets).includes(token.mtype.toString())) {
             if (token.mtype === TokenType.EOF) {
-                tracker.error(`Unexpected EOF while parsing`);
+                tracker.error(`Unexpected EOF while parsing (1)`);
             } else {
                 tracker.error(`couldn't parse token ${token.toString()}`);
             }
@@ -46,8 +46,8 @@ class Parser {
 
     consume(expected=null) {
         const token = this.lookAhead(0);
-        if (token.mtype === TokenType.EOF) {
-            tracker.error("Unexpected EOF while parsing");
+        if (expected !== null && token.mtype === TokenType.EOF) {
+            tracker.error(`Unexpected EOF while parsing. expected: ${expected}`);
             return;
         } else if (expected !== null && token.mtype !== expected) {
             tracker.error(`consumed token ${token.mtype} does not match expected ${expected}`);

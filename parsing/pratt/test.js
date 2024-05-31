@@ -122,7 +122,18 @@ function processExpressions(latexExprs) {
         const result = parser.parseExpression();
         asts.push(result);
     }
-    console.log("resulting ASTs:", asts);
+
+    if (tracker.hasError) {
+        document.querySelector("#multiline-parser-output").innerText = "";    
+    } else {
+        let astStrings = "";
+        for (const ast of asts) {
+            astStrings += ast.toString();
+            astStrings += "\n";
+        }
+        astStrings = astStrings.slice(0, -1);
+        document.querySelector("#multiline-parser-output").innerText = `parser output:\n${astStrings}`;   
+    }
 }
 
 
