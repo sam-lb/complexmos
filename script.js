@@ -9,6 +9,13 @@ const MQ = MathQuill.getInterface(2);
 const opsString = "sin cos";
 const fields = {};
 
+const menuHTML = (id) => {
+    return `<div>${id}</div>
+    <div style="display:flex;">
+        <img src="http://localhost:8000/data/settings_transparent.png" style="width:25px;height:25px;"></img>
+    </div>`;
+}
+
 function addField(parent=null) {
     /** add new math input field. parent: parent element */
 
@@ -17,9 +24,7 @@ function addField(parent=null) {
 
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
-    // newMenu.innerHTML = Object.keys(fields).length + 1;
-    newMenu.innerHTML = `<div>${Object.keys(fields).length + 1}</div>
-    <div style="display:flex;"><img src="http://localhost:8000/data/settings_transparent.png" style="width:25px;height:25px;"></img></div>`;
+    newMenu.innerHTML = menuHTML(Object.keys(fields).length + 1);
     const newSpan = document.createElement("span");
     newSpan.setAttribute("class", "math-input");
     newDiv.appendChild(newMenu);
