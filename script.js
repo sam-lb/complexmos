@@ -12,9 +12,25 @@ const fields = {};
 const menuHTML = (id) => {
     return `<div>${id}</div>
     <div style="display:flex;">
-        <img src="http://localhost:8000/data/settings_transparent.png" style="width:25px;height:25px;"></img>
+        <img src="http://localhost:8000/data/settings_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});"></img>
     </div>`;
+};
+
+function displayOverlayMenu(id) {
+    const overlay = document.querySelector("#overlay-menu-container");
+    overlay.style.display = "block";
+    overlay.innerHTML = `
+    Settings for expression ${id}
+    <hr>
+    `;
 }
+
+document.addEventListener("mousedown", (event) => {
+    const overlay = document.querySelector("#overlay-menu-container");
+    if (!overlay.contains(event.target)) {
+        overlay.style.display = "none";
+    }
+});
 
 function addField(parent=null) {
     /** add new math input field. parent: parent element */
@@ -22,17 +38,19 @@ function addField(parent=null) {
     const newDiv = document.createElement("div");
     newDiv.setAttribute("class", "math-input-div");
 
-    const newMenu = document.createElement("div");
-    newMenu.setAttribute("class", "math-input-side-menu");
-    newMenu.innerHTML = menuHTML(Object.keys(fields).length + 1);
     const newSpan = document.createElement("span");
     newSpan.setAttribute("class", "math-input");
-    newDiv.appendChild(newMenu);
-    newDiv.appendChild(newSpan);
 
     const newField = MQ.MathField(newSpan, {});
     newDiv.setAttribute("id", `math-input-div-${newField.id}`);
     // newSpan.setAttribute("onkeyup", `handle(${newField.id});`);
+
+    const newMenu = document.createElement("div");
+    newMenu.setAttribute("class", "math-input-side-menu");
+    newMenu.setAttribute("id", `math-input-side-menu-${newField.id}`);
+    newMenu.innerHTML = menuHTML(newField.id);
+    newDiv.appendChild(newMenu);
+    newDiv.appendChild(newSpan);
 
     if (parent === null) {
         const container = document.querySelector("#math-input-container");

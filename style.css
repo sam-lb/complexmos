@@ -71,6 +71,26 @@ body {
     position: absolute;
     left: 1%;
     top: 1%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#overlay-ui {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+#overlay-menu-container {
+    background-color:lightskyblue;
+    margin: 5px;
+    display: none;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+    border: 1px solid black;
 }
 
 /* MathQuill stuff */
@@ -110,7 +130,6 @@ body {
 	margin: 0px;
 	background-color: white;
 	font-size: 16pt;
-    margin-right: 5px;
 }
 
 *:focus {
