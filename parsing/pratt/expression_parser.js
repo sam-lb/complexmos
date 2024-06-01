@@ -15,6 +15,7 @@ class ExpressionParser extends Parser {
         this.prefix(TokenType.PLUS, Precedence.PREFIX);
         this.prefix(TokenType.MINUS, Precedence.PREFIX);
 
+        this.infixLeft(TokenType.COLON, Precedence.CALL);
         this.infixLeft(TokenType.PLUS, Precedence.SUM);
         this.infixLeft(TokenType.MINUS, Precedence.SUM);
         this.infixLeft(TokenType.ASTERISK, Precedence.PRODUCT);

@@ -9,7 +9,6 @@ class Precedence {
     static PRODUCT = 3;
     static EXPONENT = 4;
     static PREFIX = 5;
-    static POSTFIX = 6;
-    static CALL = 7;
+    static CALL = 6;
 
 }

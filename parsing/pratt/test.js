@@ -3,6 +3,13 @@
 document.querySelector("#minput-field").focus();
 
 
+`
+h(x:complex)=1/(2+x)*g(x)+mx+b
+g(y)=y^2+y
+m=4
+b=3
+r=h(x)
+`;
 
 const scope = {
     builtin: {
@@ -10,6 +17,11 @@ const scope = {
         "y": { isFunction: false, },
         "xy": { isFunction: false, },
         "x1": { isFunction: false, },
+        /* datatypes (for type annotation) */
+        "complex": { isFunction: false, },
+        "array": { isFunction: false, },
+        "matrix": { isFunction: false, },
+        "function": { isFunction: false, },
     },
     userGlobal: {
         "f": { isFunction: true, },
@@ -136,7 +148,7 @@ function processExpressions(latexExprs) {
             astStrings += "<br/>";
         }
         astStrings = astStrings.slice(0, -1);
-        document.querySelector("#multiline-parser-output").innerHTML = `parser output:\n${astStrings}`;   
+        document.querySelector("#multiline-parser-output").innerHTML = `parser output:<br>${astStrings}`;   
     }
 }
 

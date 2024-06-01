@@ -12,9 +12,10 @@ class TokenType {
     static ASTERISK = 7;
     static SLASH = 8;
     static CARET = 9;
-    static NAME = 10;
-    static NUMBER = 11;
-    static EOF = 12;
+    static COLON = 10;
+    static NAME = 11;
+    static NUMBER = 12;
+    static EOF = 13;
 
     constructor(value) {
         this.value = value;
@@ -22,7 +23,7 @@ class TokenType {
 
     static toStr(tokenType) {
         const values = [
-            "(", ")", ",", "=", "+", "-", "*", "/", "^", "", "", "",
+            "(", ")", ",", "=", "+", "-", "*", "/", "^", ":", "", "", "",
         ];
         return values[tokenType - 1];
     }

@@ -128,6 +128,8 @@ class Lexer {
                 this.mPunctuators.push(new Token(TokenType.SLASH, char));
             } else if (char === "^") {
                 this.mPunctuators.push(new Token(TokenType.CARET, char));
+            } else if (char === ":") {
+                this.mPunctuators.push(new Token(TokenType.COLON, char));
             } else if (num.includes(char)) {
                 this.getTokenNumber();
                 continue;
