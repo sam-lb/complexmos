@@ -118,6 +118,33 @@ function advance(id, direction) {
     }
 }
 
+
+function debounceWrapper(func, interval) {
+    let timer;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(context, args), interval);
+    };
+}
+
+function fieldEditHandler(mathField) {
+    /**
+     * potentially for the future, instead of debouncing:
+     * send the current expression only to the tokenizer,
+     * and if it kinda seems ok (well-formed latex 
+     * e.g. no \frac{1}{} sorta stuff) then do a full recalc
+     */
+    // console.log(mathField.id, mathField.latex());
+
+    const exprs = [];
+    for (const id of Object.keys(fields)) {
+        exprs.push(fields[id].field.latex());
+    }
+    console.log(exprs);
+}
+
 const firstField = addField();
 fields[firstField].field.focus();
 
@@ -131,7 +158,8 @@ MQ.config({
         downOutOf: (mathField) => { advance(mathField.id, 1); },
         upOutOf: (mathField) => { advance(mathField.id, -1); },
         deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
-    }
+        edit: debounceWrapper(fieldEditHandler, 500),
+    },
 });
 
 
