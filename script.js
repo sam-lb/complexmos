@@ -141,7 +141,7 @@ function fieldEditHandler(mathField) {
 
     const exprs = [];
     for (const id of Object.keys(fields)) {
-        exprs.push(fields[id].field.latex());
+        exprs.push(cleanLatex(fields[id].field.latex()));
     }
     
     const assignments = [];
@@ -153,6 +153,8 @@ function fieldEditHandler(mathField) {
 
     const lexer = new Lexer(null, true);
     lexer.setScope(scope);
+
+    const newIdents = [];
     for (const assignment of assignments) {
         lexer.setText(assignment);
         lexer.tokenize();
@@ -167,16 +169,41 @@ function fieldEditHandler(mathField) {
             const ident = (isFunction) ? left.mFunction : left.mName;
             if (scope.builtin[ident] !== undefined) {
                 tracker.error(`cannot overwrite builtin identifier ${ident}`);
-            } else if (scope.userGlobal[ident] !== undefined) {
+            } else if (newIdents.includes(ident)) {
+                console.log("crock");
                 tracker.error(`multiple definitions for ${ident}`);
             } else {
                 scope.userGlobal[ident] = {
                     isFunction: isFunction,
                 }
+                newIdents.push(ident);
             }
         }
     }
 
+    const asts = [];
+    if (!tracker.hasError) {
+        lexer.setScope(scope); // the scope may have changed, so it doesn't hurt to do this explicitly
+        lexer.setAllowUnboundIdentifiers(false);
+        for (const expr of exprs) {
+            lexer.setText(expr);
+            lexer.tokenize();
+            const tokens = lexer.getTokens();
+
+            const parser = new ExpressionParser(tokens);
+            const result = parser.parseExpression();
+            asts.push(result);
+        }
+    }
+    tracker.clear();
+
+    let astStrings = "";
+    for (const ast of asts) {
+        astStrings += ast.toString();
+        astStrings += "\n";
+    }
+    astStrings = astStrings.slice(0, -1);
+    console.log(`parser output:\n${astStrings}`);
 }
 
 const firstField = addField();

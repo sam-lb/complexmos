@@ -40,7 +40,7 @@ class ErrorTracker {
         this.message = this.successMsg;
 
         const target = document.querySelector(`#${this.target}`);
-        if (target !== undefined) {
+        if (target) {
             target.innerHTML = this.message;
             target.style.color = "green";
             target.style.display = "block";
