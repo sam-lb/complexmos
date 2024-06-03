@@ -137,12 +137,46 @@ function fieldEditHandler(mathField) {
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
     // console.log(mathField.id, mathField.latex());
+    tracker.setCallback(() => console.log(tracker.message));
 
     const exprs = [];
     for (const id of Object.keys(fields)) {
         exprs.push(fields[id].field.latex());
     }
-    console.log(exprs);
+    
+    const assignments = [];
+    for (const expr of exprs) {
+        if (expr.includes("=")) {
+            assignments.push(expr)
+        }
+    }
+
+    const lexer = new Lexer(null, true);
+    lexer.setScope(scope);
+    for (const assignment of assignments) {
+        lexer.setText(assignment);
+        lexer.tokenize();
+
+        const tokens = lexer.getTokens();
+        const parser = new ExpressionParser(tokens);
+        const result = parser.parseExpression();
+        
+        if (result !== undefined) {
+            const left = result.mLeft;
+            const isFunction = left instanceof CallExpression;
+            const ident = (isFunction) ? left.mFunction : left.mName;
+            if (scope.builtin[ident] !== undefined) {
+                tracker.error(`cannot overwrite builtin identifier ${ident}`);
+            } else if (scope.userGlobal[ident] !== undefined) {
+                tracker.error(`multiple definitions for ${ident}`);
+            } else {
+                scope.userGlobal[ident] = {
+                    isFunction: isFunction,
+                }
+            }
+        }
+    }
+
 }
 
 const firstField = addField();

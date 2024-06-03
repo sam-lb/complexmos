@@ -24,9 +24,11 @@ class ErrorTracker {
         this.message = message;
 
         const target = document.querySelector(`#${this.target}`);
-        target.innerHTML = this.message;
-        target.style.color = "red";
-        target.style.display = "block";
+        if (target) {
+            target.innerHTML = this.message;
+            target.style.color = "red";
+            target.style.display = "block";
+        }
 
         if (this.callback !== null) {
             this.callback();
@@ -38,9 +40,11 @@ class ErrorTracker {
         this.message = this.successMsg;
 
         const target = document.querySelector(`#${this.target}`);
-        target.innerHTML = this.message;
-        target.style.color = "green";
-        target.style.display = "block";
+        if (target !== undefined) {
+            target.innerHTML = this.message;
+            target.style.color = "green";
+            target.style.display = "block";
+        }
     }
 
 }
