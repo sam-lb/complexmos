@@ -25,7 +25,7 @@ class Parser {
             if (token.mtype === TokenType.EOF) {
                 tracker.error(`Unexpected EOF while parsing (1)`);
             } else {
-                tracker.error(`couldn't parse token ${token.toString()}`);
+                tracker.error(`Invalid syntax`);
             }
             return;
         }
@@ -47,10 +47,10 @@ class Parser {
     consume(expected=null) {
         const token = this.lookAhead(0);
         if (expected !== null && token.mtype === TokenType.EOF) {
-            tracker.error(`Unexpected EOF while parsing. expected: ${expected}`);
+            tracker.error(`Unexpected EOF while parsing`);
             return;
         } else if (expected !== null && token.mtype !== expected) {
-            tracker.error(`consumed token ${token.mtype} does not match expected ${expected}`);
+            tracker.error(`Unexpected EOF while parsing`);
             return;
         }
         this.index++;

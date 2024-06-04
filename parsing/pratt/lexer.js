@@ -188,6 +188,30 @@ class Lexer {
         }
 
         this.mPunctuators = tokens.slice();
+        this._validateTokens();
+    }
+
+    _checkIsFunction(token) {
+        return (
+            token.mtype === TokenType.NAME && 
+            (!!this.scope.builtin[token.text]?.isFunction || !!this.scope.userGlobal[token.text]?.isFunction)
+        );
+    }
+
+    _validateTokens() {
+        for (let i=0; i<this.mPunctuators.length-1; i++) {
+            /**
+             * in the case that the input string is empty, this.mPunctuators contains only the EOL token
+             * in all other cases, this loop will run at least once
+             */
+            const token = this.mPunctuators[i];
+            const nextToken = this.mPunctuators[i+1];
+
+            if (this._checkIsFunction(token) && nextToken.mtype !== TokenType.LEFT_PAREN) {
+                tracker.error(`Function call to ${token.text} requires parentheses`);
+                return;
+            }
+        }
     }
 
     getTokens() {
