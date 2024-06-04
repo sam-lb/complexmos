@@ -6,7 +6,7 @@ let plot, lastMouseX, lastMouseY;
 
 
 const MQ = MathQuill.getInterface(2);
-const opsString = "sin cos";
+const opsString = Object.keys(scope.builtin).filter(x => x.length > 1).join(" ");
 const fields = {};
 
 const menuHTML = (id) => {
@@ -162,6 +162,8 @@ function fieldEditHandler(mathField) {
         const tokens = lexer.getTokens();
         const parser = new ExpressionParser(tokens);
         const result = parser.parseExpression();
+
+        console.log(tokens, result);
         
         if (result !== undefined) {
             const left = result.mLeft;
@@ -170,16 +172,50 @@ function fieldEditHandler(mathField) {
             if (scope.builtin[ident] !== undefined) {
                 tracker.error(`cannot overwrite builtin identifier ${ident}`);
             } else if (newIdents.includes(ident)) {
-                console.log("crock");
                 tracker.error(`multiple definitions for ${ident}`);
             } else {
                 scope.userGlobal[ident] = {
                     isFunction: isFunction,
+                };
+
+                if (isFunction) {
+                    // define local variables for the function
+                    scope.userGlobal[ident].args = [];
+                    for (let arg of left.mArgs) {
+                        if (arg instanceof OperatorExpression) {
+                            if (arg.mLeft instanceof NameExpression && arg.mOperator === TokenType.COLON) {
+                                if (arg.mRight instanceof NameExpression && !!scope.builtin[arg.mRight.mName]?.isType) {
+                                    scope.userGlobal[ident].args.push({
+                                        name: arg.mLeft.mName,
+                                        type: arg.mRight.mName,   
+                                    });
+                                } else {
+                                    tracker.error("Invalid type annotation");
+                                    continue;
+                                }
+                            } else {
+                                tracker.error("Invalid arguments");
+                                continue;
+                            }
+                        } else if (arg instanceof NameExpression) {
+                            // this is where type inference should go, if I decide to implement it.
+                            // for now, we assume unspecified arguments are complex
+                            scope.userGlobal[ident].args.push({
+                                name: arg.mName,
+                                type: "complex",
+                            });
+                        } else {
+                            tracker.error("Invalid arguments");
+                            continue;
+                        }
+                    }
                 }
+
                 newIdents.push(ident);
             }
         }
     }
+    console.log(scope);
 
     const asts = [];
     if (!tracker.hasError) {
@@ -199,7 +235,7 @@ function fieldEditHandler(mathField) {
 
     let astStrings = "";
     for (const ast of asts) {
-        astStrings += ast.toString();
+        astStrings += ast?.toString();
         astStrings += "\n";
     }
     astStrings = astStrings.slice(0, -1);

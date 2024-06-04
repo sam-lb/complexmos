@@ -1,16 +1,14 @@
 const scope = {
     builtin: {
-        "x": { isFunction: false, },
-        "y": { isFunction: false, },
-        "xy": { isFunction: false, },
-        "x1": { isFunction: false, },
+        "z": { isFunction: false, },
+
         /* datatypes (for type annotation) */
-        "complex": { isFunction: false, },
-        "array": { isFunction: false, },
-        "matrix": { isFunction: false, },
-        "function": { isFunction: false, },
+        "complex": { isFunction: false, isType: true, },
+        "array": { isFunction: false, isType: true, },
+        "matrix": { isFunction: false, isType: true, },
+        "function": { isFunction: false, isType: true, },
     },
+
     userGlobal: {
-        "f": { isFunction: true, },
     },
 }
