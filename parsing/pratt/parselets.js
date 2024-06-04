@@ -127,7 +127,12 @@ class NumberParselet extends PrefixParselet {
     }
 
     parse(parser, token) {
-        return new NumberExpression(parseFloat(token.text));
+        const value = parseFloat(token.text);
+        if (isNaN(value)) {
+            tracker.error(`Invalid number literal ${value}`);
+        } else {
+            return new NumberExpression(parseFloat(token.text));
+        }
     }
 
 }

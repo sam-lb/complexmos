@@ -41,6 +41,7 @@ function handleSubmit() {
     const text = cleanLatex(latex);
 
     tracker.setTarget("error-output");
+    tracker.setCallback(() => console.log(tracker.message));
     tracker.clear();
 
     const lexer = new Lexer(text, false);

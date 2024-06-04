@@ -130,10 +130,10 @@ class Lexer {
                 this.mPunctuators.push(new Token(TokenType.CARET, char));
             } else if (char === ":") {
                 this.mPunctuators.push(new Token(TokenType.COLON, char));
-            } else if (num.includes(char)) {
+            } else if (num.includes(char) || char === ".") {
                 this.getTokenNumber();
                 continue;
-            } else if (alnum.includes(char) || char === ".") {
+            } else if (alnum.includes(char)) {
                 this.getTokenName();
                 continue;
             } else {
