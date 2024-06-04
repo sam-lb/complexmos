@@ -148,7 +148,7 @@ function processExpressions(latexExprs) {
             astStrings += "<br/>";
         }
         astStrings = astStrings.slice(0, -1);
-        document.querySelector("#multiline-parser-output").innerHTML = `parser output:<br>${astStrings}`;   
+        document.querySelector("#multiline-parser-output").innerHTML = `parser output:<br>${astStrings}`;
     }
 }
 
