@@ -31,7 +31,7 @@ class Lexer {
         this.index = 0;
     }
 
-    getTokenName() {
+    getTokenName(tokenizingAssignment=false, assignmentEncountered=false) {
         // consume characters until non-identifier character is encountered, add them to buffer
         let buffer = "";
         while (this.index < this.mText.length && alnum.includes(this.mText[this.index])) {
@@ -56,7 +56,7 @@ class Lexer {
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
                 if (alnum.includes(possibleIdentifier[0]) && !num.includes(possibleIdentifier[0])) {
-                    if (this.allowUnboundIdentifiers) {
+                    if (this.allowUnboundIdentifiers || (tokenizingAssignment)) {
                         // no match found in the remaining part of the buffer, so greedily make the 
                         // unidentified characters a single identifier
                         identifiers.push(buffer);
@@ -106,6 +106,8 @@ class Lexer {
     tokenize() {
         this.mPunctuators = [];
         this.index = 0;
+        const tokenizingAssignment = this.mText.includes("=");
+        let assignmentEncountered = false;
 
         while (this.index < this.mText.length) {
             const char = this.mText[this.index];
@@ -118,6 +120,7 @@ class Lexer {
                 this.mPunctuators.push(new Token(TokenType.COMMA, char));
             } else if (char === "=") {
                 this.mPunctuators.push(new Token(TokenType.ASSIGN, char));
+                assignmentEncountered = true;
             } else if (char === "+") {
                 this.mPunctuators.push(new Token(TokenType.PLUS, char));
             } else if (char === "-") {
@@ -134,7 +137,7 @@ class Lexer {
                 this.getTokenNumber();
                 continue;
             } else if (alnum.includes(char)) {
-                this.getTokenName();
+                this.getTokenName(tokenizingAssignment, assignmentEncountered);
                 continue;
             } else {
                 tracker.error(`bruh what is this character even doing in your input ${char}`);

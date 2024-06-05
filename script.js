@@ -168,11 +168,14 @@ function fieldEditHandler(mathField) {
         if (result !== undefined) {
             const left = result.mLeft;
             const isFunction = left instanceof CallExpression;
-            const ident = (isFunction) ? left.mFunction : left.mName;
+            const ident = (isFunction) ? left.mFunction.mName : left.mName;
+            console.log(ident, "ident");
             if (scope.builtin[ident] !== undefined) {
                 tracker.error(`cannot overwrite builtin identifier ${ident}`);
+                continue;
             } else if (newIdents.includes(ident)) {
                 tracker.error(`multiple definitions for ${ident}`);
+                continue;
             } else {
                 scope.userGlobal[ident] = {
                     isFunction: isFunction,
@@ -180,15 +183,16 @@ function fieldEditHandler(mathField) {
 
                 if (isFunction) {
                     // define local variables for the function
-                    scope.userGlobal[ident].args = [];
+                    scope.userGlobal[ident].args = {};
                     for (let arg of left.mArgs) {
                         if (arg instanceof OperatorExpression) {
                             if (arg.mLeft instanceof NameExpression && arg.mOperator === TokenType.COLON) {
                                 if (arg.mRight instanceof NameExpression && !!scope.builtin[arg.mRight.mName]?.isType) {
-                                    scope.userGlobal[ident].args.push({
-                                        name: arg.mLeft.mName,
-                                        type: arg.mRight.mName,   
-                                    });
+                                    // scope.userGlobal[ident].args.push({
+                                    //     name: arg.mLeft.mName,
+                                    //     type: arg.mRight.mName,   
+                                    // });
+                                    scope.userGlobal[ident].args[arg.mLeft.mName] = arg.mRight.mName;
                                 } else {
                                     tracker.error("Invalid type annotation");
                                     continue;
@@ -200,10 +204,11 @@ function fieldEditHandler(mathField) {
                         } else if (arg instanceof NameExpression) {
                             // this is where type inference should go, if I decide to implement it.
                             // for now, we assume unspecified arguments are complex
-                            scope.userGlobal[ident].args.push({
-                                name: arg.mName,
-                                type: "complex",
-                            });
+                            // scope.userGlobal[ident].args.push({
+                            //     name: arg.mName,
+                            //     type: "complex",
+                            // });
+                            scope.userGlobal[ident].args[arg.mName] = "complex";
                         } else {
                             tracker.error("Invalid arguments");
                             continue;
