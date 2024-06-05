@@ -199,6 +199,7 @@ class Lexer {
     }
 
     _validateTokens() {
+        let equalCount = 0;
         for (let i=0; i<this.mPunctuators.length-1; i++) {
             /**
              * in the case that the input string is empty, this.mPunctuators contains only the EOL token
@@ -211,6 +212,12 @@ class Lexer {
                 tracker.error(`Function call to ${token.text} requires parentheses`);
                 return;
             }
+
+            if (token.mtype === TokenType.ASSIGN) equalCount++;
+        }
+
+        if (equalCount > 1) {
+            tracker.error("More than one equals sign present in expression");
         }
     }
 
