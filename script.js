@@ -298,6 +298,7 @@ class Plot {
     static modes = {
         PLANE: 1,
         SPHERE: 2,
+        CUBE: 3,
     };
 
     constructor(displayWidth, displayHeight, bounds=null, mode=null, displayWindowInfo) {
@@ -461,13 +462,22 @@ class Plot {
                 z = matrix(z).transpose();
             }
             return Matrix.multiply(this.rotationMatrix, z);
+        } else if (this.mode === Plot.modes.CUBE) {
+            if (z instanceof Complex) {
+                z = matrix([
+                    z.re, z.im, 0,
+                ]).transpose();
+            } else {
+                z = matrix(z).transpose();
+            }
+            return Matrix.multiply(this.rotationMatrix, z);
         } else {
             return z;
         }
     }
 
     coordinateTransform(z) {
-        if (this.mode === Plot.modes.SPHERE) z = perspectiveProject(z, this.camera.alpha, this.camera.beta);
+        if (this.mode !== Plot.modes.PLANE) z = perspectiveProject(z, this.camera.alpha, this.camera.beta);
         return this.unitsToPixels(z);
     }
 
@@ -563,7 +573,7 @@ class Plot {
             this.polygons = this.polygons.concat(plottable.getPolygons());
         }
 
-        if (this.mode === Plot.modes.SPHERE) {
+        if (this.mode !== Plot.modes.PLANE) {
             this.polygons.sort((poly1, poly2) => {
                 return this.applyCamera(poly2.centroid).get(1, 0) - this.applyCamera(poly1.centroid).get(1, 0);
             });
@@ -607,7 +617,7 @@ class Plot {
 
     update() {
         if (this.needsUpdate) {
-            if (this.mode === Plot.modes.SPHERE) this.calculateRotationMatrix();
+            if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
             this.draw();
             this.needsUpdate = false;
         }
@@ -773,8 +783,10 @@ class DomainColoring extends Plottable {
     generatePolygons() {
         if (plot.mode === Plot.modes.PLANE) {
             this.generatePolygonsPlane();
-        } else {
+        } else if (plot.mode === Plot.modes.SPHERE) {
             this.generatePolygonsSphere();
+        } else {
+            this.generatePolygonsPlane();
         }
     }
 
@@ -1014,14 +1026,22 @@ function windowResized() {
 function tabSwitch(tab) {
     const plane = document.querySelector("#ui-header-plane");
     const sphere = document.querySelector("#ui-header-sphere");
+    const cube = document.querySelector("#ui-header-cube");
     if (tab === 0) {
         plane.style.backgroundColor = "white";
         sphere.style.backgroundColor = "lightgray";
+        cube.style.backgroundColor = "lightgray";
         plot.setMode(Plot.modes.PLANE);
-    } else {
+    } else if (tab === 1) {
         plane.style.backgroundColor = "lightgray";
         sphere.style.backgroundColor = "white";
+        cube.style.backgroundColor = "lightgray";
         plot.setMode(Plot.modes.SPHERE);
+    } else {
+        plane.style.backgroundColor = "lightgray";
+        sphere.style.backgroundColor = "lightgray";
+        cube.style.backgroundColor = "white";
+        plot.setMode(Plot.modes.CUBE);
     }
 }
 
