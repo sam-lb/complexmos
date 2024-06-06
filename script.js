@@ -245,6 +245,7 @@ function fieldEditHandler(mathField) {
     }
     astStrings = astStrings.slice(0, -1);
     console.log(`parser output:\n${astStrings}`);
+    console.log(asts);
 }
 
 const firstField = addField();
@@ -826,6 +827,7 @@ class DomainColoring extends Plottable {
             this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
         }
         pop();
+        // this.polygons = [];
     }
 
     generatePolygonsPlane() {
@@ -925,12 +927,12 @@ function setup() {
     //     );
     // };
     const f = (z) => {
-        return Complex.exp(z);
+        // return Complex.exp(z);
         // return z;
         // return Complex.sqrt(z);
         // return Complex.mult(z, z);
         // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-        // return Complex.cos(z);
+        return Complex.cos(z);
         // return Complex.sqrt(z.mult(z).scale(-4).sub(complex(1, 0))).sub(Complex.mult(complex(0, 2), z));
     };
     const dcPlot = new DomainColoring(f);

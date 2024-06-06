@@ -12,3 +12,8 @@ const scope = {
     userGlobal: {
     },
 }
+
+
+const valueScope = {
+
+};
