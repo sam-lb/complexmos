@@ -239,6 +239,13 @@ function fieldEditHandler(mathField) {
         evaluate(ast);
     }
 
+    if (valueScope["f"] !== undefined) {
+        plot.clear();
+        plot.addPlottable(new DomainColoring(
+            (z) => valueScope["f"].call({z:z}),
+        ));
+    }
+
     let astStrings = "";
     for (const ast of asts) {
         astStrings += ast?.toString();
@@ -513,6 +520,11 @@ class Plot {
 
     calculateRotationMatrix() {
         this.rotationMatrix = Matrix.rotationMatrix3D(this.camera.pitch, this.camera.roll, this.camera.yaw);
+    }
+
+    clear() {
+        this.plottables = [];
+        this.needsUpdate = true;
     }
 
     addPlottable(plottable) {
@@ -927,17 +939,17 @@ function setup() {
     //         complex(0, 1),
     //     );
     // };
-    const f = (z) => {
-        // return Complex.exp(z);
-        // return z;
-        // return Complex.sqrt(z);
-        // return Complex.mult(z, z);
-        // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-        return Complex.cos(z);
-        // return Complex.sqrt(z.mult(z).scale(-4).sub(complex(1, 0))).sub(Complex.mult(complex(0, 2), z));
-    };
-    const dcPlot = new DomainColoring(f);
-    plot.addPlottable(dcPlot);
+    // const f = (z) => {
+    //     // return Complex.exp(z);
+    //     // return z;
+    //     // return Complex.sqrt(z);
+    //     // return Complex.mult(z, z);
+    //     // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
+    //     return Complex.cos(z);
+    //     // return Complex.sqrt(z.mult(z).scale(-4).sub(complex(1, 0))).sub(Complex.mult(complex(0, 2), z));
+    // };
+    // const dcPlot = new DomainColoring(f);
+    // plot.addPlottable(dcPlot);
 
     /** Example: chaos game */
     // const maxPoints = 10000;

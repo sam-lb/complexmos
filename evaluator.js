@@ -45,7 +45,8 @@ class Evaluatable {
         return this._call(this.ast, args);
     }
 
-    _call(ast, args) {
+    _call(ast, args=null) {
+        args = (args === null) ? {} : args;
         if (ast instanceof OperatorExpression) {
             const arg1 = this._call(ast.mLeft, args);
             const arg2 = this._call(ast.mRight, args);
