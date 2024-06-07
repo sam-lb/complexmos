@@ -239,21 +239,13 @@ function fieldEditHandler(mathField) {
         evaluate(ast);
     }
 
+
     if (valueScope["f"] !== undefined) {
         plot.clear();
         plot.addPlottable(new DomainColoring(
             (z) => valueScope["f"].call({z:z}),
         ));
     }
-
-    let astStrings = "";
-    for (const ast of asts) {
-        astStrings += ast?.toString();
-        astStrings += "\n";
-    }
-    astStrings = astStrings.slice(0, -1);
-    // console.log(`parser output:\n${astStrings}`);
-    // console.log(asts);
 }
 
 const firstField = addField();
