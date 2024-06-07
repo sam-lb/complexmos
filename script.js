@@ -136,7 +136,6 @@ function fieldEditHandler(mathField) {
      * and if it kinda seems ok (well-formed latex 
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
-    // console.log(mathField.id, mathField.latex());
     tracker.setCallback(() => console.log(tracker.message));
 
     const exprs = [];
@@ -163,13 +162,12 @@ function fieldEditHandler(mathField) {
         const parser = new ExpressionParser(tokens);
         const result = parser.parseExpression();
 
-        console.log(tokens, result);
+        // console.log(tokens, result);
         
         if (result !== undefined) {
             const left = result.mLeft;
             const isFunction = left instanceof CallExpression;
             const ident = (isFunction) ? left.mFunction.mName : left.mName;
-            console.log(ident, "ident");
             if (scope.builtin[ident] !== undefined) {
                 tracker.error(`cannot overwrite builtin identifier ${ident}`);
                 continue;
@@ -220,7 +218,6 @@ function fieldEditHandler(mathField) {
             }
         }
     }
-    console.log(scope);
 
     const asts = [];
     if (!tracker.hasError) {
@@ -238,14 +235,18 @@ function fieldEditHandler(mathField) {
     }
     tracker.clear();
 
+    for (const ast of asts) {
+        evaluate(ast);
+    }
+
     let astStrings = "";
     for (const ast of asts) {
         astStrings += ast?.toString();
         astStrings += "\n";
     }
     astStrings = astStrings.slice(0, -1);
-    console.log(`parser output:\n${astStrings}`);
-    console.log(asts);
+    // console.log(`parser output:\n${astStrings}`);
+    // console.log(asts);
 }
 
 const firstField = addField();

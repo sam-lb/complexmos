@@ -1,6 +1,8 @@
 const scope = {
     builtin: {
         "z": { isFunction: false, },
+        "sin": { isFunction: true, },
+        "i": { isFunction: false, },
 
         /* datatypes (for type annotation) */
         "complex": { isFunction: false, isType: true, },
@@ -15,5 +17,7 @@ const scope = {
 
 
 const valueScope = {
-
+    "z": complex(1, 0),
+    "sin": Complex.sin,
+    "i": complex(0, 1),
 };
