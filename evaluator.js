@@ -21,7 +21,7 @@ function evaluate(ast) {
             varName = left.mName;            
         }
 
-        valueScope[varName] = getEvaluatable(ast.mRight, left.args);
+        valueScope[varName] = getEvaluatable(ast.mRight, left.mArgs);
         return null;
     } else {
         return getEvaluatable(ast);
@@ -31,6 +31,7 @@ function evaluate(ast) {
 
 
 function getEvaluatable(ast, args=null) {
+    console.log(args);
     return function(z) {
         return z;
     }    
