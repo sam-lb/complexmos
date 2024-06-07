@@ -237,6 +237,10 @@ class Complex {
 		return z.conj().scale(1 / z.normSq());
 	}
 
+	static scale(z, k) {
+		return z.scale(k);
+	}
+
 	static add(z1, z2) {
 		return z1.add(z2);
 	}
