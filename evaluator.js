@@ -12,18 +12,15 @@ function evaluate(ast) {
     if (ast instanceof AssignExpression) {
         // the expression is trying to define a function
         const left = ast.mLeft;
-        let varName;
         if (left instanceof CallExpression) {
             // the expression is defining a function
-            varName = left.mFunction.mName;
+            valueScope[left.mFunction.mName] = new Evaluatable(ast.mRight,
+                left.mArgs.map((arg) => (arg instanceof OperatorExpression) ? arg.mLeft.mName : arg.mName)
+            );
         } else {
             // the expression is defining a variable
-            varName = left.mName;            
+            valueScope[left.mName] = new Evaluatable(ast.mRight);            
         }
-
-        valueScope[varName] = new Evaluatable(ast.mRight,
-            left.mArgs.map((arg) => (arg instanceof OperatorExpression) ? arg.mLeft.mName : arg.mName)
-        );
         return null;
     } else {
         return new Evaluatable(ast);
@@ -94,7 +91,9 @@ class Evaluatable {
             if (args[ast.mName] !== undefined) {
                 return args[ast.mName];
             } else if (valueScope[ast.mName] !== undefined) {
-                return valueScope[ast.mName];
+                let value = valueScope[ast.mName];
+                if (value instanceof Evaluatable) value = value.call();
+                return value;
             } else {
                 tracker.error(`could not resolve variable ${ast.mName}`);
                 return null;
