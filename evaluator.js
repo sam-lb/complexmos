@@ -82,7 +82,7 @@ class Evaluatable {
                 const func = valueScope[ast.mFunction];
                 if (func instanceof Evaluatable) {
                     const argMap = {};
-                    args.forEach((key, index) => argMap[key] = functionArgs[index]);
+                    func.args.forEach((key, index) => argMap[key] = functionArgs[index]);
                     return func.call(argMap);
                 } else {
                     return func(...functionArgs);
