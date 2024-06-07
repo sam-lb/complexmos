@@ -21,18 +21,25 @@ function evaluate(ast) {
             varName = left.mName;            
         }
 
-        valueScope[varName] = getEvaluatable(ast.mRight, left.mArgs);
+        valueScope[varName] = new Evaluatable(ast.mRight,
+            left.mArgs.map((arg) => (arg instanceof OperatorExpression) ? arg.mLeft.mName : arg.mName)
+        );
         return null;
     } else {
-        return getEvaluatable(ast);
+        return new Evaluatable(ast);
     }
 }
 
 
+class Evaluatable {
 
-function getEvaluatable(ast, args=null) {
-    console.log(args);
-    return function(z) {
-        return z;
-    }    
+    constructor(ast, args=null) {
+        this.ast = ast;
+        this.args = (args === null) ? [] : args;
+    }
+
+    call(args) {
+        console.log(args);
+    }
+
 }
