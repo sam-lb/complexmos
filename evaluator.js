@@ -42,7 +42,12 @@ class Evaluatable {
                 return null;
             }
         }
-        return this._call(this.ast, args);
+        try {
+            return this._call(this.ast, args);
+        } catch (error) {
+            tracker.error(`An unrecognized error has occurred: ${error.message}`);
+            return null;
+        }
     }
 
     _call(ast, args=null) {

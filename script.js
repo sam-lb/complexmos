@@ -137,6 +137,7 @@ function fieldEditHandler(mathField) {
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
     tracker.setCallback(() => console.log(tracker.message));
+    tracker.clear();
 
     const exprs = [];
     for (const id of Object.keys(fields)) {
@@ -233,14 +234,13 @@ function fieldEditHandler(mathField) {
             asts.push(result);
         }
     }
-    tracker.clear();
 
+    tracker.clear();
     for (const ast of asts) {
         evaluate(ast);
     }
 
-
-    if (valueScope["f"] !== undefined) {
+    if (valueScope["f"] !== undefined && !tracker.hasError) {
         plot.clear();
         plot.addPlottable(new DomainColoring(
             (z) => valueScope["f"].call({z:z}),
@@ -252,7 +252,7 @@ const firstField = addField();
 fields[firstField].field.focus();
 
 MQ.config({
-    autoCommands: "pi sqrt",
+    autoCommands: "pi sqrt tau alpha beta",
     supSubsRequireOperand: true,
     charsThatBreakOutOfSupSub: "",
     autoOperatorNames: opsString,
@@ -828,11 +828,14 @@ class DomainColoring extends Plottable {
             ];
 
             const output = this.fn(stereographic(centroid));
+            // if (output === null) {
+            //     this.polygons = [];
+            //     return;
+            // }
             const norm = output.norm();
             this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
         }
         pop();
-        // this.polygons = [];
     }
 
     generatePolygonsPlane() {
