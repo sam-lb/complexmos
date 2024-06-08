@@ -314,7 +314,7 @@ class Plot {
         this.mode = (mode === null) ? Plot.modes.PLANE : mode;
         this.camera = {
             alpha: 1,
-            beta: 0.2,
+            beta: 0.05,
             pitch: .786,
             roll: 0,
             yaw: .672,
@@ -482,6 +482,10 @@ class Plot {
         return this.unitsToPixels(z);
     }
 
+    spaceToScreen(z) {
+        return this.coordinateTransform(this.applyCamera(z));
+    }
+
     pixelsToUnits(z) {
         // note: this is NOT an exact inverse of unitsToPixels!!!
         return complex(
@@ -525,10 +529,15 @@ class Plot {
     }
 
     drawAxes() {
-        const xAxisStart = this.unitsToPixels(complex(this.bounds.xMin, 0));
-        const xAxisStop = this.unitsToPixels(complex(this.bounds.xMax, 0));
-        const yAxisStart = this.unitsToPixels(complex(0, this.bounds.yMin));
-        const yAxisStop = this.unitsToPixels(complex(0, this.bounds.yMax));
+        // const xAxisStart = this.unitsToPixels(complex(this.bounds.xMin, 0));
+        // const xAxisStop = this.unitsToPixels(complex(this.bounds.xMax, 0));
+        // const yAxisStart = this.unitsToPixels(complex(0, this.bounds.yMin));
+        // const yAxisStop = this.unitsToPixels(complex(0, this.bounds.yMax));
+
+        const xAxisStart = this.spaceToScreen(complex(this.bounds.xMin, 0));
+        const xAxisStop = this.spaceToScreen(complex(this.bounds.xMax, 0));
+        const yAxisStart = this.spaceToScreen(complex(0, this.bounds.yMin));
+        const yAxisStop = this.spaceToScreen(complex(0, this.bounds.yMax));
 
         push();
         
