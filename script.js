@@ -242,7 +242,7 @@ function fieldEditHandler(mathField) {
 
     if (valueScope["f"] !== undefined && !tracker.hasError) {
         plot.clear();
-        plot.addPlottable(new DomainColoring(
+        plot.addPlottable(new NormPlot(
             (z) => valueScope["f"].call({z:z}),
         ));
     }
@@ -786,6 +786,78 @@ class Polygon {
                 totalY / this.vertices.length,
                 totalZ / this.vertices.length,
             ];
+        }
+    }
+
+}
+
+
+class NormPlot extends Plottable {
+
+    constructor(fn, bounds=null, density=100) {
+        super();
+        this.fn = fn;
+        if (bounds === null) {
+            this.bounds = plot.bounds
+            this.fixedBounds = false;
+        } else {
+            this.bounds = bounds;
+            this.fixedBounds = true;
+        }
+        this.samples = complex(density, density);
+        this.generatePolygons();
+    }
+
+    generatePolygons() {
+        this.polygons = [];
+
+        if (plot.mode !== Plot.modes.CUBE) {
+            return;
+        }
+
+        let x = this.bounds.xMin, y = this.bounds.yMin;
+        const step = complex(
+            (this.bounds.xMax - this.bounds.xMin) / (this.samples.re - 1),
+            (this.bounds.yMax - this.bounds.yMin) / (this.samples.im - 1),
+        );
+
+        push(); // for colormode
+        colorMode(RGB);
+        for (let i=0; i<this.samples.re-1; i++) {
+            for (let j=0; j<this.samples.im-1; j++) {
+                const square = [
+                    complex(x, y),
+                    complex(x + step.re + 0.01, y),
+                    complex(x + step.re + 0.01, y + step.im + 0.01),
+                    complex(x, y + step.im + 0.01),
+                ].map(z => [
+                    z.re, z.im, this.fn(z).norm(),
+                ]);
+                const centroid = complex(x + step.re / 2, y + step.im / 2);
+                const output = this.fn(centroid);
+                // const color1 = color(centroid.arg()/(2*Math.PI), complex(centroid.re, output).arg()/(2*Math.PI), complex(centroid.im, output).arg()/(2*Math.PI));
+                const color1 = color(100, 0, 255*Math.tanh(  ((2 * Math.PI + output.arg()) % (2*Math.PI)) / (2 * Math.PI)  ));
+
+                this.polygons.push(new Polygon(square, color1));
+
+                x += step.re;
+            }
+            x = this.bounds.xMin;
+            y += step.im;
+        }
+        pop();
+    }
+
+    getPolygons() {
+        return this.polygons;
+    }
+
+    update() {
+        if (plot.boundsChangedSinceLastDraw && !this.fixedBounds) {
+            // TODO: This can be optimized to only recalculate the new polygons
+            // by checking the difference between this.bounds and plot.bounds
+            this.bounds = plot.bounds;
+            this.generatePolygons();
         }
     }
 
