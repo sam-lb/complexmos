@@ -314,7 +314,7 @@ class Plot {
         this.mode = (mode === null) ? Plot.modes.PLANE : mode;
         this.camera = {
             alpha: 1,
-            beta: 0.05,
+            beta: 0,
             pitch: .786,
             roll: 0,
             yaw: .672,
@@ -529,24 +529,38 @@ class Plot {
     }
 
     drawAxes() {
-        // const xAxisStart = this.unitsToPixels(complex(this.bounds.xMin, 0));
-        // const xAxisStop = this.unitsToPixels(complex(this.bounds.xMax, 0));
-        // const yAxisStart = this.unitsToPixels(complex(0, this.bounds.yMin));
-        // const yAxisStop = this.unitsToPixels(complex(0, this.bounds.yMax));
+        if (this.mode === Plot.modes.PLANE) {
+            const xAxisStart = this.spaceToScreen(complex(this.bounds.xMin, 0));
+            const xAxisStop = this.spaceToScreen(complex(this.bounds.xMax, 0));
+            const yAxisStart = this.spaceToScreen(complex(0, this.bounds.yMin));
+            const yAxisStop = this.spaceToScreen(complex(0, this.bounds.yMax));
 
-        const xAxisStart = this.spaceToScreen(complex(this.bounds.xMin, 0));
-        const xAxisStop = this.spaceToScreen(complex(this.bounds.xMax, 0));
-        const yAxisStart = this.spaceToScreen(complex(0, this.bounds.yMin));
-        const yAxisStop = this.spaceToScreen(complex(0, this.bounds.yMax));
+            push();
+            
+            stroke(0);
+            strokeWeight(1);
+            line(xAxisStart.re, xAxisStart.im, xAxisStop.re, xAxisStop.im);
+            line(yAxisStart.re, yAxisStart.im, yAxisStop.re, yAxisStop.im);
 
-        push();
-        
-        stroke(0);
-        strokeWeight(1);
-        line(xAxisStart.re, xAxisStart.im, xAxisStop.re, xAxisStop.im);
-        line(yAxisStart.re, yAxisStart.im, yAxisStop.re, yAxisStop.im);
+            pop();
+        } else {
+            const xAxisStart = this.spaceToScreen([-2, 0, 0]);
+            const xAxisStop = this.spaceToScreen([2, 0, 0]);
+            const yAxisStart = this.spaceToScreen([0, -2, 0]);
+            const yAxisStop = this.spaceToScreen([0, 2, 0]);
+            const zAxisStart = this.spaceToScreen([0, 0, -2]);
+            const zAxisStop = this.spaceToScreen([0, 0, 2]);
+            
+            push();
+            
+            stroke(0);
+            strokeWeight(1);
+            line(xAxisStart.re, xAxisStart.im, xAxisStop.re, xAxisStop.im);
+            line(yAxisStart.re, yAxisStart.im, yAxisStop.re, yAxisStop.im);
+            line(zAxisStart.re, zAxisStart.im, zAxisStop.re, zAxisStop.im);
 
-        pop();
+            pop();
+        }
     }
 
     drawGridlines() {
@@ -820,7 +834,7 @@ class DomainColoring extends Plottable {
             return x * x * x * (10 - 15 * x + 6 * x * x);
         };
         const highlightPoles = (norm) => {
-            return 100 - 50 * Math.max(0, Math.min(1, 0.5 * (Math.sign(norm - threshold) + 1) * parabolaStep(norm - threshold)));
+            return 100 - 85 * Math.max(0, Math.min(1, 0.5 * (Math.sign(norm - threshold) + 1) * parabolaStep(norm - threshold)));
         };
 
         push();
