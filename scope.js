@@ -18,6 +18,7 @@ const scope = {
         "re": { isFunction: true, },
         "im": { isFunction: true, },
         "Gamma": { isFunction: true, },
+        "beta": { isFunction: true, },
 
         "i": { isFunction: false, },
         "pi": { isFunction: false, },
@@ -54,6 +55,7 @@ const valueScope = {
     "re": (z) => complex(z.re, 0),
     "im": (z) => complex(z.im, 0),
     "Gamma": Complex.gamma,
+    "beta": Complex.beta,
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),

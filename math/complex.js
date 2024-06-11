@@ -352,6 +352,10 @@ class Complex {
 		}
 	}
 
+	static beta(z1, z2) {
+		return Complex.div(Complex.mult(Complex.gamma(z1), Complex.gamma(z2)), Complex.gamma(z1.add(z2)));
+	}
+
 	/* --------------- In-place operations --------------------- */
 
 	iadd(z) {
