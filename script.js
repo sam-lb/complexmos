@@ -43,7 +43,6 @@ function addField(parent=null) {
 
     const newField = MQ.MathField(newSpan, {});
     newDiv.setAttribute("id", `math-input-div-${newField.id}`);
-    // newSpan.setAttribute("onkeyup", `handle(${newField.id});`);
 
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
@@ -162,8 +161,6 @@ function fieldEditHandler(mathField) {
         const tokens = lexer.getTokens();
         const parser = new ExpressionParser(tokens);
         const result = parser.parseExpression();
-
-        // console.log(tokens, result);
         
         if (result !== undefined) {
             const left = result.mLeft;
@@ -187,10 +184,6 @@ function fieldEditHandler(mathField) {
                         if (arg instanceof OperatorExpression) {
                             if (arg.mLeft instanceof NameExpression && arg.mOperator === TokenType.COLON) {
                                 if (arg.mRight instanceof NameExpression && !!scope.builtin[arg.mRight.mName]?.isType) {
-                                    // scope.userGlobal[ident].args.push({
-                                    //     name: arg.mLeft.mName,
-                                    //     type: arg.mRight.mName,   
-                                    // });
                                     scope.userGlobal[ident].args[arg.mLeft.mName] = arg.mRight.mName;
                                 } else {
                                     tracker.error("Invalid type annotation");
@@ -426,9 +419,6 @@ class Plot {
             });
         } else {
             this.setCamera({
-                // pitch: (this.camera.pitch + offset.im) % (2 * Math.PI),
-                // yaw: (this.camera.yaw - offset.re) % (0.5 * Math.PI),
-
                 pitch: Math.max(Math.min(this.camera.pitch + offset.im, 0.5 * Math.PI), -0.5 * Math.PI),
                 yaw: Math.max(Math.min(this.camera.yaw - offset.re, Math.PI), -Math.PI),
             });
@@ -832,7 +822,6 @@ class NormPlot extends Plottable {
                 ]);
                 const centroid = complex(x + step.re / 2, y + step.im / 2);
                 const output = this.fn(centroid);
-                // const color1 = color(centroid.arg()/(2*Math.PI), complex(centroid.re, output).arg()/(2*Math.PI), complex(centroid.im, output).arg()/(2*Math.PI));
                 const color1 = color(100, 0, 255*Math.tanh(  ((2 * Math.PI + output.arg()) % (2*Math.PI)) / (2 * Math.PI)  ));
 
                 this.polygons.push(new Polygon(square, color1));
@@ -920,10 +909,6 @@ class DomainColoring extends Plottable {
             ];
 
             const output = this.fn(stereographic(centroid));
-            // if (output === null) {
-            //     this.polygons = [];
-            //     return;
-            // }
             const norm = output.norm();
             this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
         }
@@ -940,7 +925,6 @@ class DomainColoring extends Plottable {
             return 360 * ((angle + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI); // modulo is not true remainder in JS
         };
         const normTransform = (norm) => {
-            // return 25 + (150 / Math.PI) * Math.atan(Math.sqrt(norm));
             return 25 + 75 * (
                 Math.floor((2 / Math.PI * Math.atan(Math.sqrt(norm))) / 0.2) * 0.2
             );
