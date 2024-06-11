@@ -242,7 +242,7 @@ function fieldEditHandler(mathField) {
 
     if (valueScope["f"] !== undefined && !tracker.hasError) {
         plot.clear();
-        plot.addPlottable(new NormPlot(
+        plot.addPlottable(new DomainColoring(
             (z) => valueScope["f"].call({z:z}),
         ));
     }
