@@ -9,10 +9,18 @@ const MQ = MathQuill.getInterface(2);
 const opsString = Object.keys(scope.builtin).filter(x => x.length > 1).join(" ");
 const fields = {};
 
-const menuHTML = (id) => {
+const menuHTML = (id, error=null) => {
+    let imageSrc, displayText;
+    if (error === null) {
+        imageSrc = "http://localhost:8000/data/settings_transparent.png";
+        displayText = "Settings";
+    } else {
+        imageSrc = "http://localhost:8000/data/error_transparent.png";
+        displayText = error;
+    }
     return `<div>${id}</div>
     <div style="display:flex;">
-        <img src="http://localhost:8000/data/settings_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});"></img>
+        <img src="${imageSrc}" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="${displayText}"></img>
     </div>`;
 };
 
@@ -128,6 +136,23 @@ function debounceWrapper(func, interval) {
     };
 }
 
+function getCallbacks(id) {
+    const sideMenu = document.querySelector(`#math-input-side-menu-${id}`);
+
+    const callback = (message, target) => {
+        sideMenu.innerHTML = menuHTML(id, message);
+    };
+
+    const successCallback = (message, target) => {
+        sideMenu.innerHTML = menuHTML(id);        
+    };
+
+    return {
+        callback: callback,
+        successCallback: successCallback,
+    };
+}
+
 function fieldEditHandler(mathField) {
     /**
      * potentially for the future, instead of debouncing:
@@ -135,26 +160,25 @@ function fieldEditHandler(mathField) {
      * and if it kinda seems ok (well-formed latex 
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
-    tracker.setCallback(() => console.log(tracker.message));
-    tracker.clear();
 
-    const exprs = [];
     for (const id of Object.keys(fields)) {
-        exprs.push(cleanLatex(fields[id].field.latex()));
-    }
-    
-    const assignments = [];
-    for (const expr of exprs) {
-        if (expr.includes("=")) {
-            assignments.push(expr)
-        }
+        fields[id].expr = cleanLatex(fields[id].field.latex());
     }
 
     const lexer = new Lexer(null, true);
     lexer.setScope(scope);
 
     const newIdents = [];
-    for (const assignment of assignments) {
+    for (const id of Object.keys(fields)) {
+        if (!fields[id].expr.includes("=")) continue;
+        
+        const assignment = fields[id].expr;
+        
+        const callbacks = getCallbacks(id);
+        tracker.setCallback(callbacks["callback"]);
+        tracker.setSuccessCallback(callbacks["successCallback"]);
+        tracker.clear();
+
         lexer.setText(assignment);
         lexer.tokenize();
 
@@ -209,23 +233,40 @@ function fieldEditHandler(mathField) {
         }
     }
 
-    const asts = [];
     if (!tracker.hasError) {
         lexer.setScope(scope); // the scope may have changed, so it doesn't hurt to do this explicitly
         lexer.setAllowUnboundIdentifiers(false);
-        for (const expr of exprs) {
+        for (const id of Object.keys(fields)) {
+            const callbacks = getCallbacks(id);
+            tracker.setCallback(callbacks["callback"]);
+            tracker.setSuccessCallback(callbacks["successCallback"]);
+
+            const expr = fields[id].expr;
             lexer.setText(expr);
             lexer.tokenize();
             const tokens = lexer.getTokens();
 
+            if (tracker.hasError) {
+                fields[id].ast = null;
+                continue;
+            }
+
             const parser = new ExpressionParser(tokens);
             const result = parser.parseExpression();
-            asts.push(result);
+
+            if (tracker.hasError) {
+                fields[id].ast = null;
+                continue;
+            }
+
+            fields[id].ast = result;
+            tracker.clear();
         }
     }
 
-    tracker.clear();
-    for (const ast of asts) {
+    for (const id of Object.keys(fields)) {
+        const ast = fields[id].ast;
+        if (ast === null) continue;
         evaluate(ast);
     }
 

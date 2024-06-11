@@ -3,12 +3,13 @@
 
 class ErrorTracker {
 
-    constructor(errorDivID, successMsg, callback=null) {
+    constructor(errorDivID, successMsg, callback=null, successCallback=null) {
         this.hasError = false;
         this.message = null;
         this.successMsg = successMsg;
         this.target = errorDivID;
         this.callback = callback;
+        this.successCallback = successCallback;
     }
 
     setTarget(errorDivID) {
@@ -19,19 +20,36 @@ class ErrorTracker {
         this.callback = callback;
     }
 
+    setSuccessCallback(successCallback) {
+        this.successCallback = successCallback;
+    }
+
+    defaultCallback(target) {
+        if (target) {
+            target.innerText = this.message;
+            target.style.color = "red";
+            target.style.display = "block";
+        }
+    }
+
+    defaultSuccessCallback(target) {
+        if (target) {
+            target.innerText = this.message;
+            target.style.color = "green";
+            target.style.display = "block";
+        }
+    }
+
     error(message) {
         this.hasError = true;
         this.message = message;
 
         const target = document.querySelector(`#${this.target}`);
-        if (target) {
-            target.innerHTML = this.message;
-            target.style.color = "red";
-            target.style.display = "block";
-        }
 
-        if (this.callback !== null) {
-            this.callback();
+        if (this.callback === null) {
+            this.defaultCallback(target);
+        } else {
+            this.callback(this.message, target);
         }
     }
 
@@ -40,10 +58,11 @@ class ErrorTracker {
         this.message = this.successMsg;
 
         const target = document.querySelector(`#${this.target}`);
-        if (target) {
-            target.innerHTML = this.message;
-            target.style.color = "green";
-            target.style.display = "block";
+        
+        if (this.successCallback === null) {
+            this.defaultCallback(target);
+        } else {
+            this.successCallback(this.message, target);
         }
     }
 
