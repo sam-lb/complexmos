@@ -156,6 +156,7 @@ class Lexer {
          * n( -> n * (
          * )n -> ) * n
          * )x -> ) * x
+         * )( -> ) * (
          * x( -> x(         (assuming scope[x].isFunction === false)
          * case not handled here:
          * xy -> x * y. this case is handled in getTokenName()
@@ -175,7 +176,8 @@ class Lexer {
                 token.mtype === TokenType.NUMBER && nextToken.mtype === TokenType.NAME ||           // nx
                 token.mtype === TokenType.NUMBER && nextToken.mtype === TokenType.LEFT_PAREN ||     // n(
                 token.mtype === TokenType.RIGHT_PAREN && nextToken.mtype === TokenType.NUMBER ||    // )n
-                token.mtype === TokenType.RIGHT_PAREN && nextToken.mtype === TokenType.NAME         // )x
+                token.mtype === TokenType.RIGHT_PAREN && nextToken.mtype === TokenType.NAME ||      // )x
+                token.mtype === TokenType.RIGHT_PAREN && nextToken.mtype === TokenType.LEFT_PAREN   // )(
             ) {
                 needsMultiplication = true;
             } else if (token.mtype === TokenType.NAME && nextToken.mtype === TokenType.LEFT_PAREN) {

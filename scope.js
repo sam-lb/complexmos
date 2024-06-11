@@ -4,6 +4,7 @@ const scope = {
 
         "norm": { isFunction: true, },
         "normSq": { isFunction: true, },
+        "arg": { isFunction: true, },
         "inv": { isFunction: true, },
         "exp": { isFunction: true, },
         "ln": { isFunction: true, },
@@ -38,6 +39,7 @@ const valueScope = {
     "z": complex(1, 0),
     "norm": (z) => complex(z.norm(), 0),
     "normSq": (z) => complex(z.normSq(), 0),
+    "arg": (z) => complex(z.arg(), 0),
     "inv": Complex.inv,
     "exp": Complex.exp,
     "ln": Complex.ln,

@@ -203,10 +203,6 @@ function fieldEditHandler(mathField) {
                         } else if (arg instanceof NameExpression) {
                             // this is where type inference should go, if I decide to implement it.
                             // for now, we assume unspecified arguments are complex
-                            // scope.userGlobal[ident].args.push({
-                            //     name: arg.mName,
-                            //     type: "complex",
-                            // });
                             scope.userGlobal[ident].args[arg.mName] = "complex";
                         } else {
                             tracker.error("Invalid arguments");
@@ -544,6 +540,7 @@ class Plot {
 
             pop();
         } else {
+            return;
             const xAxisStart = this.spaceToScreen([-2, 0, 0]);
             const xAxisStop = this.spaceToScreen([2, 0, 0]);
             const yAxisStart = this.spaceToScreen([0, -2, 0]);
