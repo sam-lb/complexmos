@@ -282,7 +282,7 @@ const firstField = addField();
 fields[firstField].field.focus();
 
 MQ.config({
-    autoCommands: "pi sqrt tau alpha beta",
+    autoCommands: "pi sqrt tau alpha beta Gamma",
     supSubsRequireOperand: true,
     charsThatBreakOutOfSupSub: "",
     autoOperatorNames: opsString,

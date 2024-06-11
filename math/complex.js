@@ -1,5 +1,17 @@
 const EPSILON = 0.000001;
 
+const pValues = [
+	0.99999999999980993,
+	676.5203681218851,
+	-1259.1392167224028,
+	771.32342877765313,
+	-176.61502916214059,
+	12.507343278686905,
+	-0.13857109526572012,
+	9.9843695780195716e-6,
+	1.5056327351493116e-7
+];
+
 
 class Complex {
 
@@ -323,6 +335,21 @@ class Complex {
 			z.re === Infinity || z.re === -Infinity 
 			|| z.im === Infinity || z.im === -Infinity
 		);
+	}
+
+	static gamma(z) {
+		if (z.re < 0.5) {
+			// gamma(1-z)gamma(z) = pi / sin(pi*z)
+			return Complex.div( complex(Math.PI, 0.0), Complex.mult(z.scale(Math.PI).sin(), Complex.gamma(complex(1 - z.re, -z.im))) );		
+		} else {
+			z = Complex.sub(z, complex(1, 0)); // account for stupid shift by 1
+			let x = complex(pValues[0], 0);
+			for (let i=1; i<pValues.length; i++) {
+				x = Complex.add(x, Complex.div( complex(pValues[i], 0.0), Complex.add(z, complex(i, 0)) ));
+			}
+			const t = Complex.add(z, complex(7.5, 0)); // g=7, g+0.5
+			return Complex.pow(t, z.add(complex(0.5, 0))).mult(t.scale(-1).exp()).mult(x).scale(Math.sqrt(2 * Math.PI));
+		}
 	}
 
 	/* --------------- In-place operations --------------------- */

@@ -17,6 +17,7 @@ const scope = {
         "tanh": { isFunction: true, },
         "re": { isFunction: true, },
         "im": { isFunction: true, },
+        "Gamma": { isFunction: true, },
 
         "i": { isFunction: false, },
         "pi": { isFunction: false, },
@@ -52,6 +53,7 @@ const valueScope = {
     "tanh": Complex.tanh,
     "re": (z) => complex(z.re, 0),
     "im": (z) => complex(z.im, 0),
+    "Gamma": Complex.gamma,
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),
