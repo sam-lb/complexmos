@@ -893,7 +893,7 @@ class NormPlot extends Plottable {
 
 class DomainColoring extends Plottable {
 
-    constructor(fn, bounds=null, density=100) {
+    constructor(fn, bounds=null, density=1000) {
         super();
         this.fn = fn;
         if (bounds === null) {
@@ -936,6 +936,18 @@ class DomainColoring extends Plottable {
             return 100 - 85 * Math.max(0, Math.min(1, 0.5 * (Math.sign(norm - threshold) + 1) * parabolaStep(norm - threshold)));
         };
 
+        const filterNaN = (z) => {
+            return complex(
+                (z.re < z.re + 1) ? z.re : 0,
+                (z.im < z.im + 1) ? z.im : 0,
+            );
+        };
+
+        const getColor = (z) => {
+            const zNormal = filterNaN(complex(z.re - Math.floor(z.re), 1 - (z.im - Math.floor(z.im))).eMult(complex(cImage.width-1, cImage.height-1)));
+            return cImage.get(zNormal.re, zNormal.im);
+        };
+
         push();
         colorMode(HSB);
         for (let i=0; i<this.polygons.length; i++) {
@@ -952,6 +964,7 @@ class DomainColoring extends Plottable {
             const output = this.fn(stereographic(centroid));
             const norm = output.norm();
             this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
+            // this.polygons[i].fillColor = getColor(output);
         }
         pop();
     }
@@ -970,6 +983,26 @@ class DomainColoring extends Plottable {
                 Math.floor((2 / Math.PI * Math.atan(Math.sqrt(norm))) / 0.2) * 0.2
             );
         };
+        const filterNaN = (z) => {
+            return complex(
+                (z.re < z.re + 1) ? z.re : 0,
+                (z.im < z.im + 1) ? z.im : 0,
+            );
+        };
+
+        const a = 2;
+        const distFromAx = (z) => {
+            z = rvec(z.re, z.im);
+            return Math.tanh(z.proj(rvec(1, a)).mag()) * 2 * Math.PI;
+        };
+        const angleize = (z) => {
+            return Math.tanh(z.norm()) * 2 * Math.PI;
+        }
+
+        const getColor = (z) => {
+            const zNormal = filterNaN(complex(z.re - Math.floor(z.re), 1 - (z.im - Math.floor(z.im))).eMult(complex(cImage.width-1, cImage.height-1)));
+            return cImage.get(zNormal.re, zNormal.im);
+        };
         this.polygons = [];
         push();
         colorMode(HSB);
@@ -983,7 +1016,12 @@ class DomainColoring extends Plottable {
                 ];
                 const centroid = complex(x + step.re / 2, y + step.im / 2);
                 const output = this.fn(centroid);
-                const color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
+                // const color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
+                // const color1 = getColor(output);
+
+                // const aDist = distFromAx(output);
+                // const color1 = color(angleTransform(aDist), 100, 100);
+                const color1 = color(angleTransform(angleize(output)), 100, 100);
 
                 this.polygons.push(new Polygon(square, color1));
 
@@ -1028,6 +1066,10 @@ class Model extends Plottable {
 }
 
 
+let cImage;
+function preload() {
+    cImage = loadImage("http://localhost:8000/data/cat.jpg");
+}
 
 
 function setup() {

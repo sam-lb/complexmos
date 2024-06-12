@@ -72,6 +72,11 @@ class Complex {
 		return new Complex(this.re * z.re - this.im * z.im, this.re * z.im + this.im * z.re);
 	}
 
+	eMult(z) {
+		/* elementwise multiplication of this complex number and z */
+		return new Complex(this.re * z.re, this.im * z.im);
+	}
+
 	inv() {
 		/* Computes the reciprocal (inverse) */
 		return this.conj().scale(1 / this.normSq());
@@ -228,6 +233,10 @@ class Complex {
 		/*
 		Calculate the zth power of the complex number
 		*/
+		if (this.equalsEps(complex(0, 0))) {
+			return (z.equalsEps(complex(1, 0))) ? complex(1, 0) : complex(0, 0);
+		}
+
 		const subAng = Math.atan2(this.im, this.re);
 		const normSq = this.normSq();		
 		const ang = 0.5 * z.im * Math.log(normSq) + z.re * subAng;
@@ -354,6 +363,14 @@ class Complex {
 
 	static beta(z1, z2) {
 		return Complex.div(Complex.mult(Complex.gamma(z1), Complex.gamma(z2)), Complex.gamma(z1.add(z2)));
+	}
+
+	static max(z1, z2) {
+		return (z1.normSq() < z2.normSq()) ? z2 : z1;
+	}
+
+	static min(z1, z2) {
+		return (z1.normSq() > z2.normSq()) ? z2 : z1;
 	}
 
 	/* --------------- In-place operations --------------------- */
