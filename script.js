@@ -893,7 +893,7 @@ class NormPlot extends Plottable {
 
 class DomainColoring extends Plottable {
 
-    constructor(fn, bounds=null, density=1000) {
+    constructor(fn, bounds=null, density=100) {
         super();
         this.fn = fn;
         if (bounds === null) {
@@ -1016,12 +1016,12 @@ class DomainColoring extends Plottable {
                 ];
                 const centroid = complex(x + step.re / 2, y + step.im / 2);
                 const output = this.fn(centroid);
-                // const color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
+                const color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
                 // const color1 = getColor(output);
 
                 // const aDist = distFromAx(output);
                 // const color1 = color(angleTransform(aDist), 100, 100);
-                const color1 = color(angleTransform(angleize(output)), 100, 100);
+                // const color1 = color(angleTransform(angleize(output)), 100, 100);
 
                 this.polygons.push(new Polygon(square, color1));
 
@@ -1066,6 +1066,13 @@ class Model extends Plottable {
 }
 
 
+function wheelHandler(event) {
+    event.preventDefault();
+    const factor = 1 + Math.tanh(event.deltaY / 100) / 4;
+    plot.zoom(factor);
+}
+
+
 let cImage;
 function preload() {
     cImage = loadImage("http://localhost:8000/data/cat.jpg");
@@ -1076,6 +1083,7 @@ function setup() {
     const canvasDiv = document.querySelector("#canvas-div");
 	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	canvas.parent("canvas-div");
+    document.querySelector("#canvas-div").onwheel = wheelHandler;
     plot = new Plot(width, height, null, Plot.modes.SPHERE, false);
     tabSwitch(plot.mode-1);
     // const circ = new Parametric(
