@@ -345,9 +345,11 @@ class Plot {
         this.camera = {
             alpha: 1,
             beta: 0,
-            pitch: .786,
+            // pitch: .786,
+            pitch: -0.870343,
             roll: 0,
-            yaw: .672,
+            // yaw: .672,
+            yaw: 1.37882,
         };
         this.calculateRotationMatrix();
     }
@@ -467,11 +469,17 @@ class Plot {
     }
 
     zoom(factor) {
+        const newHalfUnits = this.units.scale(factor / 2);
+        const center = complex(
+            (this.bounds.xMin + this.bounds.xMax) / 2,
+            (this.bounds.yMin + this.bounds.yMax) / 2,
+        );
+
         this.configureWindow(null, null, {
-            xMin: this.bounds.xMin * factor,
-            xMax: this.bounds.xMax * factor,
-            yMin: this.bounds.yMin * factor,
-            yMax: this.bounds.yMax * factor,
+            xMin: center.re - newHalfUnits.re,
+            xMax: center.re + newHalfUnits.re,
+            yMin: center.im - newHalfUnits.im,
+            yMax: center.im + newHalfUnits.im,
         });
     }
 
@@ -963,8 +971,12 @@ class DomainColoring extends Plottable {
 
             const output = this.fn(stereographic(centroid));
             const norm = output.norm();
-            this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
-            // this.polygons[i].fillColor = getColor(output);
+            if (Complex.infinite(output) || Complex.nan(output)) {
+                this.polygons[i].fillColor = color(0, 0, 100);
+            } else {
+                this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
+                // this.polygons[i].fillColor = getColor(output);
+            }
         }
         pop();
     }
@@ -1016,12 +1028,17 @@ class DomainColoring extends Plottable {
                 ];
                 const centroid = complex(x + step.re / 2, y + step.im / 2);
                 const output = this.fn(centroid);
-                const color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
-                // const color1 = getColor(output);
+                let color1;
+                if (Complex.infinite(output) || Complex.nan(output)) {
+                    color1 = color(0, 0, 100);                    
+                } else {
+                    color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
+                    // color1 = getColor(output);
 
-                // const aDist = distFromAx(output);
-                // const color1 = color(angleTransform(aDist), 100, 100);
-                // const color1 = color(angleTransform(angleize(output)), 100, 100);
+                    // const aDist = distFromAx(output);
+                    // color1 = color(angleTransform(aDist), 100, 100);
+                    // color1 = color(angleTransform(angleize(output)), 100, 100);
+                }
 
                 this.polygons.push(new Polygon(square, color1));
 

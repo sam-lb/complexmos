@@ -338,12 +338,21 @@ class Complex {
 
 	static infinite(z) {
 		/**
-		 * return whether one or both of the components of z is infinite
+		 * return whether one or both of the components of z is infinite, or if the norm is infinite
 		 */
+		const norm = z.norm();
 		return (
 			z.re === Infinity || z.re === -Infinity 
 			|| z.im === Infinity || z.im === -Infinity
+			|| norm === Infinity
 		);
+	}
+
+	static nan(z) {
+		/**
+		 * return whether one or both components of z is NaN 
+		*/
+		return isNaN(z.re) || isNaN(z.im);
 	}
 
 	static gamma(z) {
