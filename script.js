@@ -420,6 +420,9 @@ class Plot {
 
         if (fitToSquare) this.fitBoundsToSquare();
 
+        valueScope["realBounds"] = complex(this.bounds.xMin, this.bounds.xMax);
+        valueScope["imagBounds"] = complex(this.bounds.yMin, this.bounds.yMax);
+
         this.needsUpdate = true;
         this.boundsChangedSinceLastDraw = true;
 

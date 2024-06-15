@@ -26,6 +26,8 @@ const scope = {
         "pi": { isFunction: false, },
         "tau": { isFunction: false, },
         "e": { isFunction: false, },
+        "realBounds": { isFunction: false, },
+        "imagBounds": { isFunction: false, },
 
         /* datatypes (for type annotation) */
         "complex": { isFunction: false, isType: true, },
@@ -65,4 +67,6 @@ const valueScope = {
     "pi": complex(Math.PI, 0),
     "tau": complex(2 * Math.PI, 0),
     "e": complex(Math.E, 0),
+    "realBounds": complex(0, 0),
+    "imagBounds": complex(0, 0),
 };
