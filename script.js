@@ -486,6 +486,25 @@ class Plot {
         });
     }
 
+    state() {
+        const exprs = [];
+        for (const id of Object.keys(fields)) {
+            if (fields[id].expr) exprs.push(fields[id].expr);
+        }
+        return {
+            camera: this.camera,
+            bounds: this.bounds,
+            expressions: exprs,
+            mode: this.mode,
+        };
+    }
+
+    loadState(state) {
+        this.setCamera(state.camera);
+        this.configureWindow(null, null, state.bounds);
+        this.setMode(state.mode);
+    }
+
     unitsToPixels(z) {
         return complex(
             (z.re - this.offset.re) * this.pixelsPerUnit.re + this.halfDimensions.re,
