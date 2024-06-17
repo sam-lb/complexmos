@@ -10,10 +10,15 @@ body {
     background-color:darkslategray;
     box-shadow: inset 0px 0px 2px 0px black;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     color: lightgray;
     font-size: x-large;
+    display: flex;
+}
+
+.header-panel {
+    margin: 0px 20px 0px 20px;
 }
 
 #app-div {
