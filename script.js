@@ -161,6 +161,10 @@ function fieldEditHandler(mathField) {
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
 
+    scope.userGlobal = {};
+    valueScope = {};
+    Object.assign(valueScope, defaultValueScope);
+
     for (const id of Object.keys(fields)) {
         fields[id].expr = cleanLatex(fields[id].field.latex());
     }
@@ -921,7 +925,7 @@ class NormPlot extends Plottable {
 
 class DomainColoring extends Plottable {
 
-    constructor(fn, bounds=null, density=1000) {
+    constructor(fn, bounds=null, density=100) {
         super();
         this.fn = fn;
         if (bounds === null) {

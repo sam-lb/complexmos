@@ -42,7 +42,7 @@ const scope = {
 }
 
 
-const valueScope = {
+const defaultValueScope = {
     "z": complex(1, 0),
     "norm": (z) => complex(z.norm(), 0),
     "normSq": (z) => complex(z.normSq(), 0),
@@ -72,3 +72,5 @@ const valueScope = {
     "realBounds": complex(0, 0),
     "imagBounds": complex(0, 0),
 };
+
+let valueScope = {};
