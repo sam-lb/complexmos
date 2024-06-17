@@ -345,11 +345,9 @@ class Plot {
         this.camera = {
             alpha: 1,
             beta: 0,
-            // pitch: .786,
-            pitch: -0.870343,
+            pitch: .786,
             roll: 0,
-            // yaw: .672,
-            yaw: 1.37882,
+            yaw: .672,
         };
         this.calculateRotationMatrix();
     }
@@ -923,7 +921,7 @@ class NormPlot extends Plottable {
 
 class DomainColoring extends Plottable {
 
-    constructor(fn, bounds=null, density=100) {
+    constructor(fn, bounds=null, density=1000) {
         super();
         this.fn = fn;
         if (bounds === null) {
@@ -996,8 +994,8 @@ class DomainColoring extends Plottable {
             if (Complex.infinite(output) || Complex.nan(output)) {
                 this.polygons[i].fillColor = color(0, 0, 100);
             } else {
-                this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
-                // this.polygons[i].fillColor = getColor(output);
+                // this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
+                this.polygons[i].fillColor = getColor(output);
             }
         }
         pop();
@@ -1054,8 +1052,8 @@ class DomainColoring extends Plottable {
                 if (Complex.infinite(output) || Complex.nan(output)) {
                     color1 = color(0, 0, 100);                    
                 } else {
-                    color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
-                    // color1 = getColor(output);
+                    // color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
+                    color1 = getColor(output);
 
                     // const aDist = distFromAx(output);
                     // color1 = color(angleTransform(aDist), 100, 100);
@@ -1114,7 +1112,7 @@ function wheelHandler(event) {
 
 let cImage;
 function preload() {
-    cImage = loadImage("http://localhost:8000/data/cat.jpg");
+    cImage = loadImage("http://localhost:8000/data/grid_3.png");
 }
 
 
