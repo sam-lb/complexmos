@@ -89,22 +89,24 @@ function addField(parent=null) {
     return newField.id;
 }
 
-function deleteField(id) {
-    if (Object.keys(fields).length === 1) return; // at least one field has to remain
+function deleteField(id, preserve=true) {
+    if (preserve && Object.keys(fields).length === 1) return; // at least one field has to remain
     const entry = fields[id];
     if (entry.next !== null) {
         if (entry.last !== null) {
-        fields[entry.next.id]["last"] = entry.last;
-        fields[entry.last.id]["next"] = entry.next;
+            fields[entry.next.id]["last"] = entry.last;
+            fields[entry.last.id]["next"] = entry.next;
         } else {
         fields[entry.next.id]["last"] = null;
         }
     } else {
         if (entry.last !== null) {
-        fields[entry.last.id]["next"] = null;
-        } // they'll never both be null, that would mean there are no fields left
+            fields[entry.last.id]["next"] = null;
+        } else {
+            // there are no fields left
+        }
     }
-    advance(id, (entry.last === null) ? 1 : -1);
+    if (preserve) advance(id, (entry.last === null) ? 1 : -1);
 
     entry.container.parentNode.removeChild(entry.container);
     delete fields[id];
@@ -166,7 +168,9 @@ function fieldEditHandler(mathField) {
     Object.assign(valueScope, defaultValueScope);
 
     for (const id of Object.keys(fields)) {
-        fields[id].expr = cleanLatex(fields[id].field.latex());
+        const latex = fields[id].field.latex();
+        fields[id].latex = latex;
+        fields[id].expr = cleanLatex(latex);
     }
 
     const lexer = new Lexer(null, true);
@@ -489,22 +493,34 @@ class Plot {
     }
 
     state() {
-        const exprs = [];
+        const latex = [];
         for (const id of Object.keys(fields)) {
-            if (fields[id].expr) exprs.push(fields[id].expr);
+            if (fields[id].latex) latex.push(fields[id].latex);
         }
-        return {
+        return JSON.stringify({
             camera: this.camera,
             bounds: this.bounds,
-            expressions: exprs,
+            expressions: latex,
             mode: this.mode,
-        };
+        });
     }
 
     loadState(state) {
+        state = JSON.parse(state);
+
         this.setCamera(state.camera);
         this.configureWindow(null, null, state.bounds);
         this.setMode(state.mode);
+
+        for (const id of Object.keys(fields)) {
+            deleteField(id, false);
+        }
+
+        let lastField = null;
+        for (const expr of state.expressions) {
+            const newField = addField(lastField);
+            fields[newField].field.latex(expr);
+        }
     }
 
     unitsToPixels(z) {
