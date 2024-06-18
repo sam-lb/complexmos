@@ -1,4 +1,6 @@
 {
+  "name": "complexmos",
+  "version": "0.1.0",
   "dependencies": {
     "regl": "^2.1.0"
   }
