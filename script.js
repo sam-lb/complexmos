@@ -1014,8 +1014,8 @@ class DomainColoring extends Plottable {
             if (Complex.infinite(output) || Complex.nan(output)) {
                 this.polygons[i].fillColor = color(0, 0, 100);
             } else {
-                // this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
-                this.polygons[i].fillColor = getColor(output);
+                this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
+                // this.polygons[i].fillColor = getColor(output);
             }
         }
         pop();
@@ -1072,8 +1072,8 @@ class DomainColoring extends Plottable {
                 if (Complex.infinite(output) || Complex.nan(output)) {
                     color1 = color(0, 0, 100);                    
                 } else {
-                    // color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
-                    color1 = getColor(output);
+                    color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
+                    // color1 = getColor(output);
 
                     // const aDist = distFromAx(output);
                     // color1 = color(angleTransform(aDist), 100, 100);
