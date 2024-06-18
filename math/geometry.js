@@ -1,3 +1,7 @@
+
+const { Complex, complex } = require("./complex.js");
+
+
 class Euclid {
 
 	/*
@@ -215,3 +219,8 @@ class Poincare {
 	}
 
 }
+
+
+module.exports = {
+	Euclid, Poincare,
+};

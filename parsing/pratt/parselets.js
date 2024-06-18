@@ -1,5 +1,15 @@
 
 
+const { Precedence } = require("./precedence.js");
+const { TokenType } = require("./tokentype.js");
+const {
+    Expression, AssignExpression,
+    CallExpression, NameExpression,
+    NumberExpression, OperatorExpression,
+    PrefixExpression
+} = require("./expressions.js");
+const { tracker } = require("../errors.js");
+
 
 class InfixParselet {
 
@@ -151,3 +161,13 @@ class PrefixOperatorParselet extends PrefixParselet {
     }
 
 }
+
+
+
+module.exports = {
+    InfixParselet, PrefixParselet,
+    AssignParselet, BinaryOperatorParselet,
+    CallParselet, GroupParselet,
+    NameParselet, NumberParselet,
+    PrefixOperatorParselet,
+};

@@ -1,4 +1,9 @@
 
+const { TokenType } = require("./tokentype.js");
+const { Token } = require("./token.js");
+const { Trie } = require("../trie.js");
+const { tracker } = require("../errors.js");
+
 
 const num = "0123456789";
 const alnum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -231,3 +236,8 @@ class Lexer {
     }
 
 }
+
+
+module.exports = {
+    Lexer,
+};

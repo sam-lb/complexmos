@@ -12,3 +12,7 @@ class Precedence {
     static CALL = 6;
 
 }
+
+module.exports = {
+    Precedence,
+};

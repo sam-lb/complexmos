@@ -529,3 +529,10 @@ function vector(...values) {
 		return new Vector(values[0]);
 	}
 }
+
+
+module.exports = {
+	Complex, complex,
+	integrateOverComplexVariable, integrateOverParameter,
+	Vector, vector,
+};

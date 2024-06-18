@@ -1,4 +1,6 @@
 
+const { TokenType } = require("./tokentype.js");
+
 
 
 class Expression {
@@ -94,3 +96,14 @@ class PrefixExpression extends Expression {
     }
 
 }
+
+
+module.exports = {
+    Expression,
+    AssignExpression,
+    CallExpression,
+    NameExpression,
+    NumberExpression,
+    OperatorExpression,
+    PrefixExpression,
+};

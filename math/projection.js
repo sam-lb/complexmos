@@ -1,5 +1,9 @@
 
 
+const { matrix } = require("./matrix.js");
+const { complex } = require("./complex.js");
+
+
 function stereographic(z) {
     /**
      * computes the stereographic projection of the 3d point z onto the xy plane
@@ -34,3 +38,9 @@ function perspectiveProject(Z, orbit, fov) {
         x / denom, z / denom,
     );
 }
+
+
+module.exports = {
+    stereographic, inverseStereoProject,
+    perspectiveProject,
+};

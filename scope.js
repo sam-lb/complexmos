@@ -1,3 +1,7 @@
+
+const { complex, Complex } = require("./math/complex.js");
+
+
 const scope = {
     builtin: {
         "z": { isFunction: false, },
@@ -73,4 +77,8 @@ const defaultValueScope = {
     "imagBounds": complex(0, 0),
 };
 
-let valueScope = {};
+const valueScope = {};
+
+module.exports = {
+    scope, defaultValueScope, valueScope,
+};

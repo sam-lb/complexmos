@@ -1,4 +1,16 @@
 
+const { Parser } = require("./parser.js");
+const {
+    InfixParselet, PrefixParselet,
+    AssignParselet, BinaryOperatorParselet,
+    CallParselet, GroupParselet,
+    NameParselet, NumberParselet,
+    PrefixOperatorParselet,
+} = require("./parselets.js");
+const { TokenType } = require("./tokentype.js");
+const { Precedence } = require("./precedence.js");
+
+
 
 class ExpressionParser extends Parser {
 
@@ -37,3 +49,8 @@ class ExpressionParser extends Parser {
     }
 
 }
+
+
+module.exports = {
+    ExpressionParser,
+};

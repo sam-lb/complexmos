@@ -29,3 +29,7 @@ class TokenType {
     }
 
 }
+
+module.exports = {
+    TokenType,
+};

@@ -1,6 +1,12 @@
 
 
 
+const { tracker } = require("../errors.js");
+const { TokenType } = require("./tokentype.js");
+const { Precedence } = require("./precedence.js");
+const { Token } = require("./token.js");
+
+
 class Parser {
 
     constructor(tokens) {
@@ -80,3 +86,7 @@ class Parser {
 
 }
 
+
+module.exports = {
+    Parser,
+};

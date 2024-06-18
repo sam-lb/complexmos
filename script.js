@@ -1,5 +1,38 @@
+/**
+ * imports
+ */
+
+
+const { cleanLatex } = require("./parsing/latex_convert.js");
+const { tracker } = require("./parsing/errors.js");
+const { TokenType } = require("./parsing/pratt/tokentype.js");
+const {
+    Expression, AssignExpression,
+    CallExpression, NameExpression,
+    NumberExpression, OperatorExpression,
+    PrefixExpression
+} = require("./parsing/pratt/expressions.js");
+const { Lexer } = require("./parsing/pratt/lexer.js");
+const { ExpressionParser } = require("./parsing/pratt/expression_parser.js");
+const { Complex, complex } = require("./math/complex.js");
+const { Matrix, matrix } = require("./math/matrix.js");
+const { Euclid, Poincare } = require("./math/geometry.js");
+const { parameterizePoints, fourierCoefficients, fourierSeries } = require("./math/fourier.js");
+const { sscale, ssub, icosphere } = require("./math/icosphere.js"); // fix this garbage
+const { stereographic, inverseStereoProject, perspectiveProject } = require("./math/projection.js");
+const { rvec } = require("./math/rvector.js");
+const { scope, defaultValueScope, valueScope } = require("./scope.js");
+const { evaluate } = require("./evaluator.js");
+
+/** -------------------------------------------------------------- */
+
+
+
+
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
-let plot, lastMouseX, lastMouseY;
+window.plot = undefined;
+window.lastMouseX = undefined;
+window.lastMouseY = undefined;
 
 
 /** MathQuill handling */
@@ -164,7 +197,11 @@ function fieldEditHandler(mathField) {
      */
 
     scope.userGlobal = {};
-    valueScope = {};
+    for (const key in valueScope) {
+        if (valueScope.hasOwnProperty(key)) {
+            delete valueScope[key];
+        }
+    }
     Object.assign(valueScope, defaultValueScope);
 
     for (const id of Object.keys(fields)) {
@@ -1135,7 +1172,6 @@ function preload() {
     cImage = loadImage("http://localhost:8000/data/grid_3.png");
 }
 
-
 function setup() {
     const canvasDiv = document.querySelector("#canvas-div");
 	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
@@ -1282,3 +1318,14 @@ function tabSwitch(tab) {
 function draw() {
     plot.update();
 }
+
+
+// there might be a better way to do this, but it's actually fine
+window.preload = preload;
+window.setup = setup;
+window.mouseDragged = mouseDragged;
+window.mousePressed = mousePressed;
+window.mouseReleased = mouseReleased;
+window.windowResized = windowResized;
+window.tabSwitch = tabSwitch;
+window.draw = draw;

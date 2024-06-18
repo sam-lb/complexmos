@@ -248,3 +248,7 @@ class Trie {
     }
 
 }
+
+module.exports = {
+    Node, LinkedList, Trie,
+};

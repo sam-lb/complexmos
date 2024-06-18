@@ -1,4 +1,8 @@
 
+const { Euclid } = require("./geometry.js");
+const { complex, Complex, integrateOverParameter } = require("./complex.js");
+
+
 
 
 function parameterizePoints(points) {
@@ -52,3 +56,10 @@ function fourierSeries(f, N) {
         return result;
     };
 }
+
+
+module.exports = {
+    parameterizePoints,
+    fourierCoefficients,
+    fourierSeries,
+};

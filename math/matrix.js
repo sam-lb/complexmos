@@ -761,3 +761,8 @@ function matrix(arr) {
     // utility function for easy matrix creation
 	return new Matrix(arr);
 }
+
+
+module.exports = {
+	Matrix, matrix,
+};

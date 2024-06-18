@@ -58,3 +58,9 @@ test strings
 4\cos\left(a+bi\right)\cdot\sin\left(x\right)+\frac{1}{2iz}
 \frac{1}{1+\frac{1}{x}+\frac{1}{y}}
 */
+
+
+
+module.exports = {
+    cleanLatex,
+};

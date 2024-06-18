@@ -107,3 +107,9 @@ function icosphere(subdivisions=0) {
     return triangles;
 
 }
+
+
+module.exports = {
+    snormal, ssub, sscale, // remove these later (Fix this hacky garbage)
+    icosphere,
+};

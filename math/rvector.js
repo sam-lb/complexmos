@@ -58,3 +58,8 @@ class rVector {
 function rvec(x, y) {
     return new rVector(x, y);
 }
+
+
+module.exports = {
+    rVector, rvec,
+};

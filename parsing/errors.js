@@ -70,3 +70,7 @@ class ErrorTracker {
 
 
 const tracker = new ErrorTracker(null, "Parsing successful!");
+
+module.exports = {
+    tracker,
+};
