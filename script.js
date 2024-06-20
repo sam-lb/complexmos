@@ -1176,9 +1176,16 @@ function setup() {
     const canvasDiv = document.querySelector("#canvas-div");
 	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	canvas.parent("canvas-div");
+    // const regl = require("regl")({
+    //     container: "#canvas-div",
+    //     onDone: (err, regl) => {
+    //         console.log("loaded", err, regl);
+    //     }
+    // });
     document.querySelector("#canvas-div").onwheel = wheelHandler;
     plot = new Plot(width, height, null, Plot.modes.SPHERE, false);
     tabSwitch(plot.mode-1);
+
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
     //     {start: 0, stop: 2 * Math.PI},
