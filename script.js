@@ -539,7 +539,7 @@ class Plot {
             bounds: this.bounds,
             expressions: latex,
             mode: this.mode,
-        });
+        }, null, 4);
     }
 
     loadState(state) {
@@ -558,6 +558,20 @@ class Plot {
             const newField = addField(lastField);
             fields[newField].field.latex(expr);
         }
+    }
+
+    downloadState() {
+        const state = encodeURIComponent(this.state());
+        const tempEl = document.createElement("a");
+        tempEl.setAttribute("href", `data:text/json;charset=utf-8,${state}`);
+        tempEl.setAttribute("download", "plot.json");
+        document.body.appendChild(tempEl);
+        tempEl.click();
+        tempEl.remove();
+    }
+
+    uploadState() {
+
     }
 
     unitsToPixels(z) {
