@@ -1,0 +1,22 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.1853796601282298,
+        "roll": 0,
+        "yaw": 1.2917916666666671
+    },
+    "bounds": {
+        "xMin": -4.056813066882971,
+        "xMax": 3.553995313870037,
+        "yMin": -2.4408181152955324,
+        "yMax": 2.0701714353799465
+    },
+    "expressions": [
+        "a\\left(z\\right)=\\operatorname{re}\\left(z\\right)+\\operatorname{norm}\\left(\\operatorname{im}\\left(z\\right)\\right)i",
+        "c=0.555+0.15i",
+        "g\\left(z\\right)=\\sinh\\left(\\ln\\left(a\\left(\\left(z+c+1\\right)\\left(z+c-1\\right)\\right)\\right)\\right)",
+        "f\\left(z\\right)=g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

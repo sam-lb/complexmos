@@ -547,7 +547,7 @@ class Plot {
 
         this.setCamera(state.camera);
         this.configureWindow(null, null, state.bounds);
-        this.setMode(state.mode);
+        tabSwitch(state.mode-1);
 
         for (const id of Object.keys(fields)) {
             deleteField(id, false);
@@ -571,7 +571,26 @@ class Plot {
     }
 
     uploadState() {
+        const tempEl = document.createElement("input");
+        tempEl.setAttribute("type", "file");
+        tempEl.setAttribute("accept", ".json");
+        tempEl.setAttribute("id", "file-selector");
+        document.body.appendChild(tempEl);
+        tempEl.click();
 
+        tempEl.onchange = () => {
+            const selector = document.querySelector("#file-selector");
+            const files = selector.files;
+            if (files.length <= 0) return;
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                this.loadState(event.target.result);
+            }
+
+            reader.readAsText(files.item(0));
+            selector.parentNode.removeChild(selector);
+        }
     }
 
     unitsToPixels(z) {

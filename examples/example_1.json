@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -26.208289044949304,
+        "xMax": 30.390538462204546,
+        "yMin": -16.48592386784923,
+        "yMax": 17.060672852536726
+    },
+    "expressions": [
+        "a=12",
+        "f\\left(z\\right)=\\frac{z}{z+a}\\left(z-a\\right)"
+    ],
+    "mode": 1
+}
