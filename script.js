@@ -1241,44 +1241,18 @@ function setup() {
           position: [
             [0, -1], [-1, 0], [1, 1],
             [-1, 0], [1, 1], [-1, 1],
-            // [2, 2], [0, 0], [0, 0.5],
-        ]
+            ],
         },
       
         uniforms: {
-          //
-          // Dynamic properties can be functions.  Each function gets passed:
-          //
-          //  * context: which contains data about the current regl environment
-          //  * props: which are user specified arguments
-          //  * batchId: which is the index of the draw command in the batch
-          //
           angle: function (context, props, batchId) {
             return props.speed * context.tick + 0.01 * batchId
           },
-      
-          // As a shortcut/optimization we can also just read out a property
-          // from the props.  For example, this
-          //
+
           scale: regl.prop('scale'),
-          //
-          // is semantically equivalent to
-          //
-          //  scale: function (context, props) {
-          //    return props.scale
-          //  }
-          //
       
-          // Similarly there are shortcuts for accessing context variables
           width: regl.context('viewportWidth'),
           height: regl.context('viewportHeight'),
-          //
-          // which is the same as writing:
-          //
-          // width: function (context) {
-          //    return context.viewportWidth
-          // }
-          //
         },
       
         count: 6
