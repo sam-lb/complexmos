@@ -1205,66 +1205,66 @@ function preload() {
     cImage = loadImage("http://localhost:8000/data/grid_3.png");
 }
 
+async function loadShaders() {
+    const frag = (await fetch("http://localhost:8000/shaders/complexmos.frag"));
+    const vert = (await fetch("http://localhost:8000/shaders/complexmos.vert"));
+
+    fragShaderSource = await frag.text().then(text => text);
+    vertShaderSource = await vert.text().then(text => text);
+
+    return {
+        fragShaderSource,
+        vertShaderSource,
+    };
+}
+
 function setup() {
-    const canvasDiv = document.querySelector("#canvas-div");
+    // const canvasDiv = document.querySelector("#canvas-div");
 	// const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 	// canvas.parent("canvas-div");
-    const regl = require("regl")({
-        container: "#canvas-div",
-        onDone: (err, regl) => {
-            console.log("loaded", err, regl);
-        }
-    });
     // document.querySelector("#canvas-div").onwheel = wheelHandler;
     plot = new Plot(width, height, null, Plot.modes.PLANE, false);
     tabSwitch(plot.mode-1);
+    
+    loadShaders().then(shaders => {
+        const { fragShaderSource, vertShaderSource } = shaders;
 
-    const spinBox = regl({
-        frag: `
-        void main() {
-          gl_FragColor = vec4(gl_FragCoord.x/1000.0, gl_FragCoord.y/1000.0, 0.0, 1.0);
-        }`,
-      
-        vert: `
-        attribute vec2 position;
-        uniform float angle, scale, width, height;
-        void main() {
-          float aspect = width / height;
-          gl_Position = vec4(
-            scale * (cos(angle) * position.x - sin(angle) * position.y),
-            aspect * scale * (sin(angle) * position.x + cos(angle) * position.y),
-            0,
-            1.0);
-        }`,
-      
-        attributes: {
-          position: [
-            [0, -1], [-1, 0], [1, 1],
-            [-1, 0], [1, 1], [-1, 1],
-            ],
-        },
-      
-        uniforms: {
-          angle: function (context, props, batchId) {
-            return props.speed * context.tick + 0.01 * batchId
-          },
+        const regl = require("regl")({
+            container: "#canvas-div",
+            onDone: (err, regl) => {
+                console.log("regl loaded!");
+            }
+        });
 
-          scale: regl.prop('scale'),
-      
-          width: regl.context('viewportWidth'),
-          height: regl.context('viewportHeight'),
-        },
-      
-        count: 6
-      });
+        const spinBox = regl({
+            frag: fragShaderSource,
+            vert: vertShaderSource,
 
-regl.frame(() => {
-    spinBox({
-        scale: 0.5,
-        speed: 0.01
+            attributes: {
+                position: [
+                    [-1, -1], [1, 1], [-1, 1],
+                    [-1, -1], [1, 1], [1, -1],
+                ],
+            },
+
+            uniforms: {
+                angle: function (context, props, batchId) {
+                    return props.speed * context.tick + 0.01 * batchId
+                },
+
+                width: regl.context('viewportWidth'),
+                height: regl.context('viewportHeight'),
+            },
+
+            count: 6
+        });
+
+        regl.frame(() => {
+            spinBox({
+                speed: 0.01
+            }
+        )});
     });
-
-});
 
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
