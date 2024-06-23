@@ -1207,17 +1207,90 @@ function preload() {
 
 function setup() {
     const canvasDiv = document.querySelector("#canvas-div");
-	const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
-	canvas.parent("canvas-div");
-    // const regl = require("regl")({
-    //     container: "#canvas-div",
-    //     onDone: (err, regl) => {
-    //         console.log("loaded", err, regl);
-    //     }
-    // });
-    document.querySelector("#canvas-div").onwheel = wheelHandler;
-    plot = new Plot(width, height, null, Plot.modes.SPHERE, false);
+	// const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
+	// canvas.parent("canvas-div");
+    const regl = require("regl")({
+        container: "#canvas-div",
+        onDone: (err, regl) => {
+            console.log("loaded", err, regl);
+        }
+    });
+    // document.querySelector("#canvas-div").onwheel = wheelHandler;
+    plot = new Plot(width, height, null, Plot.modes.PLANE, false);
     tabSwitch(plot.mode-1);
+
+    const spinBox = regl({
+        frag: `
+        void main() {
+          gl_FragColor = vec4(gl_FragCoord.x/1000.0, gl_FragCoord.y/1000.0, 0.0, 1.0);
+        }`,
+      
+        vert: `
+        attribute vec2 position;
+        uniform float angle, scale, width, height;
+        void main() {
+          float aspect = width / height;
+          gl_Position = vec4(
+            scale * (cos(angle) * position.x - sin(angle) * position.y),
+            aspect * scale * (sin(angle) * position.x + cos(angle) * position.y),
+            0,
+            1.0);
+        }`,
+      
+        attributes: {
+          position: [
+            [0, -1], [-1, 0], [1, 1],
+            [-1, 0], [1, 1], [-1, 1],
+            // [2, 2], [0, 0], [0, 0.5],
+        ]
+        },
+      
+        uniforms: {
+          //
+          // Dynamic properties can be functions.  Each function gets passed:
+          //
+          //  * context: which contains data about the current regl environment
+          //  * props: which are user specified arguments
+          //  * batchId: which is the index of the draw command in the batch
+          //
+          angle: function (context, props, batchId) {
+            return props.speed * context.tick + 0.01 * batchId
+          },
+      
+          // As a shortcut/optimization we can also just read out a property
+          // from the props.  For example, this
+          //
+          scale: regl.prop('scale'),
+          //
+          // is semantically equivalent to
+          //
+          //  scale: function (context, props) {
+          //    return props.scale
+          //  }
+          //
+      
+          // Similarly there are shortcuts for accessing context variables
+          width: regl.context('viewportWidth'),
+          height: regl.context('viewportHeight'),
+          //
+          // which is the same as writing:
+          //
+          // width: function (context) {
+          //    return context.viewportWidth
+          // }
+          //
+        },
+      
+        count: 6
+      });
+
+regl.frame(() => {
+    spinBox({
+        scale: 0.5,
+        speed: 0.01
+    });
+
+});
 
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
