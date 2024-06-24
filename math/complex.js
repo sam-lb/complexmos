@@ -358,7 +358,7 @@ class Complex {
 	static gamma(z) {
 		if (z.re < 0.5) {
 			// gamma(1-z)gamma(z) = pi / sin(pi*z)
-			return Complex.div( complex(Math.PI, 0.0), Complex.mult(z.scale(Math.PI).sin(), Complex.gamma(complex(1 - z.re, -z.im))) );		
+			return Complex.div( complex(Math.PI, 0.0), Complex.mult(z.scale(Math.PI).sin(), Complex.gamma(complex(1 - z.re, -z.im))) );
 		} else {
 			z = Complex.sub(z, complex(1, 0)); // account for stupid shift by 1
 			let x = complex(pValues[0], 0);
