@@ -26,6 +26,7 @@ const scope = {
         "min": { isFunction: true, },
         "max": { isFunction: true, },
         "lerp": { isFunction: true, },
+        "conj": { isFunction: true, },
 
         "i": { isFunction: false, },
         "pi": { isFunction: false, },
@@ -68,6 +69,7 @@ const defaultValueScope = {
     "min": Complex.min,
     "max": Complex.max,
     "lerp": (z1, z2, t) => Complex.mult(complex(1, 0).sub(t), z1).add(z2.mult(t)),
+    "conj": (z) => z.conj(),
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),
