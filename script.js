@@ -1225,8 +1225,12 @@ function setup() {
     // document.querySelector("#canvas-div").onwheel = wheelHandler;
     plot = new Plot(width, height, null, Plot.modes.PLANE, false);
     tabSwitch(plot.mode-1);
-    
+
     loadShaders().then(shaders => {
+
+        // remove the loading shaders message
+        document.querySelector("#canvas-div").innerHTML = "";
+
         const { fragShaderSource, vertShaderSource } = shaders;
 
         const regl = require("regl")({
