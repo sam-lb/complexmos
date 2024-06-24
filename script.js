@@ -1219,56 +1219,61 @@ async function loadShaders() {
 }
 
 function setup() {
-    // const canvasDiv = document.querySelector("#canvas-div");
-	// const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
-	// canvas.parent("canvas-div");
-    // document.querySelector("#canvas-div").onwheel = wheelHandler;
-    plot = new Plot(width, height, null, Plot.modes.PLANE, false);
-    tabSwitch(plot.mode-1);
+    const RENDERER = "p5";
 
-    loadShaders().then(shaders => {
+    if (RENDERER === "p5") {
+        const canvasDiv = document.querySelector("#canvas-div");
+        canvasDiv.innerHTML = "";
+        const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
+        canvas.parent("canvas-div");
+        canvasDiv.onwheel = wheelHandler;
 
-        // remove the loading shaders message
-        document.querySelector("#canvas-div").innerHTML = "";
-
-        const { fragShaderSource, vertShaderSource } = shaders;
-
-        const regl = require("regl")({
-            container: "#canvas-div",
-            onDone: (err, regl) => {
-                console.log("regl loaded!");
-            }
-        });
-
-        const spinBox = regl({
-            frag: fragShaderSource,
-            vert: vertShaderSource,
-
-            attributes: {
-                position: [
-                    [-1, -1], [1, 1], [-1, 1],
-                    [-1, -1], [1, 1], [1, -1],
-                ],
-            },
-
-            uniforms: {
-                angle: function (context, props, batchId) {
-                    return props.speed * context.tick + 0.01 * batchId
+        plot = new Plot(width, height, null, Plot.modes.PLANE, false);
+        tabSwitch(plot.mode-1);
+    } else {
+        loadShaders().then(shaders => {
+            // remove the loading shaders message
+            document.querySelector("#canvas-div").innerHTML = "";
+    
+            const { fragShaderSource, vertShaderSource } = shaders;
+    
+            const regl = require("regl")({
+                container: "#canvas-div",
+                onDone: (err, regl) => {
+                    console.log("regl loaded!");
+                }
+            });
+    
+            const spinBox = regl({
+                frag: fragShaderSource,
+                vert: vertShaderSource,
+    
+                attributes: {
+                    position: [
+                        [-1, -1], [1, 1], [-1, 1],
+                        [-1, -1], [1, 1], [1, -1],
+                    ],
                 },
-
-                width: regl.context('viewportWidth'),
-                height: regl.context('viewportHeight'),
-            },
-
-            count: 6
+    
+                uniforms: {
+                    angle: function (context, props, batchId) {
+                        return props.speed * context.tick + 0.01 * batchId
+                    },
+    
+                    width: regl.context('viewportWidth'),
+                    height: regl.context('viewportHeight'),
+                },
+    
+                count: 6
+            });
+    
+            regl.frame(() => {
+                spinBox({
+                    speed: 0.01
+                }
+            )});
         });
-
-        regl.frame(() => {
-            spinBox({
-                speed: 0.01
-            }
-        )});
-    });
+    }
 
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
