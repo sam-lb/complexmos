@@ -803,11 +803,9 @@ class Plot {
     update() {
         if (this.needsUpdate) {
             if (RENDERER === "p5") {
-                console.log(this.bounds);
                 if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
                 this.draw();
             } else {
-                console.log(this.bounds);
                 const box = this.reglInstance({
                     frag: this.fragShaderSource,
                     vert: this.vertShaderSource,
@@ -1479,9 +1477,6 @@ function draw() {
 // there might be a better way to do this, but it's actually fine
 window.preload = preload;
 window.setup = setup;
-// window.mouseDragged = mouseDragged;
-// window.mousePressed = mousePressed;
-// window.mouseReleased = mouseReleased;
-// window.windowResized = windowResized;
+window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
 window.draw = draw;

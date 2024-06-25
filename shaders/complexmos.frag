@@ -184,7 +184,8 @@ void main() {
     vec2 z = ((uv - vec2(0.5, 0.5)) * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
 
     // vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
-    vec2 outp = multC(sinC(z), sinhC(z));
+    vec2 outp = sinhC(z);
+
 
     vec3 col;
     float nm = normC(outp).x;
