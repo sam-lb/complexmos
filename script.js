@@ -1218,61 +1218,93 @@ async function loadShaders() {
     };
 }
 
+function setupP5() {
+    const canvasDiv = document.querySelector("#canvas-div");
+    canvasDiv.innerHTML = "";
+    const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
+    canvas.parent("canvas-div");
+    canvasDiv.onwheel = wheelHandler;
+
+    plot = new Plot(width, height, null, Plot.modes.PLANE, false);
+    tabSwitch(plot.mode-1);
+}
+
+function setupWebGL() {
+    loadShaders().then(shaders => {
+        // remove the loading shaders message
+        document.querySelector("#canvas-div").innerHTML = "";
+
+        const { fragShaderSource, vertShaderSource } = shaders;
+
+        const regl = require("regl")({
+            container: "#canvas-div",
+            onDone: (err, regl) => {
+                if (err) {
+                    console.warn(`Could not load WebGL! Maybe your browser doesn't support it? Using vanilla canvas instead. Specific error: ${err}`);
+                    setupP5();
+                    return;
+                }
+
+                console.log("regl loaded!");
+
+                const canvasDiv = document.querySelector("#canvas-div");
+                canvasDiv.onwheel = wheelHandler;
+                plot = new Plot(width, height, null, Plot.modes.PLANE, false);
+                tabSwitch(plot.mode-1);
+
+                const spinBox = regl({
+                    frag: fragShaderSource,
+                    vert: vertShaderSource,
+
+                    attributes: {
+                        position: [
+                            [-1, -1], [1, 1], [-1, 1],
+                            [-1, -1], [1, 1], [1, -1],
+                        ],
+                    },
+
+                    uniforms: {
+                        angle: function (context, props, batchId) {
+                            return props.speed * context.tick + 0.01 * batchId
+                        },
+
+                        width: regl.context('viewportWidth'),
+                        height: regl.context('viewportHeight'),
+
+                        pValues: [
+                            0.99999999999980993,
+                            676.5203681218851,
+                            -1259.1392167224028,
+                            771.32342877765313,
+                            -176.61502916214059,
+                            12.507343278686905,
+                            -0.13857109526572012,
+                            9.9843695780195716e-6,
+                            1.5056327351493116e-7
+                        ],
+                    },
+
+                    count: 6
+                });
+
+                regl.frame(() => {
+                    spinBox({
+                        speed: 0.01
+                    }
+                )});
+
+            }
+        });
+    });
+}
+
 function setup() {
-    const RENDERER = "p5";
+    const RENDERER = "WebGL";
 
     if (RENDERER === "p5") {
-        const canvasDiv = document.querySelector("#canvas-div");
-        canvasDiv.innerHTML = "";
-        const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
-        canvas.parent("canvas-div");
-        canvasDiv.onwheel = wheelHandler;
-
-        plot = new Plot(width, height, null, Plot.modes.PLANE, false);
-        tabSwitch(plot.mode-1);
+        setupP5();
     } else {
-        loadShaders().then(shaders => {
-            // remove the loading shaders message
-            document.querySelector("#canvas-div").innerHTML = "";
-    
-            const { fragShaderSource, vertShaderSource } = shaders;
-    
-            const regl = require("regl")({
-                container: "#canvas-div",
-                onDone: (err, regl) => {
-                    console.log("regl loaded!");
-                }
-            });
-    
-            const spinBox = regl({
-                frag: fragShaderSource,
-                vert: vertShaderSource,
-    
-                attributes: {
-                    position: [
-                        [-1, -1], [1, 1], [-1, 1],
-                        [-1, -1], [1, 1], [1, -1],
-                    ],
-                },
-    
-                uniforms: {
-                    angle: function (context, props, batchId) {
-                        return props.speed * context.tick + 0.01 * batchId
-                    },
-    
-                    width: regl.context('viewportWidth'),
-                    height: regl.context('viewportHeight'),
-                },
-    
-                count: 6
-            });
-    
-            regl.frame(() => {
-                spinBox({
-                    speed: 0.01
-                }
-            )});
-        });
+        setupWebGL(); 
     }
 
     // const circ = new Parametric(
@@ -1371,6 +1403,10 @@ function mouseDragged() {
 		lastMouseX = mouseX;
 		lastMouseY = mouseY;
 	}
+}
+
+function registerMouseEvents() {
+    // const canvas
 }
 
 function mousePressed() {

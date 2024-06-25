@@ -8,17 +8,8 @@ const float tpi = 2.0 * pi;
 const vec2 i = vec2(0., 1.);
 const float EPSILON = 0.0000001;
 
-const float[9] pValues = float[](
-    0.99999999999980993,
-    676.5203681218851,
-    -1259.1392167224028,
-    771.32342877765313,
-    -176.61502916214059,
-    12.507343278686905,
-    -0.13857109526572012,
-    9.9843695780195716e-6,
-    1.5056327351493116e-7
-);
+uniform float pValues[9]; // GLSL ES 2.0 sucks. There's no way to initialize an array
+
 
 vec2 conjC(vec2 z) {
     return vec2(z.x, -z.y);
@@ -92,11 +83,11 @@ vec2 tanC(vec2 z) {
 }
 
 vec2 sinhC(vec2 z) {
-    return scaleC( subC( expC(z), expC(scaleC(z, -1.)) ) );
+    return scaleC( subC( expC(z), expC(scaleC(z, -1.)) ), 0.5 );
 }
 
 vec2 coshC(vec2 z) {
-    return scaleC( addC( expC(z), expC(scaleC(z, -1.)) ) );
+    return scaleC( addC( expC(z), expC(scaleC(z, -1.)) ), 0.5 );
 }
 
 vec2 tanhC(vec2 z) {
@@ -128,18 +119,13 @@ vec2 powC(vec2 z, vec2 w) {
     return vec2(cos(ang), sin(ang)) * nm;
 }
 
-z = Complex.sub(z, complex(1, 0)); // account for stupid shift by 1
-let x = complex(pValues[0], 0);
-for (let i=1; i<pValues.length; i++) {
-    x = Complex.add(x, Complex.div( complex(pValues[i], 0.0), Complex.add(z, complex(i, 0)) ));
-}
-const t = Complex.add(z, complex(7.5, 0)); // g=7, g+0.5
-return Complex.pow(t, z.add(complex(0.5, 0))).mult(t.scale(-1).exp()).mult(x).scale(Math.sqrt(2 * Math.PI));
-
 vec2 GammaMainC(vec2 z) {
     z = subC(z, vec2(1., 0.));
     vec2 x = vec2(pValues[0], 0);
-    for (int j=1; j<pValues.length(); j++) {
+    for (int j=1; j<9; j++) {
+        // there is quite literally no way to NOT hard code j<9 in the above loop
+        // as in GLSL ES 2.0 you can't get the length of an array and you can't compare
+        // the loop variable to a non-constant value (like a uniform)
         x = addC(x, divC( vec2(pValues[j], 0.0), addC(z, vec2(float(j), 0.0)) ));
     }
     vec2 t = addC(z, vec2(7.5, 0.0)); // g=7, g+0.5
@@ -174,7 +160,7 @@ vec2 maxC(vec2 z, vec2 w) {
 }
 
 vec2 lerpC(vec2 z, vec2 w, vec2 t) {
-    addC(multC( subC(vec2(1., 0.), t), z ), multC(w, t) );
+    return addC(multC( subC(vec2(1., 0.), t), z ), multC(w, t) );
 }
 
 /* end complex lib */
