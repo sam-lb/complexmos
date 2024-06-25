@@ -33,6 +33,8 @@ p5.disableFriendlyErrors = true; // ridiculous that this is on by default
 window.plot = undefined;
 window.lastMouseX = undefined;
 window.lastMouseY = undefined;
+window.mouseIsDown = false;
+const RENDERER = "WebGL";
 
 
 /** MathQuill handling */
@@ -377,13 +379,21 @@ class Plot {
         CUBE: 3,
     };
 
-    constructor(displayWidth, displayHeight, bounds=null, mode=null, displayWindowInfo) {
+    constructor(
+        displayWidth, displayHeight, bounds=null, mode=null, displayWindowInfo, reglInstance=null,
+        fragShaderSource=null, vertShaderSource=null
+    ) {
         this.gridlineSpacing = 1;
         this.boundsChangedSinceLastDraw = false;
-        this.displayWindowInfo = this.displayWindowInfo;
+        this.displayWindowInfo = displayWindowInfo;
         this.configureWindow(displayWidth, displayHeight, bounds, bounds === null);
         this.plottables = [];
         this.polygons = [];
+
+        this.reglInstance = reglInstance;
+        this.fragShaderSource = fragShaderSource;
+        this.vertShaderSource = vertShaderSource;
+
         this.needsUpdate = true;
 
         this.mode = (mode === null) ? Plot.modes.PLANE : mode;
@@ -792,8 +802,48 @@ class Plot {
 
     update() {
         if (this.needsUpdate) {
-            if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
-            this.draw();
+            if (RENDERER === "p5") {
+                console.log(this.bounds);
+                if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
+                this.draw();
+            } else {
+                console.log(this.bounds);
+                const box = this.reglInstance({
+                    frag: this.fragShaderSource,
+                    vert: this.vertShaderSource,
+
+                    attributes: {
+                        position: [
+                            [-1, -1], [1, 1], [-1, 1],
+                            [-1, -1], [1, 1], [1, -1],
+                        ],
+                    },
+
+                    uniforms: {
+                        width: this.reglInstance.context('viewportWidth'),
+                        height: this.reglInstance.context('viewportHeight'),
+
+                        xBounds: [this.bounds.xMin, this.bounds.xMax],
+                        yBounds: [this.bounds.yMin, this.bounds.yMax],
+
+                        pValues: [
+                            0.99999999999980993,
+                            676.5203681218851,
+                            -1259.1392167224028,
+                            771.32342877765313,
+                            -176.61502916214059,
+                            12.507343278686905,
+                            -0.13857109526572012,
+                            9.9843695780195716e-6,
+                            1.5056327351493116e-7
+                        ],
+                    },
+
+                    count: 6
+                });
+
+                box();
+            }
             this.needsUpdate = false;
         }
     }
@@ -1193,13 +1243,6 @@ class Model extends Plottable {
 }
 
 
-function wheelHandler(event) {
-    event.preventDefault();
-    const factor = 1 + Math.tanh(event.deltaY / 100) / 4;
-    plot.zoom(factor);
-}
-
-
 let cImage;
 function preload() {
     cImage = loadImage("http://localhost:8000/data/grid_3.png");
@@ -1236,7 +1279,7 @@ function setupWebGL() {
 
         const { fragShaderSource, vertShaderSource } = shaders;
 
-        const regl = require("regl")({
+        require("regl")({
             container: "#canvas-div",
             onDone: (err, regl) => {
                 if (err) {
@@ -1248,63 +1291,21 @@ function setupWebGL() {
                 console.log("regl loaded!");
 
                 const canvasDiv = document.querySelector("#canvas-div");
-                canvasDiv.onwheel = wheelHandler;
-                plot = new Plot(width, height, null, Plot.modes.PLANE, false);
-                tabSwitch(plot.mode-1);
-
-                const box = regl({
-                    frag: fragShaderSource,
-                    vert: vertShaderSource,
-
-                    attributes: {
-                        position: [
-                            [-1, -1], [1, 1], [-1, 1],
-                            [-1, -1], [1, 1], [1, -1],
-                        ],
-                    },
-
-                    uniforms: {
-                        width: regl.context('viewportWidth'),
-                        height: regl.context('viewportHeight'),
-
-                        xBounds: [plot.bounds.xMin, plot.bounds.xMax],
-                        yBounds: [plot.bounds.yMin, plot.bounds.yMax],
-
-                        pValues: [
-                            0.99999999999980993,
-                            676.5203681218851,
-                            -1259.1392167224028,
-                            771.32342877765313,
-                            -176.61502916214059,
-                            12.507343278686905,
-                            -0.13857109526572012,
-                            9.9843695780195716e-6,
-                            1.5056327351493116e-7
-                        ],
-                    },
-
-                    count: 6
-                });
-
-                regl.frame(() => {
-                    box({
-                        speed: 0.01
-                    }
-                )});
-
+                plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, Plot.modes.PLANE, false, regl, fragShaderSource, vertShaderSource);
+                tabSwitch(plot.mode-1);                
             }
         });
     });
 }
 
 function setup() {
-    const RENDERER = "WebGL";
-
     if (RENDERER === "p5") {
         setupP5();
     } else {
         setupWebGL(); 
     }
+
+    registerMouseEvents();
 
     // const circ = new Parametric(
     //     t => complex(Math.cos(t), Math.sin(t)),
@@ -1386,36 +1387,60 @@ function setup() {
     // const icosphereTris = icosphere(3);
     // const sphere = new Model(icosphereTris);
     // plot.addPlottable(sphere);
-
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
 }
 
-function mouseDragged() {
-	if ((0 <= mouseX && mouseX <= width) && (0 <= mouseY && mouseY <= height)) {
-        plot.pan(
-            plot.pixelsToUnits(complex(
-                lastMouseX - mouseX,
-                lastMouseY - mouseY
-            ))
-        );
-		lastMouseX = mouseX;
-		lastMouseY = mouseY;
-	}
+function wheelHandler(event) {
+    event.preventDefault();
+    const factor = 1 + Math.tanh(event.deltaY / 100) / 4;
+    plot.zoom(factor);
+}
+
+function mouseDragged(event) {
+    if (mouseIsDown) {
+        const rect = event.target.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+        const canvasDiv = document.querySelector("#canvas-div");
+        
+        if ((0 <= mouseX && mouseX <= canvasDiv.offsetWidth) && (0 <= mouseY && mouseY <= canvasDiv.offsetHeight)) {
+            plot.pan(
+                plot.pixelsToUnits(complex(
+                    lastMouseX - mouseX,
+                    lastMouseY - mouseY
+                ))
+            );
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+        }
+    }
+}
+
+function mousePressed(event) {
+    const rect = event.target.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+	
+    lastMouseX = mouseX;
+	lastMouseY = mouseY;
+    mouseIsDown = true;
+}
+
+function mouseReleased(event) {
+	lastMouseX = 0;
+	lastMouseY = 0;
+    mouseIsDown = false;
 }
 
 function registerMouseEvents() {
     const canvasDiv = document.querySelector("#canvas-div");
-}
 
-function mousePressed() {
-	lastMouseX = mouseX;
-	lastMouseY = mouseY;
-}
-
-function mouseReleased() {
-	lastMouseX = 0;
-	lastMouseY = 0;
+    canvasDiv.addEventListener("wheel", wheelHandler);
+    canvasDiv.addEventListener("mousemove", mouseDragged);
+    canvasDiv.addEventListener("touchmove", mouseDragged);
+    document.addEventListener("mousedown", mousePressed);
+    document.addEventListener("touchstart", mousePressed);
+    document.addEventListener("mouseup", mouseReleased);
+    document.addEventListener("touchend", mouseReleased);
 }
 
 function windowResized() {
@@ -1454,9 +1479,9 @@ function draw() {
 // there might be a better way to do this, but it's actually fine
 window.preload = preload;
 window.setup = setup;
-window.mouseDragged = mouseDragged;
-window.mousePressed = mousePressed;
-window.mouseReleased = mouseReleased;
-window.windowResized = windowResized;
+// window.mouseDragged = mouseDragged;
+// window.mousePressed = mousePressed;
+// window.mouseReleased = mouseReleased;
+// window.windowResized = windowResized;
 window.tabSwitch = tabSwitch;
 window.draw = draw;
