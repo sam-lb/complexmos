@@ -1267,6 +1267,9 @@ function setupWebGL() {
                         width: regl.context('viewportWidth'),
                         height: regl.context('viewportHeight'),
 
+                        xBounds: [plot.bounds.xMin, plot.bounds.xMax],
+                        yBounds: [plot.bounds.yMin, plot.bounds.yMax],
+
                         pValues: [
                             0.99999999999980993,
                             676.5203681218851,
@@ -1402,7 +1405,7 @@ function mouseDragged() {
 }
 
 function registerMouseEvents() {
-    // const canvas
+    const canvasDiv = document.querySelector("#canvas-div");
 }
 
 function mousePressed() {

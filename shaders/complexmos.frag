@@ -9,7 +9,8 @@ const vec2 i = vec2(0., 1.);
 const float EPSILON = 0.0000001;
 
 uniform float pValues[9]; // GLSL ES 2.0 sucks. There's no way to initialize an array
-
+uniform vec2 xBounds;
+uniform vec2 yBounds;
 
 vec2 conjC(vec2 z) {
     return vec2(z.x, -z.y);
@@ -173,9 +174,15 @@ vec3 hsvToRgb(vec3 c){
 
 void main() {
 
+    float xUnits = xBounds.y - xBounds.x;
+    float yUnits = yBounds.y - yBounds.x;
+    float xCenter = xBounds.x + 0.5 * xUnits;
+    float yCenter = yBounds.x + 0.5 * yUnits;
+
     vec2 uv = vec2(gl_FragCoord.x / width, gl_FragCoord.y / height);
-    float aspect = height / width;
-    vec2 z = (uv - vec2(0.5, 0.5)) * vec2(1, aspect) * 8.0; // fix x bounds from -4 to 4 for now
+    float aspect = yUnits / xUnits;
+    vec2 z = (uv - vec2(0.5, 0.5)) * vec2(1, aspect) * xUnits;
+    z = z - vec2(xCenter, yCenter);
 
     vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
 
