@@ -1252,7 +1252,7 @@ function setupWebGL() {
                 plot = new Plot(width, height, null, Plot.modes.PLANE, false);
                 tabSwitch(plot.mode-1);
 
-                const spinBox = regl({
+                const box = regl({
                     frag: fragShaderSource,
                     vert: vertShaderSource,
 
@@ -1264,10 +1264,6 @@ function setupWebGL() {
                     },
 
                     uniforms: {
-                        angle: function (context, props, batchId) {
-                            return props.speed * context.tick + 0.01 * batchId
-                        },
-
                         width: regl.context('viewportWidth'),
                         height: regl.context('viewportHeight'),
 
@@ -1288,7 +1284,7 @@ function setupWebGL() {
                 });
 
                 regl.frame(() => {
-                    spinBox({
+                    box({
                         speed: 0.01
                     }
                 )});
@@ -1448,7 +1444,7 @@ function tabSwitch(tab) {
 }
 
 function draw() {
-    plot.update();
+    if (plot) plot.update();
 }
 
 

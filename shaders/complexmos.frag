@@ -165,6 +165,25 @@ vec2 lerpC(vec2 z, vec2 w, vec2 t) {
 
 /* end complex lib */
 
+vec3 hsvToRgb(vec3 c){
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
 void main() {
-    gl_FragColor = vec4(gl_FragCoord.x/width, gl_FragCoord.y/height, 0.0, 1.0);
+
+    vec2 uv = vec2(gl_FragCoord.x / width, gl_FragCoord.y / height);
+    float aspect = height / width;
+    vec2 z = (uv - vec2(0.5, 0.5)) * vec2(1, aspect) * 8.0; // fix x bounds from -4 to 4 for now
+
+    vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
+
+    vec3 col;
+    float nm = normC(outp).x;
+    float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
+    col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
+    col = hsvToRgb(col);
+
+    gl_FragColor = vec4(col, 1.0);
 }
