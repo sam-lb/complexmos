@@ -800,47 +800,65 @@ class Plot {
         this.boundsChangedSinceLastDraw = false;
     }
 
+    drawFnPlane() {
+        return this.reglInstance({
+            frag: this.fragShaderSource,
+            vert: this.vertShaderSource,
+
+            attributes: {
+                position: [
+                    [-1, -1], [1, 1], [-1, 1],
+                    [-1, -1], [1, 1], [1, -1],
+                ],
+            },
+
+            uniforms: {
+                width: this.reglInstance.context('viewportWidth'),
+                height: this.reglInstance.context('viewportHeight'),
+
+                xBounds: [this.bounds.xMin, this.bounds.xMax],
+                yBounds: [this.bounds.yMin, this.bounds.yMax],
+
+                pValues: [
+                    0.99999999999980993,
+                    676.5203681218851,
+                    -1259.1392167224028,
+                    771.32342877765313,
+                    -176.61502916214059,
+                    12.507343278686905,
+                    -0.13857109526572012,
+                    9.9843695780195716e-6,
+                    1.5056327351493116e-7
+                ],
+            },
+
+            count: 6
+        });
+    }
+
+    drawFnSphere() {
+        
+    }
+
+    drawFn3D() {
+        return () => {};
+    }
+
     update() {
         if (this.needsUpdate) {
             if (RENDERER === "p5") {
                 if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
                 this.draw();
             } else {
-                const box = this.reglInstance({
-                    frag: this.fragShaderSource,
-                    vert: this.vertShaderSource,
-
-                    attributes: {
-                        position: [
-                            [-1, -1], [1, 1], [-1, 1],
-                            [-1, -1], [1, 1], [1, -1],
-                        ],
-                    },
-
-                    uniforms: {
-                        width: this.reglInstance.context('viewportWidth'),
-                        height: this.reglInstance.context('viewportHeight'),
-
-                        xBounds: [this.bounds.xMin, this.bounds.xMax],
-                        yBounds: [this.bounds.yMin, this.bounds.yMax],
-
-                        pValues: [
-                            0.99999999999980993,
-                            676.5203681218851,
-                            -1259.1392167224028,
-                            771.32342877765313,
-                            -176.61502916214059,
-                            12.507343278686905,
-                            -0.13857109526572012,
-                            9.9843695780195716e-6,
-                            1.5056327351493116e-7
-                        ],
-                    },
-
-                    count: 6
-                });
-
-                box();
+                let drawFn;
+                if (this.mode === Plot.modes.PLANE) {
+                    drawFn = this.drawFnPlane();
+                } else if (this.mode === Plot.modes.SPHERE) {
+                    drawFn = this.drawFnSphere();
+                } else {
+                    drawFn = this.drawFn3D();
+                }
+                drawFn();
             }
             this.needsUpdate = false;
         }

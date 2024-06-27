@@ -108,6 +108,17 @@ function icosphere(subdivisions=0) {
 
 }
 
+function icosphere_flat(subdivisions=0) {
+    const icosphere_tris = icosphere(subdivisions);
+    const verts = [];
+    for (const tri of icosphere_tris) {
+        for (const vert of tri) {
+            verts.push(vert);
+        }
+    }
+    return verts;
+}
+
 
 module.exports = {
     snormal, ssub, sscale, // remove these later (Fix this hacky garbage)

@@ -12,6 +12,9 @@ uniform float pValues[9]; // GLSL ES 2.0 sucks. There's no way to initialize an 
 uniform vec2 xBounds;
 uniform vec2 yBounds;
 
+uniform float alpha;
+uniform float beta;
+
 vec2 conjC(vec2 z) {
     return vec2(z.x, -z.y);
 }
