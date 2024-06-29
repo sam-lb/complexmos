@@ -172,7 +172,7 @@ vec2 lerpC(vec2 z, vec2 w, vec2 t) {
 /* end complex lib */
 
 vec2 stereoProject(vec3 P) {
-    float denom = 1. - P.z;
+    float denom = 1. + P.z;
     return vec2(P.x / denom, P.y / denom);
 }
 
@@ -182,24 +182,25 @@ vec3 hsvToRgb(vec3 c){
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
+vec2 mandelbrot(vec2 z) {
+    vec2 z0 = vec2(0., 0.);
+    for (int i=0; i<50; i++) {
+        z0 = addC(multC(z0, z0), z);
+    }
+    return z0;
+}
+
 void main() {
+    float xCenter = 0.5 * (xBounds.x + xBounds.y);
+    float yCenter = 0.5 * (yBounds.x + yBounds.y);
 
-    // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-
-    float xUnits = xBounds.y - xBounds.x;
-    float yUnits = yBounds.y - yBounds.x;
-    float xCenter = xBounds.x + 0.5 * xUnits;
-    float yCenter = yBounds.x + 0.5 * yUnits;
-
-    // y and z intentionally flipped due to pathological avoidance of y-up
     vec2 projected = stereoProject(vec3(outPos.x, outPos.y, outPos.z));
-    vec2 uv = vec2(projected.x, projected.y);
-    float aspect = yUnits / xUnits;
-    // vec2 z = ((uv - vec2(0.5, 0.5)) * xUnits + vec2(xCenter, yCenter)) * vec2(1., aspect);
-    vec2 z = uv * xUnits + vec2(xCenter, yCenter) * vec2(1., aspect);
+    vec2 z = projected + vec2(xCenter, yCenter);
 
-    vec2 outp = z;
-    // vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
+    vec3 col;
+    
+    // vec2 outp = z;
+    vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
     // vec2 outp = sinhC(z);
     // vec2 outp = GammaC(z);
     // vec2 nz = scaleC(z, -1.);
@@ -207,13 +208,17 @@ void main() {
     // for (int k=0; k<100; k++) {
     //     outp += powC(vec2(float(k), 0.), nz);
     // }
+    // vec2 outp = mandelbrot(z);
 
-
-    vec3 col;
     float nm = normC(outp).x;
     float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
     col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
     col = hsvToRgb(col);
+
+    float tolerance = 0.01;
+    if (abs(fract(z.x) - tolerance * 0.5) < tolerance || abs(fract(z.y) - tolerance * 0.5) < tolerance) {
+        col = vec3((0.25 + col.x) / 2., (0.25 + col.y) / 2., (0.25 + col.z) / 2.);
+    }
 
     gl_FragColor = vec4(col, 1.0);
 }

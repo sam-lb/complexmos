@@ -840,7 +840,6 @@ class Plot {
     drawFnSphere() {
         const mesh = icosphere_flat(4).map((z) => this.applyCamera(z).getColumn(0));
         const vertexCount = mesh.length;
-        console.log(this.rotationMatrix.getRow(2));
 
         return this.reglInstance({
             frag: this.shaders["complexmos_sphere.frag"],
