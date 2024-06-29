@@ -818,8 +818,14 @@ class Plot {
     }
 
     drawFnPlane() {
+        const emittedGLSL = translateToGLSL(fields);
+        let frag = this.shaders["complexmos.frag"];
+        if (emittedGLSL.valid) {
+            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+        }
+
         return this.reglInstance({
-            frag: this.shaders["complexmos.frag"],
+            frag: frag,
             vert: this.shaders["complexmos.vert"],
 
             attributes: {
