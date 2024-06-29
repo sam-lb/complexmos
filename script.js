@@ -211,8 +211,10 @@ function fieldEditHandler(mathField) {
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
 
-    plot.needsUpdate = true;
-    return;
+    if (RENDERER === "WebGL") {
+        plot.needsUpdate = true;
+        return;
+    }
 
     scope.userGlobal = {};
     for (const key in valueScope) {

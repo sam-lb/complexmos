@@ -170,6 +170,14 @@ vec2 lerpC(vec2 z, vec2 w, vec2 t) {
     return addC(multC( subC(vec2(1., 0.), t), z ), multC(w, t) );
 }
 
+bool fIsInvalid(float x) {
+    return !(x <= 0. || 0. <= x) || (abs(x) > 1000000.0);
+}
+
+bool isInvalid(vec2 z) {
+    return (fIsInvalid(z.x) || fIsInvalid(z.y));
+}
+
 /* end complex lib */
 
 //REPLACE_BEGIN
@@ -227,10 +235,14 @@ void main() {
     // vec2 outp = mandelbrot(z);
     vec2 outp = udf_f(z);
 
-    float nm = normC(outp).x;
-    float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
-    col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
-    col = hsvToRgb(col);
+    if (isInvalid(outp)) {
+        col = vec3(1., 1., 1.);
+    } else {
+        float nm = normC(outp).x;
+        float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
+        col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
+        col = hsvToRgb(col);
+    }
 
     float tolerance = 0.01;
     if (abs(z.x - round(z.x)) < tolerance || abs(z.y - round(z.y)) < tolerance) {

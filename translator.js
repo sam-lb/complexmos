@@ -47,7 +47,7 @@ function translateToGLSL(fields) {
             "tokens": tokens,
             "dependencies": ((L) => L.slice(1, L.length))(tokens.filter((token) => token.mtype === TokenType.NAME)).map(token => token.text),
         });
-        scope.userGlobal[originalName] = {isFunction: true};
+        scope.userGlobal[originalName] = {isFunction: tokens[1].text === "("};
     }
 
     lexer.setAllowUnboundIdentifiers(false);
@@ -56,7 +56,10 @@ function translateToGLSL(fields) {
         lexer.setText(expr);
         lexer.tokenize(); // to accumulate errors
     }
-    if (tracker.hasError) return { "glsl": "", "valid": false };
+    if (tracker.hasError && tracker.message.includes("Unidentified")) {
+        return { "glsl": "", "valid": false };
+    }
+    tracker.clear();
 
     tokenArrays = tokenArrays.sort((a, b) => {
         const aDependsOnB = a.dependencies.includes(b.name);
