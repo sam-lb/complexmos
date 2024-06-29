@@ -190,6 +190,13 @@ vec2 mandelbrot(vec2 z) {
     return z0;
 }
 
+float round(float x) {
+    if (fract(x) > 0.5) {
+        return ceil(x);
+    }
+    return floor(x);
+}
+
 void main() {
     float xCenter = 0.5 * (xBounds.x + xBounds.y);
     float yCenter = 0.5 * (yBounds.x + yBounds.y);
@@ -200,9 +207,10 @@ void main() {
     vec3 col;
     
     // vec2 outp = z;
-    vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
+    // vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
     // vec2 outp = sinhC(z);
     // vec2 outp = GammaC(z);
+    vec2 outp = sinC(scaleC(z, tpi));
     // vec2 nz = scaleC(z, -1.);
     // vec2 outp = vec2(0., 0.);
     // for (int k=0; k<100; k++) {
@@ -216,7 +224,7 @@ void main() {
     col = hsvToRgb(col);
 
     float tolerance = 0.01;
-    if (abs(fract(z.x) - tolerance * 0.5) < tolerance || abs(fract(z.y) - tolerance * 0.5) < tolerance) {
+    if (abs(z.x - round(z.x)) < tolerance || abs(z.y - round(z.y)) < tolerance) {
         col = vec3((0.25 + col.x) / 2., (0.25 + col.y) / 2., (0.25 + col.z) / 2.);
     }
 
