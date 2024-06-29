@@ -148,7 +148,7 @@ function astToGLSL(ast) {
     } else if (ast instanceof CallExpression) {
         return `${ast.mFunction}(${ast.mArgs.map(astToGLSL).join(",")})`;
     } else if (ast instanceof NameExpression) {
-        if (scope.builtin[ast.mName]) {
+        if (!(ast.mName.slice(0, 4) === "udf_")) {
             return ast.mName;
         } else {
             return `${ast.mName}()`;

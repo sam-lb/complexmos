@@ -100,11 +100,11 @@ const scope = {
         },
         "pi": {
             isFunction: false,
-            shaderAlias: "pi",
+            shaderAlias: "piC",
         },
         "tau": {
             isFunction: false,
-            shaderAlias: "tpi",
+            shaderAlias: "tpiC",
         },
         "e": {
             isFunction: false,

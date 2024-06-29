@@ -7,7 +7,9 @@ varying vec3 outPos;
 
 const float pi = 3.1415926535897;
 const float tpi = 2.0 * pi;
-const float e = 2.71828182846;
+const vec2 e = vec2(2.71828182846, 0.);
+const vec2 piC = vec2(pi, 0.);
+const vec2 tpiC = vec2(tpi, 0.);
 const vec2 i = vec2(0., 1.);
 const float EPSILON = 0.0000001;
 
