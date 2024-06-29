@@ -61,7 +61,10 @@ class NumberExpression extends Expression {
     }
 
     toString() {
-        return this.mNumber.toString();
+        if (this.mNumber.toString().includes(".") || this.mNumber.toString().includes("e")) {
+            return this.mNumber.toString();
+        }
+        return this.mNumber.toFixed(1); // because of glsl's extremely strict typing
     }
 
 }

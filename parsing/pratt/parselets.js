@@ -141,7 +141,7 @@ class NumberParselet extends PrefixParselet {
         if (isNaN(value)) {
             tracker.error(`Invalid number literal ${value}`);
         } else {
-            return new NumberExpression(parseFloat(token.text));
+            return new NumberExpression(value);
         }
     }
 

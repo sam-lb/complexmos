@@ -7,6 +7,7 @@ varying vec3 outPos;
 
 const float pi = 3.1415926535897;
 const float tpi = 2.0 * pi;
+const float e = 2.71828182846;
 const vec2 i = vec2(0., 1.);
 const float EPSILON = 0.0000001;
 
@@ -171,6 +172,12 @@ vec2 lerpC(vec2 z, vec2 w, vec2 t) {
 
 /* end complex lib */
 
+//REPLACE_BEGIN
+vec2 udf_f(vec2 z) {
+    return vec2(1., 0.);
+}
+//REPLACE_END
+
 vec2 stereoProject(vec3 P) {
     float denom = 1. + P.z;
     return vec2(P.x / denom, P.y / denom);
@@ -202,7 +209,8 @@ void main() {
     float yCenter = 0.5 * (yBounds.x + yBounds.y);
 
     vec2 projected = stereoProject(vec3(outPos.x, outPos.y, outPos.z));
-    vec2 z = projected + vec2(xCenter, yCenter);
+    float aspect = height / width;
+    vec2 z = projected * aspect + vec2(xCenter, yCenter);
 
     vec3 col;
     
@@ -210,13 +218,14 @@ void main() {
     // vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
     // vec2 outp = sinhC(z);
     // vec2 outp = GammaC(z);
-    vec2 outp = sinC(scaleC(z, tpi));
+    // vec2 outp = sinC(scaleC(z, tpi));
     // vec2 nz = scaleC(z, -1.);
     // vec2 outp = vec2(0., 0.);
     // for (int k=0; k<100; k++) {
     //     outp += powC(vec2(float(k), 0.), nz);
     // }
     // vec2 outp = mandelbrot(z);
+    vec2 outp = udf_f(z);
 
     float nm = normC(outp).x;
     float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;

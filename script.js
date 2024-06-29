@@ -23,6 +23,7 @@ const { stereographic, inverseStereoProject, perspectiveProject } = require("./m
 const { rvec } = require("./math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
+const { translateToGLSL } = require("./translator.js");
 
 /** -------------------------------------------------------------- */
 
@@ -209,6 +210,9 @@ function fieldEditHandler(mathField) {
      * and if it kinda seems ok (well-formed latex 
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
+
+    plot.needsUpdate = true;
+    return;
 
     scope.userGlobal = {};
     for (const key in valueScope) {
@@ -841,8 +845,14 @@ class Plot {
         const mesh = icosphere_flat(4).map((z) => this.applyCamera(z).getColumn(0));
         const vertexCount = mesh.length;
 
+        const emittedGLSL = translateToGLSL(fields);
+        let frag = this.shaders["complexmos_sphere.frag"];
+        if (emittedGLSL.valid) {
+            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+        }
+
         return this.reglInstance({
-            frag: this.shaders["complexmos_sphere.frag"],
+            frag: frag,
             vert: this.shaders["complexmos_sphere.vert"],
 
             attributes: {
@@ -1494,8 +1504,7 @@ function registerMouseEvents() {
 
 function windowResized() {
     const canvasDiv = document.querySelector("#canvas-div");
-    resizeCanvas(window.innerWidth * 0.75, document.querySelector("#ui-container").offsetHeight);
-    plot.configureWindow(width, height);
+    plot.configureWindow(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
 }
 
 function tabSwitch(tab) {
@@ -1531,3 +1540,4 @@ window.setup = setup;
 window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
 window.draw = draw;
+window.addEventListener("resize", debounceWrapper(windowResized, 100));

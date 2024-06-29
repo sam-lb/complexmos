@@ -61,7 +61,14 @@ class Lexer {
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
                 if (alnum.includes(possibleIdentifier[0]) && !num.includes(possibleIdentifier[0])) {
-                    if (this.allowUnboundIdentifiers || (tokenizingAssignment)) {
+                    if (
+                        this.allowUnboundIdentifiers ||
+                        (
+                            tokenizingAssignment &&
+                            assignmentEncountered &&
+                            this.mPunctuators.some((token) => token.type === TokenType.NAME && token.text === possibleIdentifier)
+                        )
+                    ) {
                         // no match found in the remaining part of the buffer, so greedily make the 
                         // unidentified characters a single identifier
                         identifiers.push(buffer);

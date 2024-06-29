@@ -4,36 +4,120 @@ const { complex, Complex } = require("./math/complex.js");
 
 const scope = {
     builtin: {
-        "z": { isFunction: false, },
+        "z": {
+            isFunction: false,
+            shaderAlias: "z",
+        },
 
-        "norm": { isFunction: true, },
-        "normSq": { isFunction: true, },
-        "arg": { isFunction: true, },
-        "inv": { isFunction: true, },
-        "exp": { isFunction: true, },
-        "ln": { isFunction: true, },
-        "sqrt": { isFunction: true, },
-        "sin": { isFunction: true, },
-        "cos": { isFunction: true, },
-        "tan": { isFunction: true, },
-        "sinh": { isFunction: true, },
-        "cosh": { isFunction: true, },
-        "tanh": { isFunction: true, },
-        "re": { isFunction: true, },
-        "im": { isFunction: true, },
-        "Gamma": { isFunction: true, },
-        "beta": { isFunction: true, },
-        "min": { isFunction: true, },
-        "max": { isFunction: true, },
-        "lerp": { isFunction: true, },
-        "conj": { isFunction: true, },
+        "norm": {
+            isFunction: true,
+            shaderAlias: "normC",
+        },
+        "normSq": {
+            isFunction: true,
+            shaderAlias: "normSqC",
+        },
+        "arg": {
+            isFunction: true,
+            shaderAlias: "argC",
+        },
+        "inv": {
+            isFunction: true,
+            shaderAlias: "invC",
+        },
+        "exp": { 
+            isFunction: true,
+            shaderAlias: "expC",
+        },
+        "ln": { 
+            isFunction: true,
+            shaderAlias: "lnC",
+        },
+        "sqrt": { 
+            isFunction: true,
+            shaderAlias: "sqrtC",
+        },
+        "sin": { 
+            isFunction: true,
+            shaderAlias: "sinC",
+        },
+        "cos": { 
+            isFunction: true,
+            shaderAlias: "cosC",
+        },
+        "tan": {
+            isFunction: true,
+            shaderAlias: "tanC",
+        },
+        "sinh": {
+            isFunction: true,
+            shaderAlias: "sinhC",
+        },
+        "cosh": {
+            isFunction: true,
+            shaderAlias: "coshC",
+        },
+        "tanh": {
+            isFunction: true,
+            shaderAlias: "tanhC",
+        },
+        "re": {
+            isFunction: true,
+            shaderAlias: "reC",
+        },
+        "im": {
+            isFunction: true,
+            shaderAlias: "imC",
+        },
+        "Gamma": {
+            isFunction: true,
+            shaderAlias: "GammaC",
+        },
+        "beta": {
+            isFunction: true,
+            shaderAlias: "betaC",
+        },
+        "min": {
+            isFunction: true,
+            shaderAlias: "minC",
+        },
+        "max": {
+            isFunction: true,
+            shaderAlias: "maxC",
+        },
+        "lerp": {
+            isFunction: true,
+            shaderAlias: "lerpC",
+        },
+        "conj": {
+            isFunction: true,
+            shaderAlias: "conjC",
+        },
 
-        "i": { isFunction: false, },
-        "pi": { isFunction: false, },
-        "tau": { isFunction: false, },
-        "e": { isFunction: false, },
-        "realBounds": { isFunction: false, },
-        "imagBounds": { isFunction: false, },
+        "i": {
+            isFunction: false,
+            shaderAlias: "i",
+        },
+        "pi": {
+            isFunction: false,
+            shaderAlias: "pi",
+        },
+        "tau": {
+            isFunction: false,
+            shaderAlias: "tpi",
+        },
+        "e": {
+            isFunction: false,
+            shaderAlias: "e",
+        },
+        "realBounds": {
+            isFunction: false,
+            shaderAlias: "xBounds",
+        },
+        "imagBounds": {
+            isFunction: false,
+            shaderAlias: "yBounds",
+        },
 
         /* datatypes (for type annotation) */
         "complex": { isFunction: false, isType: true, },
