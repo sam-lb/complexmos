@@ -122,5 +122,5 @@ function icosphere_flat(subdivisions=0) {
 
 module.exports = {
     snormal, ssub, sscale, // remove these later (Fix this hacky garbage)
-    icosphere,
+    icosphere, icosphere_flat
 };

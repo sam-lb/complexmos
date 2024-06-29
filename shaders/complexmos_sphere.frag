@@ -1,6 +1,8 @@
 precision highp float;
 uniform float width, height;
 
+varying vec3 outPos;
+
 /* complex lib */
 
 const float pi = 3.1415926535897;
@@ -169,6 +171,11 @@ vec2 lerpC(vec2 z, vec2 w, vec2 t) {
 
 /* end complex lib */
 
+vec2 stereoProject(vec3 P) {
+    float denom = 1. - P.z;
+    return vec2(P.x / denom, P.y / denom);
+}
+
 vec3 hsvToRgb(vec3 c){
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
@@ -177,23 +184,29 @@ vec3 hsvToRgb(vec3 c){
 
 void main() {
 
+    // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+
     float xUnits = xBounds.y - xBounds.x;
     float yUnits = yBounds.y - yBounds.x;
     float xCenter = xBounds.x + 0.5 * xUnits;
     float yCenter = yBounds.x + 0.5 * yUnits;
 
-    vec2 uv = vec2(gl_FragCoord.x / width, gl_FragCoord.y / height);
+    // y and z intentionally flipped due to pathological avoidance of y-up
+    vec2 projected = stereoProject(vec3(outPos.x, outPos.y, outPos.z));
+    vec2 uv = vec2(projected.x, projected.y);
     float aspect = yUnits / xUnits;
-    vec2 z = ((uv - vec2(0.5, 0.5)) * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
+    // vec2 z = ((uv - vec2(0.5, 0.5)) * xUnits + vec2(xCenter, yCenter)) * vec2(1., aspect);
+    vec2 z = uv * xUnits + vec2(xCenter, yCenter) * vec2(1., aspect);
 
+    vec2 outp = z;
     // vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
     // vec2 outp = sinhC(z);
     // vec2 outp = GammaC(z);
-    vec2 nz = scaleC(z, -1.);
-    vec2 outp = vec2(0., 0.);
-    for (int k=0; k<100; k++) {
-        outp += powC(vec2(float(k), 0.), nz);
-    }
+    // vec2 nz = scaleC(z, -1.);
+    // vec2 outp = vec2(0., 0.);
+    // for (int k=0; k<100; k++) {
+    //     outp += powC(vec2(float(k), 0.), nz);
+    // }
 
 
     vec3 col;

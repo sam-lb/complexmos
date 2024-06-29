@@ -18,7 +18,7 @@ const { Complex, complex } = require("./math/complex.js");
 const { Matrix, matrix } = require("./math/matrix.js");
 const { Euclid, Poincare } = require("./math/geometry.js");
 const { parameterizePoints, fourierCoefficients, fourierSeries } = require("./math/fourier.js");
-const { sscale, ssub, icosphere } = require("./math/icosphere.js"); // fix this garbage
+const { sscale, ssub, icosphere, icosphere_flat } = require("./math/icosphere.js"); // fix this garbage
 const { stereographic, inverseStereoProject, perspectiveProject } = require("./math/projection.js");
 const { rvec } = require("./math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
@@ -35,6 +35,18 @@ window.lastMouseX = undefined;
 window.lastMouseY = undefined;
 window.mouseIsDown = false;
 const RENDERER = "WebGL";
+
+const pValueArray = [
+    0.99999999999980993,
+    676.5203681218851,
+    -1259.1392167224028,
+    771.32342877765313,
+    -176.61502916214059,
+    12.507343278686905,
+    -0.13857109526572012,
+    9.9843695780195716e-6,
+    1.5056327351493116e-7
+];
 
 
 /** MathQuill handling */
@@ -381,7 +393,7 @@ class Plot {
 
     constructor(
         displayWidth, displayHeight, bounds=null, mode=null, displayWindowInfo, reglInstance=null,
-        fragShaderSource=null, vertShaderSource=null
+        shaders=null
     ) {
         this.gridlineSpacing = 1;
         this.boundsChangedSinceLastDraw = false;
@@ -391,8 +403,7 @@ class Plot {
         this.polygons = [];
 
         this.reglInstance = reglInstance;
-        this.fragShaderSource = fragShaderSource;
-        this.vertShaderSource = vertShaderSource;
+        this.shaders = shaders;
 
         this.needsUpdate = true;
 
@@ -802,8 +813,8 @@ class Plot {
 
     drawFnPlane() {
         return this.reglInstance({
-            frag: this.fragShaderSource,
-            vert: this.vertShaderSource,
+            frag: this.shaders["complexmos.frag"],
+            vert: this.shaders["complexmos.vert"],
 
             attributes: {
                 position: [
@@ -813,23 +824,13 @@ class Plot {
             },
 
             uniforms: {
-                width: this.reglInstance.context('viewportWidth'),
-                height: this.reglInstance.context('viewportHeight'),
+                width: this.reglInstance.context("viewportWidth"),
+                height: this.reglInstance.context("viewportHeight"),
 
                 xBounds: [this.bounds.xMin, this.bounds.xMax],
                 yBounds: [this.bounds.yMin, this.bounds.yMax],
 
-                pValues: [
-                    0.99999999999980993,
-                    676.5203681218851,
-                    -1259.1392167224028,
-                    771.32342877765313,
-                    -176.61502916214059,
-                    12.507343278686905,
-                    -0.13857109526572012,
-                    9.9843695780195716e-6,
-                    1.5056327351493116e-7
-                ],
+                pValues: pValueArray,
             },
 
             count: 6
@@ -837,7 +838,36 @@ class Plot {
     }
 
     drawFnSphere() {
-        
+        const mesh = icosphere_flat(4).map((z) => this.applyCamera(z).getColumn(0));
+        const vertexCount = mesh.length;
+        console.log(this.rotationMatrix.getRow(2));
+
+        return this.reglInstance({
+            frag: this.shaders["complexmos_sphere.frag"],
+            vert: this.shaders["complexmos_sphere.vert"],
+
+            attributes: {
+                position: mesh,
+            },
+
+            uniforms: {
+                width: this.reglInstance.context("viewportWidth"),
+                height: this.reglInstance.context("viewportHeight"),
+
+                xBounds: [this.bounds.xMin, this.bounds.xMax],
+                yBounds: [this.bounds.yMin, this.bounds.yMax],
+
+                pValues: pValueArray,
+                alpha: this.camera.alpha,
+                beta: this.camera.beta,
+
+                row1: this.rotationMatrix.getRow(0),
+                row2: this.rotationMatrix.getRow(1),
+                row3: this.rotationMatrix.getRow(2),
+            },
+
+            count: vertexCount,
+        });
     }
 
     drawFn3D() {
@@ -846,8 +876,8 @@ class Plot {
 
     update() {
         if (this.needsUpdate) {
+            if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
             if (RENDERER === "p5") {
-                if (this.mode !== Plot.modes.PLANE) this.calculateRotationMatrix();
                 this.draw();
             } else {
                 let drawFn;
@@ -1267,13 +1297,19 @@ function preload() {
 async function loadShaders() {
     const frag = (await fetch("http://localhost:8000/shaders/complexmos.frag"));
     const vert = (await fetch("http://localhost:8000/shaders/complexmos.vert"));
+    const fragSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.frag"));
+    const vertSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.vert"));
 
     fragShaderSource = await frag.text().then(text => text);
     vertShaderSource = await vert.text().then(text => text);
+    fragSphereShaderSource = await fragSphere.text().then(text => text);
+    vertSphereShaderSource = await vertSphere.text().then(text => text);
 
     return {
-        fragShaderSource,
-        vertShaderSource,
+        "complexmos.frag": fragShaderSource,
+        "complexmos.vert": vertShaderSource,
+        "complexmos_sphere.frag": fragSphereShaderSource,
+        "complexmos_sphere.vert": vertSphereShaderSource,
     };
 }
 
@@ -1293,8 +1329,6 @@ function setupWebGL() {
         // remove the loading shaders message
         document.querySelector("#canvas-div").innerHTML = "";
 
-        const { fragShaderSource, vertShaderSource } = shaders;
-
         require("regl")({
             container: "#canvas-div",
             onDone: (err, regl) => {
@@ -1307,8 +1341,8 @@ function setupWebGL() {
                 console.log("regl loaded!");
 
                 const canvasDiv = document.querySelector("#canvas-div");
-                plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, Plot.modes.PLANE, false, regl, fragShaderSource, vertShaderSource);
-                tabSwitch(plot.mode-1);                
+                plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, Plot.modes.SPHERE, false, regl, shaders);
+                tabSwitch(plot.mode-1);         
             }
         });
     });
