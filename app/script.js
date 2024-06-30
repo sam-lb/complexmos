@@ -3,24 +3,24 @@
  */
 
 
-const { cleanLatex } = require("./parsing/latex_convert.js");
-const { tracker } = require("./parsing/errors.js");
-const { TokenType } = require("./parsing/pratt/tokentype.js");
+const { cleanLatex } = require("../parsing/latex_convert.js");
+const { tracker } = require("../parsing/errors.js");
+const { TokenType } = require("../parsing/pratt/tokentype.js");
 const {
     Expression, AssignExpression,
     CallExpression, NameExpression,
     NumberExpression, OperatorExpression,
     PrefixExpression
-} = require("./parsing/pratt/expressions.js");
-const { Lexer } = require("./parsing/pratt/lexer.js");
-const { ExpressionParser } = require("./parsing/pratt/expression_parser.js");
-const { Complex, complex } = require("./math/complex.js");
-const { Matrix, matrix } = require("./math/matrix.js");
-const { Euclid, Poincare } = require("./math/geometry.js");
-const { parameterizePoints, fourierCoefficients, fourierSeries } = require("./math/fourier.js");
-const { sscale, ssub, icosphere, icosphere_flat, icosphere_flat_lopsided } = require("./math/icosphere.js"); // fix this garbage
-const { stereographic, inverseStereoProject, perspectiveProject } = require("./math/projection.js");
-const { rvec } = require("./math/rvector.js");
+} = require("../parsing/pratt/expressions.js");
+const { Lexer } = require("../parsing/pratt/lexer.js");
+const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
+const { Complex, complex } = require("../math/complex.js");
+const { Matrix, matrix } = require("../math/matrix.js");
+const { Euclid, Poincare } = require("../math/geometry.js");
+const { parameterizePoints, fourierCoefficients, fourierSeries } = require("../math/fourier.js");
+const { sscale, ssub, icosphere, icosphere_flat, icosphere_flat_lopsided } = require("../math/icosphere.js"); // fix this garbage
+const { stereographic, inverseStereoProject, perspectiveProject } = require("../math/projection.js");
+const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { translateToGLSL } = require("./translator.js");

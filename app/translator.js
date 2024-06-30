@@ -1,17 +1,17 @@
 
 
-const { Lexer } = require("./parsing/pratt/lexer.js");
-const { ExpressionParser } = require("./parsing/pratt/expression_parser.js");
+const { Lexer } = require("../parsing/pratt/lexer.js");
+const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
 const { scope } = require("./scope.js");
-const { tracker } = require("./parsing/errors.js");
-const { cleanLatex } = require("./parsing/latex_convert.js");
-const { TokenType } = require("./parsing/pratt/tokentype.js");
+const { tracker } = require("../parsing/errors.js");
+const { cleanLatex } = require("../parsing/latex_convert.js");
+const { TokenType } = require("../parsing/pratt/tokentype.js");
 const {
     Expression, AssignExpression,
     CallExpression, NameExpression,
     NumberExpression, OperatorExpression,
     PrefixExpression
-} = require("./parsing/pratt/expressions.js");
+} = require("../parsing/pratt/expressions.js");
 
 let newVars = [];
 

@@ -1,5 +1,5 @@
 
-const { complex, Complex } = require("./math/complex.js");
+const { complex, Complex } = require("../math/complex.js");
 
 
 const scope = {
