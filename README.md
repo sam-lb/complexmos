@@ -1,6 +1,6 @@
 ## complexmos
 
-A Desmos-style interative graphing calculator with native complex number support. Complexmos compiles LaTeX expressions from MathQuill inputs to GLSL for rendering with WebGL, allowing for real-time editing and viewing of visualization of expressions.
+A Desmos-style interactive graphing calculator with native complex number support. Complexmos compiles LaTeX expressions from MathQuill inputs to GLSL for rendering with WebGL, allowing for real-time editing and viewing of visualization of expressions.
 
 ### Screenshots
 
