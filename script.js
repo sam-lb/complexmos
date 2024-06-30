@@ -18,7 +18,7 @@ const { Complex, complex } = require("./math/complex.js");
 const { Matrix, matrix } = require("./math/matrix.js");
 const { Euclid, Poincare } = require("./math/geometry.js");
 const { parameterizePoints, fourierCoefficients, fourierSeries } = require("./math/fourier.js");
-const { sscale, ssub, icosphere, icosphere_flat } = require("./math/icosphere.js"); // fix this garbage
+const { sscale, ssub, icosphere, icosphere_flat, icosphere_flat_lopsided } = require("./math/icosphere.js"); // fix this garbage
 const { stereographic, inverseStereoProject, perspectiveProject } = require("./math/projection.js");
 const { rvec } = require("./math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
@@ -852,6 +852,7 @@ class Plot {
     drawFnSphere() {
         const mesh = icosphere_flat(4).map((z) => this.applyCamera(z).getColumn(0));
         const vertexCount = mesh.length;
+        console.log(vertexCount / 3);
 
         const emittedGLSL = translateToGLSL(fields);
         let frag = this.shaders["complexmos_sphere.frag"];
@@ -884,6 +885,13 @@ class Plot {
             },
 
             count: vertexCount,
+
+            cull: {
+                enable: true,
+                face: "back",
+            },
+
+            frontFace: "cw",
         });
     }
 

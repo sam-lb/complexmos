@@ -27,6 +27,85 @@ function sscale(s, X) {
     ];
 }
 
+function snorm(X) {
+    return Math.sqrt(X[0] * X[0] + X[1] * X[1] + X[2] * X[2]);
+}
+
+function sdist(X, Y) {
+    return snorm(ssub(1, X, Y));
+}
+
+function sdot(X, Y) {
+    return X[0] * Y[0] + X[1] * Y[1] + X[2] * Y[2];
+}
+
+function sangle(X, Y) {
+    return Math.acos(sdot(X, Y) / (snorm(X) * snorm(Y)));
+}
+
+function scross(X, Y) {
+    return [
+        X[1] * Y[2] - X[2] * Y[1],
+        X[2] * Y[0] - X[0] * Y[2],
+        X[0] * Y[1] - X[1] * Y[0]
+    ];
+}
+
+function sunormal(X, Y) {
+    const norm = scross(X, Y);
+    return snormal(norm);
+}
+
+
+// const REF_NORMAL = [0, 0, 1];
+// function sortClockwise(points) {
+//     const ref = ssub(1, points[1], points[0]);
+    
+//     let results = points.slice(1, points.length).sort((x, y) => {
+//         return sangle(ref, ssub(1, x, points[0])) - sangle(ref, ssub(1, y, points[0]));
+//     });
+//     results.unshift(points[0]);
+
+//     const normal = sunormal(ssub(1, results[1], results[0]), ssub(1, results[2], results[0]));
+//     if (sangle(normal, REF_NORMAL) < Math.PI / 2) {
+//         return results.reverse();
+//     }
+//     return results;
+// }
+
+// function sortClockwise(points) {
+//     const normal = scross(ssub(1, points[1], points[0]), ssub(1, points[2], points[0]));
+//     if (snorm(ssub(-1, points[0], normal)) < snorm(points[0])) {
+//         return [points[0], points[2], points[1]];
+//     }
+//     return points;
+// }
+
+function scenter(points) {
+    let xTotal = 0, yTotal = 0, zTotal = 0;
+    for (let i=0; i<points.length; i++) {
+        xTotal += points[i][0];
+        yTotal += points[i][1];
+        zTotal += points[i][2];
+    }
+    xTotal /= points.length;
+    yTotal /= points.length;
+    zTotal /= points.length;
+    return [xTotal, yTotal, zTotal];
+}
+
+function sortClockwise(points) {
+    const mid = scenter(points);
+    const vec1 = ssub(1, points[0], mid);
+    const vec2 = ssub(1, points[1], mid);
+    const normal = scross(vec1, vec2);
+
+    if (sdot(normal, mid) > 0) {
+        return points;
+    } else {
+        return [points[0], points[2], points[1]];
+    }
+}
 
 
 function icosphere(subdivisions=0) {
@@ -104,14 +183,32 @@ function icosphere(subdivisions=0) {
         triangles[i][1] = snormal(triangles[i][1]);
         triangles[i][2] = snormal(triangles[i][2]);
     }
+
+    for (let i=0; i<triangles.length; i++) {
+        triangles[i] = sortClockwise(triangles[i]);
+    }
+
     return triangles;
 
 }
 
 function icosphere_flat(subdivisions=0) {
-    const icosphere_tris = icosphere(subdivisions);
+    return flatten(icosphere(subdivisions));
+}
+
+function icosphere_flat_lopsided(subdivisions_top=0, subdivisions_bottom=0) {
+    const top = icosphere(subdivisions_top).filter(face => {
+        return scenter(face)[2] < 0;
+    });
+    const bottom = icosphere(subdivisions_bottom).filter(face => {
+        return scenter(face)[2] >= 0;
+    });
+    return flatten(Array.prototype.concat(top, bottom));
+}
+
+function flatten(triangles) {
     const verts = [];
-    for (const tri of icosphere_tris) {
+    for (const tri of triangles) {
         for (const vert of tri) {
             verts.push(vert);
         }
@@ -122,5 +219,5 @@ function icosphere_flat(subdivisions=0) {
 
 module.exports = {
     snormal, ssub, sscale, // remove these later (Fix this hacky garbage)
-    icosphere, icosphere_flat
+    icosphere, icosphere_flat, icosphere_flat_lopsided
 };
