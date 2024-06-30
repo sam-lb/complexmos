@@ -65,8 +65,12 @@ class Lexer {
                         this.allowUnboundIdentifiers ||
                         (
                             tokenizingAssignment &&
-                            assignmentEncountered &&
-                            this.mPunctuators.some((token) => token.type === TokenType.NAME && token.text === possibleIdentifier)
+                            (
+                                (
+                                    assignmentEncountered &&
+                                    this.mPunctuators.some((token) => token.mtype === TokenType.NAME && token.text === possibleIdentifier)
+                                ) || !assignmentEncountered
+                            )
                         )
                     ) {
                         // no match found in the remaining part of the buffer, so greedily make the 

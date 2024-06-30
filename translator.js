@@ -13,8 +13,10 @@ const {
     PrefixExpression
 } = require("./parsing/pratt/expressions.js");
 
+let newVars = [];
 
 function translateToGLSL(fields) {
+    newVars = [];
     const expressions = [];
     
     tracker.clear();
@@ -47,6 +49,7 @@ function translateToGLSL(fields) {
             "tokens": tokens,
             "dependencies": ((L) => L.slice(1, L.length))(tokens.filter((token) => token.mtype === TokenType.NAME)).map(token => token.text),
         });
+        newVars.push(tokens[0].text);
         scope.userGlobal[originalName] = {isFunction: tokens[1].text === "("};
     }
 
@@ -56,7 +59,7 @@ function translateToGLSL(fields) {
         lexer.setText(expr);
         lexer.tokenize(); // to accumulate errors
     }
-    if (tracker.hasError && tracker.message.includes("Unidentified")) {
+    if (tracker.hasError) { //&& tracker.message.includes("Unidentified")) {
         return { "glsl": "", "valid": false };
     }
     tracker.clear();
@@ -148,7 +151,7 @@ function astToGLSL(ast) {
     } else if (ast instanceof CallExpression) {
         return `${ast.mFunction}(${ast.mArgs.map(astToGLSL).join(",")})`;
     } else if (ast instanceof NameExpression) {
-        if (!(ast.mName.slice(0, 4) === "udf_")) {
+        if (!(ast.mName.slice(0, 4) === "udf_") || !newVars.includes(ast.mName)) {
             return ast.mName;
         } else {
             return `${ast.mName}()`;
