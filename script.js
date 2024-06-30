@@ -1324,10 +1324,13 @@ async function loadShaders() {
     const vert = (await fetch("http://localhost:8000/shaders/complexmos.vert"));
     const fragSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.frag"));
     const vertSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.vert"));
+    const complexLib = (await fetch("http://localhost:8000/shaders/complex.frag"));
 
-    fragShaderSource = await frag.text().then(text => text);
+    complexLibSource = await complexLib.text().then(text => text);
+    const importLib = (fileContents) => fileContents.replace(/\/\/IMPORT_COMPLEX/, complexLibSource);
+    fragShaderSource = await frag.text().then(importLib);
     vertShaderSource = await vert.text().then(text => text);
-    fragSphereShaderSource = await fragSphere.text().then(text => text);
+    fragSphereShaderSource = await fragSphere.text().then(importLib);
     vertSphereShaderSource = await vertSphere.text().then(text => text);
 
     return {
