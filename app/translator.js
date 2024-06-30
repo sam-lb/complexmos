@@ -18,6 +18,7 @@ let newVars = [];
 function translateToGLSL(fields) {
     newVars = [];
     const expressions = [];
+    scope.userGlobal = {};
     
     tracker.clear();
     tracker.setCallback((message, target) => console.log(message));
@@ -59,7 +60,7 @@ function translateToGLSL(fields) {
         lexer.setText(expr);
         lexer.tokenize(); // to accumulate errors
     }
-    if (tracker.hasError) { //&& tracker.message.includes("Unidentified")) {
+    if ((tracker.hasError) && tracker.message.includes("Undefined")) {
         return { "glsl": "", "valid": false };
     }
     tracker.clear();
@@ -84,7 +85,9 @@ function translateToGLSL(fields) {
     for (const tokenArray of tokenArrays) {
         const parser = new ExpressionParser(tokenArray.tokens);
         tokenArray.ast = parser.parseExpression();
-        if (tracker.hasError) return { "glsl": "", "valid": false };
+        if (tracker.hasError) {
+            return { "glsl": "", "valid": false };
+        }
         
         if (tokenArray.ast.mLeft instanceof CallExpression) {
             const args = [];
@@ -122,6 +125,7 @@ function translateToGLSL(fields) {
             "valid": true,
         };
     } else {
+        console.log("STICK");
         return {
             "glsl": "",
             "valid": false,
