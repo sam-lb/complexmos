@@ -670,12 +670,13 @@ class Plot {
     }
 
     setMode(mode) {
+        const previousMode = this.mode;
         this.mode = mode;
 
         if (mode === Plot.modes.PLANE) {
             if (this.savedBounds !== undefined) this.configureWindow(null, null, this.savedBounds);
         } else {
-            this.savedBounds = this.bounds;
+            if (previousMode === Plot.modes.PLANE) this.savedBounds = this.bounds;
             this.configureWindow(null, null, {
                 xMin: -2.5,
                 xMax: 2.5,
