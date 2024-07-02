@@ -125,7 +125,6 @@ function translateToGLSL(fields) {
             "valid": true,
         };
     } else {
-        console.log("STICK");
         return {
             "glsl": "",
             "valid": false,

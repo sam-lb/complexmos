@@ -422,6 +422,9 @@ class Plot {
             yaw: .672,
         };
         this.calculateRotationMatrix();
+
+        this.planeMesh = this.generatePlaneMesh(50);
+        this.sphereMesh = icosphere_flat(4);
     }
 
     configureWindow(newWidth=null, newHeight=null, bounds=null) {
@@ -817,6 +820,32 @@ class Plot {
         this.boundsChangedSinceLastDraw = false;
     }
 
+    generatePlaneMesh(count) {
+        let x = -1, y = -1;
+        const step = 2 / count;
+        const verts = [];
+        const sqrt2 = Math.sqrt(2);
+        for (let i=0; i<count; i++) {
+            for (let j=0; j<count; j++) {
+                const nextX = x + step;
+                const nextY = y + step;
+
+                verts.push([x / sqrt2, y / sqrt2, 0]);
+                verts.push([nextX / sqrt2, y / sqrt2, 0]);
+                verts.push([x / sqrt2, nextY / sqrt2, 0]);
+
+                verts.push([nextX / sqrt2, y / sqrt2, 0]);
+                verts.push([nextX / sqrt2, nextY / sqrt2, 0]);
+                verts.push([x / sqrt2, nextY / sqrt2, 0]);
+
+                x += step;
+            }
+            x = -1;
+            y += step;
+        }
+        return verts;
+    }
+
     drawFnPlane() {
         const emittedGLSL = translateToGLSL(fields);
         let frag = this.shaders["complexmos.frag"];
@@ -850,9 +879,8 @@ class Plot {
     }
 
     drawFnSphere() {
-        const mesh = icosphere_flat(4).map((z) => this.applyCamera(z).getColumn(0));
+        const mesh = icosphere_flat(4);
         const vertexCount = mesh.length;
-        console.log(vertexCount / 3);
 
         const emittedGLSL = translateToGLSL(fields);
         let frag = this.shaders["complexmos_sphere.frag"];
@@ -896,7 +924,48 @@ class Plot {
     }
 
     drawFn3D() {
-        return () => {};
+        const mesh = this.generatePlaneMesh(20);
+        const vertexCount = mesh.length;
+        console.log(vertexCount / 3);
+
+        const emittedGLSL = translateToGLSL(fields);
+        let frag = this.shaders["complexmos_cube.frag"];
+        if (emittedGLSL.valid) {
+            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+        }
+
+        return this.reglInstance({
+            frag: frag,
+            vert: this.shaders["complexmos_cube.vert"],
+
+            attributes: {
+                position: mesh,
+            },
+
+            uniforms: {
+                width: this.reglInstance.context("viewportWidth"),
+                height: this.reglInstance.context("viewportHeight"),
+
+                xBounds: [this.bounds.xMin, this.bounds.xMax],
+                yBounds: [this.bounds.yMin, this.bounds.yMax],
+
+                pValues: pValueArray,
+                alpha: this.camera.alpha,
+                beta: this.camera.beta,
+
+                row1: this.rotationMatrix.getRow(0),
+                row2: this.rotationMatrix.getRow(1),
+                row3: this.rotationMatrix.getRow(2),
+            },
+
+            cull: {
+                enable: false,
+            },
+
+            frontFace: "ccw",
+
+            count: vertexCount,
+        });
     }
 
     update() {
@@ -1324,20 +1393,26 @@ async function loadShaders() {
     const vert = (await fetch("http://localhost:8000/shaders/complexmos.vert"));
     const fragSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.frag"));
     const vertSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.vert"));
+    const fragCube = (await fetch("http://localhost:8000/shaders/complexmos_cube.frag"));
+    const vertCube = (await fetch("http://localhost:8000/shaders/complexmos_cube.vert"));
     const complexLib = (await fetch("http://localhost:8000/shaders/complex.frag"));
 
-    complexLibSource = await complexLib.text().then(text => text);
+    const complexLibSource = await complexLib.text().then(text => text);
     const importLib = (fileContents) => fileContents.replace(/\/\/IMPORT_COMPLEX/, complexLibSource);
-    fragShaderSource = await frag.text().then(importLib);
-    vertShaderSource = await vert.text().then(text => text);
-    fragSphereShaderSource = await fragSphere.text().then(importLib);
-    vertSphereShaderSource = await vertSphere.text().then(text => text);
+    const fragShaderSource = await frag.text().then(importLib);
+    const vertShaderSource = await vert.text().then(text => text);
+    const fragCubeShaderSource = await fragCube.text().then(importLib);
+    const vertCubeShaderSource = await vertCube.text().then(text => text);
+    const fragSphereShaderSource = await fragSphere.text().then(importLib);
+    const vertSphereShaderSource = await vertSphere.text().then(text => text);
 
     return {
         "complexmos.frag": fragShaderSource,
         "complexmos.vert": vertShaderSource,
         "complexmos_sphere.frag": fragSphereShaderSource,
         "complexmos_sphere.vert": vertSphereShaderSource,
+        "complexmos_cube.frag": fragCubeShaderSource,
+        "complexmos_cube.vert": vertCubeShaderSource,
     };
 }
 
