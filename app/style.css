@@ -61,6 +61,18 @@ body {
     box-shadow: 0 -5px 5px 2px rgba(0, 0, 0, 0.5);
 }
 
+.sick-button-design {
+    background-color: #fff;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.sick-button-design:hover {
+    background-color: #aaa;
+    box-shadow: 0 -2px 5px 1px rgba(0, 0, 0, 0.5);
+}
+
 #canvas-wrapper {
     position: relative;
     flex: 3;
