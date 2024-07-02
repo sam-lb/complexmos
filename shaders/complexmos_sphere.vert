@@ -8,11 +8,6 @@ uniform vec3 row3;
 varying vec3 outPos;
 
 vec3 transform(vec3 P) {
-    vec3 prod1 = row1 * P;
-    vec3 prod2 = row2 * P;
-    vec3 prod3 = row3 * P;
-
-    // return vec3(prod1.x + prod1.y + prod1.z, prod2.x + prod2.y + prod2.z, prod3.x + prod3.y + prod3.z);
     return vec3(
         row1.x * P.x + row1.y * P.y + row1.z * P.z,
         row2.x * P.x + row2.y * P.y + row2.z * P.z,
