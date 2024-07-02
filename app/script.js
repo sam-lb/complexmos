@@ -424,7 +424,7 @@ class Plot {
         this.calculateRotationMatrix();
 
         this.planeMesh = this.generatePlaneMesh(50);
-        this.sphereMesh = icosphere_flat(4);
+        this.sphereMesh = icosphere_flat(5);
     }
 
     configureWindow(newWidth=null, newHeight=null, bounds=null) {
@@ -879,7 +879,7 @@ class Plot {
     }
 
     drawFnSphere() {
-        const mesh = icosphere_flat(4);
+        const mesh = this.sphereMesh;
         const vertexCount = mesh.length;
 
         const emittedGLSL = translateToGLSL(fields);
@@ -924,7 +924,7 @@ class Plot {
     }
 
     drawFn3D() {
-        const mesh = this.generatePlaneMesh(20);
+        const mesh = this.planeMesh;
         const vertexCount = mesh.length;
         console.log(vertexCount / 3);
 
