@@ -423,7 +423,7 @@ class Plot {
         };
         this.calculateRotationMatrix();
 
-        this.planeMesh = this.generatePlaneMesh(50);
+        this.planeMesh = this.generatePlaneMesh(100);
         this.sphereMesh = icosphere_flat(5);
     }
 
@@ -931,13 +931,15 @@ class Plot {
 
         const emittedGLSL = translateToGLSL(fields);
         let frag = this.shaders["complexmos_cube.frag"];
+        let vert = this.shaders["complexmos_cube.vert"];
         if (emittedGLSL.valid) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+            vert = vert.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
         }
 
         return this.reglInstance({
             frag: frag,
-            vert: this.shaders["complexmos_cube.vert"],
+            vert: vert,
 
             attributes: {
                 position: mesh,
@@ -1403,7 +1405,7 @@ async function loadShaders() {
     const fragShaderSource = await frag.text().then(importLib);
     const vertShaderSource = await vert.text().then(text => text);
     const fragCubeShaderSource = await fragCube.text().then(importLib);
-    const vertCubeShaderSource = await vertCube.text().then(text => text);
+    const vertCubeShaderSource = await vertCube.text().then(importLib); // yes the vert shader needs this
     const fragSphereShaderSource = await fragSphere.text().then(importLib);
     const vertSphereShaderSource = await vertSphere.text().then(text => text);
 
