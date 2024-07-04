@@ -47,9 +47,9 @@ void main() {
     float aspect = yUnits / xUnits;
     vec2 z = (uv * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
 
-    vec3 newPosition = vec3(position.x, position.y, 0.5-normC(udf_f(z)).x/2.);
+    vec3 newPosition = vec3(position.x, position.y, -normC(udf_f(z)).x);
 
     vec3 transformed = transform(newPosition);   
-    vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9);
+    vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9 - 0.5);
     gl_Position = vec4(projected, -transformed.y, 1.0);
 }

@@ -155,3 +155,28 @@ body {
     outline: none;
     box-shadow: none;
 }
+
+#settings-popup {
+    position: absolute;
+    height: 90vh;
+    width: 90vw;
+    z-index: 1000;
+    background-color: white;
+    color: black;
+    border: 3px solid black;
+    margin: 5vh 5vw 5vh 5vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#close-settings-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+hr {
+    color: black;
+    background-color: black;
+}
