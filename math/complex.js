@@ -120,6 +120,16 @@ class Complex {
 		this.add(this.square().sub(new Complex(1, 0)).sqrt()).ln().div(complex(0, 1));
 	}
 
+	asin() {
+		/** computes the principle branch of the inverse sine */
+		const i = complex(0, 1);
+		return Complex.div( Complex.add(this.mult(i), Complex.sqrt(complex(1, 0).sub(this.mult(z)))).ln() , i);
+	}
+
+	atan() {
+
+	}
+
 	rotate(angle) {
 		/* Computes this complex number rotated by angle radians */
 		return this.mult((new Complex(0, angle)).exp());

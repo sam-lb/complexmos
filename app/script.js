@@ -35,7 +35,7 @@ window.plot = undefined;
 window.lastMouseX = undefined;
 window.lastMouseY = undefined;
 window.mouseIsDown = false;
-const RENDERER = "WebGL";
+let RENDERER = "WebGL";
 
 const pValueArray = [
     0.99999999999980993,
@@ -1440,6 +1440,7 @@ function setupWebGL() {
             onDone: (err, regl) => {
                 if (err) {
                     console.warn(`Could not load WebGL! Maybe your browser doesn't support it? Using vanilla canvas instead. Specific error: ${err}`);
+                    RENDERER = "p5";
                     setupP5();
                     return;
                 }
@@ -1639,6 +1640,17 @@ function toggleSettingsPopup() {
     }
 }
 
+function setRenderer() {
+    const renderer = document.querySelector("#webgl-toggle").checked;
+    if (RENDERER === "WebGL" && !renderer) {
+        RENDERER = "p5";
+        setupP5();
+    } else if (RENDERER === "p5" && renderer) {
+        RENDERER = "WebGL";
+        setupWebGL();
+    }
+}
+
 
 // there might be a better way to do this, but it's actually fine
 window.preload = preload;
@@ -1648,3 +1660,4 @@ window.tabSwitch = tabSwitch;
 window.draw = draw;
 window.addEventListener("resize", debounceWrapper(windowResized, 100));
 window.toggleSettingsPopup = toggleSettingsPopup;
+window.setRenderer = setRenderer;
