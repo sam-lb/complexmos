@@ -165,7 +165,7 @@ body {
     color: black;
     border: 3px solid black;
     margin: 5vh 5vw 5vh 5vw;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
 }

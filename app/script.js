@@ -1630,6 +1630,15 @@ function draw() {
     if (plot) plot.update();
 }
 
+function toggleSettingsPopup() {
+    const popup = document.querySelector("#settings-popup");
+    if (popup.style.display !== "flex") {
+        popup.style.display = "flex";
+    } else {
+        popup.style.display = "none";
+    }
+}
+
 
 // there might be a better way to do this, but it's actually fine
 window.preload = preload;
@@ -1638,3 +1647,4 @@ window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
 window.draw = draw;
 window.addEventListener("resize", debounceWrapper(windowResized, 100));
+window.toggleSettingsPopup = toggleSettingsPopup;
