@@ -873,6 +873,7 @@ class Plot {
                 yBounds: [this.bounds.yMin, this.bounds.yMax],
 
                 pValues: pValueArray,
+                texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
 
             count: 6
@@ -1391,6 +1392,15 @@ function preload() {
     cImage = loadImage("http://localhost:8000/data/grid_3.png");
 }
 
+async function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        let image = new Image();
+        image.src = src;
+        image.onerror = reject;
+        image.onload = resolve(image);
+    });
+}
+
 async function loadShaders() {
     const frag = (await fetch("http://localhost:8000/shaders/complexmos.frag"));
     const vert = (await fetch("http://localhost:8000/shaders/complexmos.vert"));
@@ -1399,6 +1409,7 @@ async function loadShaders() {
     const fragCube = (await fetch("http://localhost:8000/shaders/complexmos_cube.frag"));
     const vertCube = (await fetch("http://localhost:8000/shaders/complexmos_cube.vert"));
     const complexLib = (await fetch("http://localhost:8000/shaders/complex.frag"));
+    const sampleImage = await loadImage("http://localhost:8000/data/cat.jpg");
 
     const complexLibSource = await complexLib.text().then(text => text);
     const importLib = (fileContents) => fileContents.replace(/\/\/IMPORT_COMPLEX/, complexLibSource);
@@ -1416,6 +1427,7 @@ async function loadShaders() {
         "complexmos_sphere.vert": vertSphereShaderSource,
         "complexmos_cube.frag": fragCubeShaderSource,
         "complexmos_cube.vert": vertCubeShaderSource,
+        "sample texture": sampleImage,
     };
 }
 

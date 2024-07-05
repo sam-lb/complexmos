@@ -1,5 +1,6 @@
 precision highp float;
 uniform float width, height;
+uniform sampler2D texture;
 
 const float pi = 3.1415926535897;
 const float tpi = 2.0 * pi;
@@ -57,16 +58,28 @@ void main() {
     // }
     vec2 outp = udf_f(z);
 
-    vec3 col;
-    float nm = normC(outp).x;
-    float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
-    col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
-    col = hsvToRgb(col);
+    // vec3 col;
+
+    // float squareNorm = max(abs(outp.x), abs(outp.y));
+    // vec2 texCoord = 1. / pi * atan(squareNorm) * outp / squareNorm + vec2(.5, .5);
+    // texCoord = vec2(texCoord.x, 1. - texCoord.y);
+
+    vec2 texCoord = vec2(
+        outp.x - floor(outp.x),
+        1. - (outp.y - floor(outp.y))
+    );
+
+    vec4 col = texture2D(texture, texCoord);
+    // float nm = normC(outp).x;
+    // float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
+    // col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
+    // col = hsvToRgb(col);
 
     float tolerance = 0.01;
     if (abs(z.x - round(z.x)) < tolerance || abs(z.y - round(z.y)) < tolerance) {
-        col = vec3((0.25 + col.x) / 2., (0.25 + col.y) / 2., (0.25 + col.z) / 2.);
+        col = vec4((0.25 + col.x) / 2., (0.25 + col.y) / 2., (0.25 + col.z) / 2., col.w);
     }
 
-    gl_FragColor = vec4(col, 1.0);
+    gl_FragColor = col;
+    // gl_FragColor = vec4(col, 1.0);
 }
