@@ -1560,12 +1560,12 @@ function mouseDragged(event) {
         const canvasDiv = document.querySelector("#canvas-div");
         
         if ((0 <= mouseX && mouseX <= canvasDiv.offsetWidth) && (0 <= mouseY && mouseY <= canvasDiv.offsetHeight)) {
-            plot.pan(
-                plot.pixelsToUnits(complex(
-                    lastMouseX - mouseX,
-                    lastMouseY - mouseY
-                ))
-            );
+            const diff = complex(lastMouseX - mouseX, lastMouseY - mouseY);
+            if (plot.mode === Plot.modes.PLANE) {
+                plot.pan(plot.pixelsToUnits(diff));
+            } else {
+                plot.pan(diff.eMult(complex(3 / canvasDiv.clientWidth, -3 / canvasDiv.clientHeight)));
+            }
             lastMouseX = mouseX;
             lastMouseY = mouseY;
         }
