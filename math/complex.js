@@ -124,7 +124,6 @@ class Complex {
 		/** computes the principle branch of the inverse sine */
 		const i = complex(0, 1);
 		return this.mult(i).add(complex(1, 0).sub(this.square()).sqrt()).ln().div(i);
-		// return Complex.div( Complex.add(this.mult(i), Complex.sqrt(complex(1, 0).sub(this.mult(this)))).ln() , i);
 	}
 
 	atan() {

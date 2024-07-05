@@ -69,6 +69,18 @@ vec2 tanC(vec2 z) {
     return divC(sinC(z), cosC(z));
 }
 
+vec2 asinC(vec2 z) {
+    return divC(lnC(addC(multC(z, i), sqrtC(subC(vec2(1., 0.), multC(z, z))))), i);
+}
+
+vec2 acosC(vec2 z) {
+    return divC(lnC(addC(z, sqrtC(subC(multC(z, z), vec2(1., 0.))))), i);
+}
+
+vec2 atanC(vec2 z) {
+    return divC(lnC(divC(subC(i, z), addC(i, z))), vec2(0., 2.));
+}
+
 vec2 sinhC(vec2 z) {
     return scaleC( subC( expC(z), expC(scaleC(z, -1.)) ), 0.5 );
 }
