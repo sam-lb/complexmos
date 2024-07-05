@@ -49,6 +49,18 @@ const scope = {
             isFunction: true,
             shaderAlias: "tanC",
         },
+        "asin": {
+            isFunction: true,
+            shaderAlias: "asinC",
+        },
+        "acos": {
+            isFunction: true,
+            shaderAlias: "acosC",
+        },
+        "atan": {
+            isFunction: true,
+            shaderAlias: "atanC",
+        },
         "sinh": {
             isFunction: true,
             shaderAlias: "sinhC",
@@ -143,6 +155,9 @@ const defaultValueScope = {
     "sin": Complex.sin,
     "cos": Complex.cos,
     "tan": Complex.tan,
+    "acos": Complex.acos,
+    "asin": Complex.asin,
+    "atan": Complex.atan,
     "sinh": Complex.sinh,
     "cosh": Complex.cosh,
     "tanh": Complex.tanh,

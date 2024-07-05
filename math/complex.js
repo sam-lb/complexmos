@@ -117,17 +117,19 @@ class Complex {
 
 	acos() {
 		/* Computes the principal branch of the inverse cosine */
-		this.add(this.square().sub(new Complex(1, 0)).sqrt()).ln().div(complex(0, 1));
+		return this.add(this.square().sub(new Complex(1, 0)).sqrt()).ln().div(complex(0, 1));
 	}
 
 	asin() {
 		/** computes the principle branch of the inverse sine */
 		const i = complex(0, 1);
-		return Complex.div( Complex.add(this.mult(i), Complex.sqrt(complex(1, 0).sub(this.mult(z)))).ln() , i);
+		return this.mult(i).add(complex(1, 0).sub(this.square()).sqrt()).ln().div(i);
+		// return Complex.div( Complex.add(this.mult(i), Complex.sqrt(complex(1, 0).sub(this.mult(this)))).ln() , i);
 	}
 
 	atan() {
-
+		const i = complex(0, 1);
+		return Complex.div(Complex.div(i.sub(this), i.add(this)).ln(), i.scale(2));
 	}
 
 	rotate(angle) {
@@ -323,6 +325,18 @@ class Complex {
 		Return the tangent of z		
 		*/
 		return z.tan();
+	}
+
+	static asin(z) {
+		return z.asin();
+	} 
+
+	static acos(z) {
+		return z.acos();
+	}
+
+	static atan(z) {
+		return z.atan();
 	}
 
 	static sinh(z) {
