@@ -24,6 +24,7 @@ const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { translateToGLSL } = require("./translator.js");
+const { classifyInput } = require("./expression_processor.js");
 
 /** -------------------------------------------------------------- */
 
@@ -210,6 +211,9 @@ function fieldEditHandler(mathField) {
      * and if it kinda seems ok (well-formed latex 
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
+
+    classifyInput(fields);
+    return;
 
     if (RENDERER === "WebGL") {
         plot.needsUpdate = true;

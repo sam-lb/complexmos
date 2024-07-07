@@ -7,7 +7,7 @@
  */
 
 
-const { valueScope } = require("./scope.js");
+const { valueScope, scope } = require("./scope.js");
 const { tracker } = require("../parsing/errors.js");
 const {
     Expression, AssignExpression,
@@ -16,8 +16,53 @@ const {
     PrefixExpression
 } = require("../parsing/pratt/expressions.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
+const { Lexer } = require("../parsing/pratt/lexer.js");
 const { complex, Complex } = require("../math/complex.js");
 const {
     FunctionDefinition, VariableDefinition,
     EvaluatableLine,
 } = require("./input_expressions.js");
+const { cleanLatex } = require("../parsing/latex_convert.js");
+
+
+
+function classifyInput(fields) {
+    tracker.setCallback((message, target) => console.log(message));
+    const lexer = new Lexer(null, true);
+    lexer.setScope(scope);
+    const inputExpressions = {
+        "functions": [],
+        "variables": [],
+        "evaluatables": [],
+    };
+
+    for (const id in fields) {
+        const field = fields[id];
+        const latex = cleanLatex(field.field.latex());
+        lexer.setText(latex);
+        lexer.tokenize();
+        const tokens = lexer.getTokens();
+        
+        if (latex.includes("=")) {
+            if (tokens[1]?.mtype === TokenType.LEFT_PAREN) {
+                inputExpressions["functions"].push(new FunctionDefinition(tokens, id));
+            } else {
+                inputExpressions["variables"].push(new VariableDefinition(tokens, id));
+            }
+        } else {
+            inputExpressions["evaluatables"].push(new EvaluatableLine(tokens, id));
+        }
+    }
+
+    console.log(inputExpressions);
+}
+
+function validateLines() {
+
+}
+
+
+module.exports = {
+    classifyInput,
+    validateLines,
+};

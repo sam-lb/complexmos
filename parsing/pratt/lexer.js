@@ -240,6 +240,11 @@ class Lexer {
         if (equalCount > 1) {
             tracker.error("More than one equals sign present in expression");
         }
+
+        /**
+         * checks to be done:
+         * - RHS of : is a type (regardless of allowUnboundIdentifier mode)
+         */
     }
 
     getTokens() {
