@@ -13,6 +13,15 @@ const pValues = [
 ];
 
 
+const frac = (x) => {
+	return x - (x > 0 ? Math.floor(x) : Math.ceil(x));
+};
+
+const clamp = (x, min, max) => {
+	return Math.min(max, Math.max(min, x));
+};
+
+
 class Complex {
 
 	/*
@@ -255,6 +264,27 @@ class Complex {
 		return complex(norm * Math.cos(ang), norm * Math.sin(ang));
 	}
 
+	clamp(min, max) {
+		/**
+		 * clamp the complex number's norm between two values
+		 */
+		const norm = z.norm();
+		if (!(min <= norm && norm <= max)) {
+			return this.scale(clamp(norm) / norm);
+		}
+		return this;
+	}
+
+	frac() {
+		/**
+		 * return the fractional part of each of the components of the complex number
+		 */
+		return complex(
+			frac(this.re),
+			frac(this.im),
+		);
+	}
+
 	/* ---------- Static functions -------------------- */
 
 	static norm(z) {
@@ -403,6 +433,14 @@ class Complex {
 
 	static min(z1, z2) {
 		return (z1.normSq() > z2.normSq()) ? z2 : z1;
+	}
+
+	static clamp(z, min, max) {
+		return z.clamp(min, max);
+	}
+
+	static frac() {
+		return z.frac();
 	}
 
 	/* --------------- In-place operations --------------------- */

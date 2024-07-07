@@ -105,6 +105,14 @@ const scope = {
             isFunction: true,
             shaderAlias: "conjC",
         },
+        "clamp": {
+            isFunction: true,
+            shaderAlias: "clampC",
+        },
+        "frac": {
+            isFunction: true,
+            shaderAlias: "fracC",
+        },
 
         "i": {
             isFunction: false,
@@ -169,6 +177,8 @@ const defaultValueScope = {
     "max": Complex.max,
     "lerp": (z1, z2, t) => Complex.mult(complex(1, 0).sub(t), z1).add(z2.mult(t)),
     "conj": (z) => z.conj(),
+    "clamp": (z, min, max) => Complex.clamp(z, min.norm(), max.norm()),
+    "frac": Complex.frac,
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),
