@@ -55,10 +55,13 @@ function classifyInput(fields) {
     }
 
     console.log(inputExpressions);
+    return inputExpressions;
 }
 
 function validateLines() {
-
+    // check that none of the function's locals are defined elsewhere
+    // check that all the requirements are satisfied
+    // check that there are no circular requirements (including self requirements)
 }
 
 

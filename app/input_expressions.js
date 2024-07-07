@@ -58,11 +58,14 @@ class FunctionDefinition extends InputExpression {
                 continue;   
             }
 
-            if (token.mtype === TokenType.NAME && !scope.builtin[token.text]) {
-                console.log(token.text, ":Reahg");
-                if (assignmentEncountered && !this.locals.includes(token.text)) {
+            if (token.mtype !== TokenType.NAME) continue;
+
+            if (assignmentEncountered) {
+                if (!scope.builtin[token.text] && !this.locals.includes(token.text)) {
                     this.requirements.push(token.text);
-                } else if (!assignmentEncountered) {
+                }
+            } else {
+                if (!scope.builtin[token.text]?.isType) {
                     this.locals.push(token.text);
                 }
             }
@@ -70,7 +73,6 @@ class FunctionDefinition extends InputExpression {
     }
 
     readTokens() {
-        this.name = null;
         this.arguments = {
             arg1: "type1",
         };
@@ -88,11 +90,19 @@ class VariableDefinition extends InputExpression {
     }
 
     findRequirements() {
-        this.requirements = [];
+        if (this.tokens[0]?.mtype !== TokenType.NAME) {
+            tracker.error("Variable definition does not begin with valid identifier");
+            return;
+        } else {
+            this.name = this.tokens[0].text;
+        }
+
+        this.requirements = this.tokens.slice(2, this.tokens.length).filter(token => {
+            return token.mtype === TokenType.NAME && !scope.builtin[token.text];
+        }).map(token => token.text);
     }
 
     readTokens() {
-        this.name = null;
         this.definition = null;
         this.sliderable = false;
         this.type = "type";
@@ -108,7 +118,9 @@ class EvaluatableLine extends InputExpression {
     }
 
     findRequirements() {
-        this.requirements = [];
+        this.requirements = this.tokens.filter(token => {
+            return token.mtype === TokenType.NAME && !scope.builtin[token.text];
+        }).map(token => token.text);
     }
 
     readTokens() {
