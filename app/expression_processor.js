@@ -58,10 +58,27 @@ function classifyInput(fields) {
     return inputExpressions;
 }
 
-function validateLines() {
+function validateLines(lines) {
     // check that none of the function's locals are defined elsewhere
-    // check that all the requirements are satisfied
     // check that there are no circular requirements (including self requirements)
+
+    const varsAndFuncs = lines["functions"].concat(lines["variables"]);
+    const names = varsAndFuncs.map(line => line.name);
+
+    // check that all the requirements are satisfied
+    if (varsAndFuncs.some(line => {
+        for (const req of line.requirements) {
+            if (!names.includes(req)) {
+                tracker.error(`Unbound variable ${req}`);
+                return true;
+            }
+            return false;
+        }
+    })) {
+        return false;
+    }
+
+    return true;
 }
 
 

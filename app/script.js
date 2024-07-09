@@ -24,7 +24,7 @@ const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { translateToGLSL } = require("./translator.js");
-const { classifyInput } = require("./expression_processor.js");
+const { classifyInput, validateLines } = require("./expression_processor.js");
 
 /** -------------------------------------------------------------- */
 
@@ -212,7 +212,8 @@ function fieldEditHandler(mathField) {
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
 
-    classifyInput(fields);
+    const lines = classifyInput(fields);
+    console.log(validateLines(lines));
     return;
 
     if (RENDERER === "WebGL") {
