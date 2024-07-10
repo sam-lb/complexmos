@@ -58,15 +58,8 @@ function classifyInput(fields) {
     return inputExpressions;
 }
 
-function validateLines(lines) {
-    // check that there are no circular requirements (including self requirements)
-
-    const varsAndFuncs = lines["functions"].concat(lines["variables"]);
-    const names = varsAndFuncs.map(line => line.name);
-    const locals = Array.prototype.concat(...lines["functions"].map(line => line.locals));
-
-    // check that all the requirements are satisfied
-    if (varsAndFuncs.some(line => {
+function allRequirementsSatisfied(lines, names) {
+    if (lines.some(line => {
         for (const req of line.requirements) {
             if (!names.includes(req)) {
                 tracker.error(`Unbound variable ${req}`);
@@ -78,13 +71,50 @@ function validateLines(lines) {
         return false;
     }
 
-    // check that none of the function's locals are defined elsewhere
+    return true;
+}
+
+function noLocalOverwrites(locals, names) {
     for (const local of locals) {
         if (names.includes(local)) {
             tracker.error(`Cannot redefine global variable ${local} in the local scope.`);
             return false;
         }
     }
+
+    return true;
+}
+
+function noInvalidRequirements(varsAndFuncs, lines) {
+    // check that there are no circular requirements (including self requirements)
+    // check that there are no repeated definitions
+    for (const line of varsAndFuncs) {
+        for (const req of line.requirements) {
+            const definitions = lines.filter(def => def.name === req);
+            if (definitions.length > 1) {
+                tracker.error(`Multiple defintions found for ${req}`);
+                return false;
+            }
+            const definition = definitions[0];
+            if (definition.requirements.includes(line.name)) {
+                tracker.error(`Circular definition: ${req}, ${line.name}`);
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function validateLines(lines) {
+    const varsAndFuncs = lines["functions"].concat(lines["variables"]);
+    const allLines = Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"]);
+    const names = varsAndFuncs.map(line => line.name);
+    const locals = Array.prototype.concat(...lines["functions"].map(line => line.locals));
+
+    if (!allRequirementsSatisfied(allLines, names)) return false;
+    if (!noLocalOverwrites(locals, names)) return false;
+    if (!noInvalidRequirements(varsAndFuncs, allLines)) return false;
 
     return true;
 }

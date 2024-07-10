@@ -18,12 +18,17 @@ class Lexer {
         this.index = 0;
         this.allowUnboundIdentifiers = allowUnboundIdentifiers;
         this.setScope({});
+        this.setLocalScope({});
     }
 
     setScope(scope) {
         this.scope = scope;
         this.builtinLookup = new Trie(Object.keys(scope.builtin === undefined ? {} : scope.builtin));
         this.userGlobalLookup = new Trie(Object.keys(scope.userGlobal === undefined ? {} : scope.userGlobal));
+    }
+
+    setLocalScope(localScope) {
+        this.localScope = localScope;
     }
 
     setAllowUnboundIdentifiers(allowUnboundIdentifiers) {
@@ -51,7 +56,7 @@ class Lexer {
             let possibleIdentifier, i;
             for (i=buffer.length-1; i>=0; i--) {
                 possibleIdentifier = buffer.slice(0, i+1);
-                if (this.builtinLookup.containsKey(possibleIdentifier) || this.userGlobalLookup.containsKey(possibleIdentifier)) {
+                if (this.builtinLookup.containsKey(possibleIdentifier) || this.userGlobalLookup.containsKey(possibleIdentifier) || Object.keys(this.localScope).includes(possibleIdentifier)) {
                     matchFound = true;
                     break;
                 }
@@ -197,11 +202,12 @@ class Lexer {
             ) {
                 needsMultiplication = true;
             } else if (token.mtype === TokenType.NAME && nextToken.mtype === TokenType.LEFT_PAREN) {
-                if (this.builtinLookup.containsKey(token.text)) {
-                    needsMultiplication = !this.scope.builtin[token.text].isFunction;
-                } else if (this.userGlobalLookup.containsKey(token.text)) {
-                    needsMultiplication = !this.scope.userGlobal[token.text].isFunction;
-                }
+                // if (this.builtinLookup.containsKey(token.text)) {
+                //     needsMultiplication = !this.scope.builtin[token.text].isFunction;
+                // } else if (this.userGlobalLookup.containsKey(token.text)) {
+                //     needsMultiplication = !this.scope.userGlobal[token.text].isFunction;
+                // }
+                needsMultiplication = this._checkIsFunction(token);
             }
 
             if (needsMultiplication) tokens.push(new Token(TokenType.ASTERISK, "*"));
@@ -215,7 +221,11 @@ class Lexer {
     _checkIsFunction(token) {
         return (
             token.mtype === TokenType.NAME && 
-            (!!this.scope.builtin[token.text]?.isFunction || !!this.scope.userGlobal[token.text]?.isFunction)
+            (
+                !!this.scope.builtin[token.text]?.isFunction ||
+                !!this.scope.userGlobal[token.text]?.isFunction ||
+                !!this.localScope[token.text]?.isFunction
+            )
         );
     }
 
