@@ -59,11 +59,11 @@ function classifyInput(fields) {
 }
 
 function validateLines(lines) {
-    // check that none of the function's locals are defined elsewhere
     // check that there are no circular requirements (including self requirements)
 
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
     const names = varsAndFuncs.map(line => line.name);
+    const locals = Array.prototype.concat(...lines["functions"].map(line => line.locals));
 
     // check that all the requirements are satisfied
     if (varsAndFuncs.some(line => {
@@ -76,6 +76,14 @@ function validateLines(lines) {
         }
     })) {
         return false;
+    }
+
+    // check that none of the function's locals are defined elsewhere
+    for (const local of locals) {
+        if (names.includes(local)) {
+            tracker.error(`Cannot redefine global variable ${local} in the local scope.`);
+            return false;
+        }
     }
 
     return true;
