@@ -7,7 +7,13 @@ const scope = {
         "z": {
             isFunction: false,
             shaderAlias: "z",
+            isParameter: true,
         },
+        // "t": {
+        //     isFunction: false,
+        //     shaderAlias: "t",
+        //     isParameter: true,
+        // },
 
         "norm": {
             isFunction: true,

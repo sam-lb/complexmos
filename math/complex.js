@@ -270,7 +270,7 @@ class Complex {
 		 */
 		const norm = z.norm();
 		if (!(min <= norm && norm <= max)) {
-			return this.scale(clamp(norm) / norm);
+			return this.scale(clamp(norm, min, max) / norm);
 		}
 		return this;
 	}

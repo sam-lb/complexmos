@@ -162,6 +162,20 @@ vec2 lerpC(vec2 z, vec2 w, vec2 t) {
     return addC(multC( subC(vec2(1., 0.), t), z ), multC(w, t) );
 }
 
+vec2 fracC(vec2 z) {
+    return vec2(
+        fract(z.x), fract(z.y)
+    );
+}
+
+vec2 clampC(vec2 z, vec2 min_, vec2 max_) {
+    float norm = normC(z);
+    if (!(min_ <= norm && norm <= max_)) {
+        return scaleC(clamp(norm, min_, max_) / norm);
+    }
+    return z;
+}
+
 bool fIsInvalid(float x) {
     return !(x <= 0. || 0. <= x) || (abs(x) > 1000000.0);
 }
