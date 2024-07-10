@@ -169,9 +169,9 @@ vec2 fracC(vec2 z) {
 }
 
 vec2 clampC(vec2 z, vec2 min_, vec2 max_) {
-    float norm = normC(z);
-    if (!(min_ <= norm && norm <= max_)) {
-        return scaleC(clamp(norm, min_, max_) / norm);
+    float norm = normC(z).x;
+    if (!(min_.x <= norm && norm <= max_.x)) {
+        return scaleC(z, clamp(norm, min_.x, max_.x) / norm);
     }
     return z;
 }
