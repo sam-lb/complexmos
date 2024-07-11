@@ -17,6 +17,7 @@ const {
 } = require("../parsing/pratt/expressions.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
 const { Lexer } = require("../parsing/pratt/lexer.js");
+const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
 const { complex, Complex } = require("../math/complex.js");
 const {
     FunctionDefinition, VariableDefinition,
@@ -24,6 +25,108 @@ const {
 } = require("./input_expressions.js");
 const { cleanLatex } = require("../parsing/latex_convert.js");
 
+
+function populateGlobalUserScope(fields) {
+    const lexer = new Lexer(null, true);
+    // intentionally NOT setting the lexer's scope here
+    const functionAssignments = {};
+
+    for (const id in fields) {
+        const field = fields[id];
+        const latex = cleanLatex(field.field.latex());
+
+        if (!latex.includes("=")) continue;
+
+        lexer.setText(latex);
+        lexer.tokenize();
+        if (tracker.hasError) return;
+        const tokens = lexer.getTokens();
+        const name = tokens[0];
+
+        if (!(name.mtype === TokenType.NAME)) {
+            tracker.error("Invalid assignment: left hand side must begin with identifier");
+            return null;
+        }
+
+        if (!(scope.builtin[name.text] === undefined)) {
+            tracker.error(`Cannot overwrite builtin ${name.text}`);
+        }
+
+        const second = tokens[1]; // not undefined since there's at least an identifier and = at this point
+        if (second.mtype === TokenType.ASSIGN) {
+            scope.userGlobal[name.text] = {
+                isFunction: false,
+            };
+        } else if (second.mtype === TokenType.LEFT_PAREN) {
+            scope.userGlobal[name.text] = {
+                isFunction: true,
+            };
+            functionAssignments[name.text] = tokens;
+        } else {
+            tracker.error("Invalid assignment: left hand side must be identifier or function with argument list");
+            return null;
+        }
+    }
+
+    return functionAssignments;
+}
+
+function populateLocalUserScopes(functionAssignments) {
+    // specify local variables for functions
+    for (const name in functionAssignments) {
+        const assignment = functionAssignments[name];
+        const locals = {};
+        const ast = (new ExpressionParser(assignment)).parseExpression();
+        if (tracker.hasError) return;
+        if (!(ast instanceof AssignExpression) || !(ast.mLeft instanceof CallExpression)) {
+            tracker.error("Invalid assignment"); // not a lot of detail in the error message because it's not clear when this might happen
+            return;
+        }
+
+        const args = ast.mLeft.mArgs;
+        for (const arg of args) {
+            let argName;
+            if (arg instanceof NameExpression) {
+                // argument without type spec
+                console.log("what the freack", arg);
+                argName = arg.mName;
+            } else if (arg instanceof OperatorExpression && arg.mOperator === TokenType.COLON) {
+                // argument with type spec
+                // ignore type for now, since only valid type is complex
+                argName = arg.mLeft.mName;
+            } else {
+                tracker.error(`Invalid argument ${arg.toString()}`);
+                return;
+            }
+
+            if (Object.keys(scope.builtin).includes(argName) && !scope.builtin[argName].isParameter) {
+                tracker.error(`Cannot overwrite builtin identifier ${argName}`);
+                return;
+            } else if (Object.keys(scope.userGlobal).includes(argName)) {
+                tracker.error(`Cannot locally overwrite globally defined identifier ${argName}`);
+                return;
+            }
+
+            locals[argName] = {
+                isFunction: false,
+                type: "complex",
+            };
+        }
+
+        console.log(scope, "bf", name);
+        scope.userGlobal[name]["locals"] = locals;
+        console.log("frog");
+    }
+}
+
+
+function populateUserScope(fields) {
+    tracker.setCallback((message, target) => console.log(message));
+    const functionAssignments = populateGlobalUserScope(fields);
+    if (functionAssignments === null) return;
+    populateLocalUserScopes(functionAssignments);
+    console.log(scope);
+}
 
 
 function classifyInput(fields) {
@@ -54,7 +157,6 @@ function classifyInput(fields) {
         }
     }
 
-    console.log(inputExpressions);
     return inputExpressions;
 }
 
@@ -123,4 +225,5 @@ function validateLines(lines) {
 module.exports = {
     classifyInput,
     validateLines,
+    populateUserScope,
 };

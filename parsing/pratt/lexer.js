@@ -17,7 +17,10 @@ class Lexer {
         this.mText = mText;
         this.index = 0;
         this.allowUnboundIdentifiers = allowUnboundIdentifiers;
-        this.setScope({});
+        this.setScope({
+            "builtin": {},
+            "userGlobal": {},
+        });
         this.setLocalScope({});
     }
 
