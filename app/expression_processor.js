@@ -39,7 +39,7 @@ function populateGlobalUserScope(fields) {
 
         lexer.setText(latex);
         lexer.tokenize();
-        if (tracker.hasError) return;
+        if (tracker.hasError) return null;
         const tokens = lexer.getTokens();
         const name = tokens[0];
 
@@ -50,6 +50,7 @@ function populateGlobalUserScope(fields) {
 
         if (!(scope.builtin[name.text] === undefined)) {
             tracker.error(`Cannot overwrite builtin ${name.text}`);
+            return null;
         }
 
         const second = tokens[1]; // not undefined since there's at least an identifier and = at this point
@@ -77,10 +78,10 @@ function populateLocalUserScopes(functionAssignments) {
         const assignment = functionAssignments[name];
         const locals = {};
         const ast = (new ExpressionParser(assignment)).parseExpression();
-        if (tracker.hasError) return;
+        if (tracker.hasError) return null;
         if (!(ast instanceof AssignExpression) || !(ast.mLeft instanceof CallExpression)) {
             tracker.error("Invalid assignment"); // not a lot of detail in the error message because it's not clear when this might happen
-            return;
+            return null;
         }
 
         const args = ast.mLeft.mArgs;
@@ -88,7 +89,6 @@ function populateLocalUserScopes(functionAssignments) {
             let argName;
             if (arg instanceof NameExpression) {
                 // argument without type spec
-                console.log("what the freack", arg);
                 argName = arg.mName;
             } else if (arg instanceof OperatorExpression && arg.mOperator === TokenType.COLON) {
                 // argument with type spec
@@ -96,15 +96,15 @@ function populateLocalUserScopes(functionAssignments) {
                 argName = arg.mLeft.mName;
             } else {
                 tracker.error(`Invalid argument ${arg.toString()}`);
-                return;
+                return null;
             }
 
             if (Object.keys(scope.builtin).includes(argName) && !scope.builtin[argName].isParameter) {
-                tracker.error(`Cannot overwrite builtin identifier ${argName}`);
-                return;
+                tracker.error(`Cannot locally overwrite builtin identifier ${argName}`);
+                return null;
             } else if (Object.keys(scope.userGlobal).includes(argName)) {
                 tracker.error(`Cannot locally overwrite globally defined identifier ${argName}`);
-                return;
+                return null;
             }
 
             locals[argName] = {
@@ -113,18 +113,21 @@ function populateLocalUserScopes(functionAssignments) {
             };
         }
 
-        console.log(scope, "bf", name);
         scope.userGlobal[name]["locals"] = locals;
-        console.log("frog");
     }
+    return 1;
 }
 
 
 function populateUserScope(fields) {
+    scope.userGlobal = {};
+    tracker.clear();
+
     tracker.setCallback((message, target) => console.log(message));
     const functionAssignments = populateGlobalUserScope(fields);
     if (functionAssignments === null) return;
-    populateLocalUserScopes(functionAssignments);
+    const success = populateLocalUserScopes(functionAssignments);
+    if (success === null) return;
     console.log(scope);
 }
 
