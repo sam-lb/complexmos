@@ -212,9 +212,11 @@ function fieldEditHandler(mathField) {
      * e.g. no \frac{1}{} sorta stuff) then do a full recalc
      */
 
-    // const lines = classifyInput(fields);
-    // console.log(validateLines(lines));
     populateUserScope(fields);
+    if (tracker.hasError) return;
+    const lines = classifyInput(fields);
+    if (tracker.hasError) return;
+    validateLines(lines);
     return;
 
     if (RENDERER === "WebGL") {

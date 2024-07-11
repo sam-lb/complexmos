@@ -58,7 +58,9 @@ function populateGlobalUserScope(fields) {
             scope.userGlobal[name.text] = {
                 isFunction: false,
             };
-        } else if (second.mtype === TokenType.LEFT_PAREN) {
+        } else if (second.mtype === TokenType.ASTERISK && tokens[2]?.mtype === TokenType.LEFT_PAREN) {
+            // account for implicit multiplication
+            tokens.splice(1, 1);
             scope.userGlobal[name.text] = {
                 isFunction: true,
             };
@@ -134,7 +136,7 @@ function populateUserScope(fields) {
 
 function classifyInput(fields) {
     tracker.setCallback((message, target) => console.log(message));
-    const lexer = new Lexer(null, true);
+    const lexer = new Lexer(null, false);
     lexer.setScope(scope);
     const inputExpressions = {
         "functions": [],
@@ -151,7 +153,11 @@ function classifyInput(fields) {
         
         if (latex.includes("=")) {
             if (tokens[1]?.mtype === TokenType.LEFT_PAREN) {
-                inputExpressions["functions"].push(new FunctionDefinition(tokens, id));
+                // re-tokenize with local scope
+                lexer.setText(latex);
+                lexer.setLocalScope(scope.userGlobal[tokens[0].text].locals);
+                lexer.tokenize();
+                inputExpressions["functions"].push(new FunctionDefinition(lexer.getTokens(), id));
             } else {
                 inputExpressions["variables"].push(new VariableDefinition(tokens, id));
             }
@@ -170,21 +176,10 @@ function allRequirementsSatisfied(lines, names) {
                 tracker.error(`Unbound variable ${req}`);
                 return true;
             }
-            return false;
         }
+        return false;
     })) {
         return false;
-    }
-
-    return true;
-}
-
-function noLocalOverwrites(locals, names) {
-    for (const local of locals) {
-        if (names.includes(local)) {
-            tracker.error(`Cannot redefine global variable ${local} in the local scope.`);
-            return false;
-        }
     }
 
     return true;
@@ -211,15 +206,23 @@ function noInvalidRequirements(varsAndFuncs, lines) {
     return true;
 }
 
+function noRepeatDefinitions(names) {
+    if (!(Array.from(new Set(...names)).length === names.length)) {
+        tracker.error("Repeated definitions");
+        return false;
+    }
+    return true;
+}
+
+
 function validateLines(lines) {
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
     const allLines = Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"]);
     const names = varsAndFuncs.map(line => line.name);
-    const locals = Array.prototype.concat(...lines["functions"].map(line => line.locals));
 
     if (!allRequirementsSatisfied(allLines, names)) return false;
-    if (!noLocalOverwrites(locals, names)) return false;
     if (!noInvalidRequirements(varsAndFuncs, allLines)) return false;
+    if (!noRepeatDefinitions(names)) return false;
 
     return true;
 }

@@ -210,7 +210,7 @@ class Lexer {
                 // } else if (this.userGlobalLookup.containsKey(token.text)) {
                 //     needsMultiplication = !this.scope.userGlobal[token.text].isFunction;
                 // }
-                needsMultiplication = this._checkIsFunction(token);
+                needsMultiplication = !this._checkIsFunction(token);
             }
 
             if (needsMultiplication) tokens.push(new Token(TokenType.ASTERISK, "*"));
