@@ -18,7 +18,7 @@ let newVars = [];
 function translateToGLSL(fields) {
     newVars = [];
     const expressions = [];
-    scope.userGlobal = {};
+    scope.userGlobal = {"f": {isFunction: true}};
     
     tracker.clear();
     tracker.setCallback((message, target) => console.log(message));

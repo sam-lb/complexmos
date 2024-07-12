@@ -176,6 +176,76 @@ vec2 clampC(vec2 z, vec2 min_, vec2 max_) {
     return z;
 }
 
+// SC stuff
+
+vec2 nCrC(vec2 n, vec2 k) {
+    return divC(GammaC(n + vec2(1., 0.)), multC( GammaC(k + vec2(1., 0.)), GammaC(n - k + vec2(1., 0.)) ));
+}
+
+vec2 scC(vec2 z, vec2 pC) {
+    float p = pC.x;
+
+    // compute scale factor (inverse radius of resulting polygon)
+    float scaleFactor = p / betaC(vec2(1.0 / p, 0.), vec2(1.0 - 2.0 / p, 0.)).x;
+
+    // compute integral
+    float step = 1.0 / 100.;
+    vec2 integral = vec2(0.0, 0.0);
+    for (int i=0; i<101; i++) {
+        float t = step * float(i);
+        integral += step * multC( z, powC( vec2(1.0, 0.0) - powC( t * z, vec2(p, 0) ), vec2(-2.0 / p, 0) ) );
+    }
+
+    return scaleFactor * integral;
+}
+
+float scInvRadiusScale(float p) {
+  float scaleFactor = 1.0 / cos(pi / p);
+  return scaleFactor * ( 1.00508636015 - 0.673153865829 * pow(p, -1.55599992684) );
+}
+
+vec2 inverseSCC(vec2 z, vec2 pC) {
+    float p = pC.x;
+
+    // from what I can tell, there is no way to declare an array in GLSL ES 2.0,
+    // which is what I did in the original version of this code (written in es 3.0) for the series coefficients
+    // so this has to suffice
+    float Cn1 = scaleC(nCrC(vec2(1. - 1.0 + 2.0 / p, 0.), vec2(1., 0.)), 1. / (1. + 1. + p)).x;
+    float Cn2 = scaleC(nCrC(vec2(2. - 1.0 + 2.0 / p, 0.), vec2(2., 0.)), 1. / (1. + 2. + p)).x;
+    float Cn3 = scaleC(nCrC(vec2(3. - 1.0 + 2.0 / p, 0.), vec2(3., 0.)), 1. / (1. + 3. + p)).x;
+    float Cn4 = scaleC(nCrC(vec2(4. - 1.0 + 2.0 / p, 0.), vec2(4., 0.)), 1. / (1. + 4. + p)).x;
+    float Cn5 = scaleC(nCrC(vec2(5. - 1.0 + 2.0 / p, 0.), vec2(5., 0.)), 1. / (1. + 5. + p)).x;
+
+    float C = betaC(vec2(1.0 / p, 0.), vec2(1.0 - 2.0 / p, 0.)).x / p;
+
+    // taylor coefficients
+    float T1 = -Cn1;
+    float T2 = -Cn2 + (p + 1.0) * pow(Cn1, 2.0);
+    float T3 = -Cn3 + (3.0 * p + 2.0) * (Cn1 * Cn2 - (p + 1.0) / 2.0 * pow(Cn1, 3.0));
+    float T4 = -Cn4 + (2.0 * p + 1.0) * (2.0 * Cn1 * Cn3 + pow(Cn2, 2.0) - (4.0 * p + 3.0) * (pow(Cn1, 2.0) * Cn2 - (p + 1.0) / 3.0 * pow(Cn1, 4.0)));
+    float T5 = -Cn5 + (5.0 * p + 2.0) * (Cn1 * Cn4 + Cn2 * Cn3 + (5.0 * p + 3.0) * (-0.5 * pow(Cn1, 2.0) * Cn3 - 0.5 * Cn1 * pow(Cn2, 2.0) + (5.0 * p + 4.0) * ((pow(Cn1, 3.0) * Cn2) / 6.0 - ((p + 1.0) * pow(Cn1, 5.0)) / 24.0 )));
+
+    z = scInvRadiusScale(p) * z;
+    vec2 h = powC(z, vec2(p, 0.0));
+    vec2 base = vec2(1.0, 0.0) + T1 * h + T2 * powC(h, vec2(2.0, 0.0)) + T3 * powC(h, vec2(3.0, 0.0)) + T4 * powC(h, vec2(4.0, 0.0)) + divC( T5 * powC(h, vec2(5.0, 0.0)), vec2(1.0, 0.0) + h / pow(C, p) );
+
+    return multC(z, base);
+}
+
+vec2 planeToPC(vec2 z, vec2 pC) {
+    vec2 squished = scaleC(z, 2. / (1. + exp(-normC(z).x)) - 1.);
+    return scC(squished, pC);
+}
+
+vec2 pToPlaneC(vec2 z, vec2 pC) {
+    z = inverseSCC(z, pC);
+    float norm = normC(z).x;
+    vec2 stretched = scaleC(z, log((1. + norm) / (1. - norm)));
+    return stretched;
+}
+
+// end SC stuff
+
 bool fIsInvalid(float x) {
     return !(x <= 0. || 0. <= x) || (abs(x) > 1000000.0);
 }

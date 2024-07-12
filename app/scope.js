@@ -119,6 +119,22 @@ const scope = {
             isFunction: true,
             shaderAlias: "fracC",
         },
+        "inverseSC": {
+            isFunction: true,
+            shaderAlias: "inverseSCC",
+        },
+        "sc": {
+            isFunction: true,
+            shaderAlias: "scC",
+        },
+        "planeToP": {
+            isFunction: true,
+            shaderAlias: "planeToPC",
+        },
+        "pToPlane": {
+            isFunction: true,
+            shaderAlias: "pToPlaneC",
+        },
 
         "i": {
             isFunction: false,
@@ -185,6 +201,10 @@ const defaultValueScope = {
     "conj": (z) => z.conj(),
     "clamp": (z, min, max) => Complex.clamp(z, min.norm(), max.norm()),
     "frac": Complex.frac,
+    "inverseSC": (z, p) => complex(1, 0), // not implemented
+    "sc": (z, p) => complex(1, 0), // not implemented
+    "planeToP": (z, p) => complex(1, 0), // not implemented
+    "pToPlane": (z, p) => complex(1, 0), // not implemented
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),
