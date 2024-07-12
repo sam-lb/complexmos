@@ -130,7 +130,6 @@ function populateUserScope(fields) {
     if (functionAssignments === null) return;
     const success = populateLocalUserScopes(functionAssignments);
     if (success === null) return;
-    console.log(scope);
 }
 
 
@@ -207,7 +206,8 @@ function noInvalidRequirements(varsAndFuncs, lines) {
 }
 
 function noRepeatDefinitions(names) {
-    if (!(Array.from(new Set(...names)).length === names.length)) {
+    console.log(names);
+    if (!(Array.from(new Set(names)).length === names.length)) {
         tracker.error("Repeated definitions");
         return false;
     }

@@ -1,7 +1,7 @@
 {
   "name": "complexmos",
   "author": "Sam Brunacini",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "dependencies": {
     "regl": "^2.1.0"
   }
