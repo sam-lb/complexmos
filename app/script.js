@@ -204,13 +204,16 @@ function getCallbacks(id) {
     };
 }
 
+/*
+I acknowledge that this is horrible, but there's not really a better solution.
+*/
+let exitEarly = false;
+
 function fieldEditHandler(mathField) {
-    /**
-     * potentially for the future, instead of debouncing:
-     * send the current expression only to the tokenizer,
-     * and if it kinda seems ok (well-formed latex 
-     * e.g. no \frac{1}{} sorta stuff) then do a full recalc
-     */
+    if (exitEarly) {
+        exitEarly = false;
+        return;
+    }
 
     console.log("\n\n---------- Input Processing ---------------");
     populateUserScope(fields);
@@ -224,6 +227,16 @@ function fieldEditHandler(mathField) {
     validateLines(lines);
     if (tracker.hasError) return;
     console.log("validated lines.");
+
+    const varsAndFuncs = lines["functions"].concat(lines["variables"]);
+    const newOpsString = " " + varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
+    MQ.config({
+        autoOperatorNames: opsString + newOpsString,
+    });
+    mathField.latex(mathField.latex());
+    exitEarly = true;
+    console.log("User defined variables added to autoOperatorNames: ", newOpsString);
+
     console.log("\n\n--------- Input Processed Successfully -----------");
     return;
 
