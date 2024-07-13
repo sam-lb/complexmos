@@ -215,30 +215,30 @@ function fieldEditHandler(mathField) {
         return;
     }
 
-    // console.log("\n\n---------- Input Processing ---------------");
-    // populateUserScope(fields);
-    // if (tracker.hasError) return;
-    // console.log("User Scope populated.");
-    // console.log("current scope: ", scope);
-    // const lines = classifyInput(fields);
-    // if (tracker.hasError) return;
-    // console.log("input classified.");
-    // console.log("lines: ", lines);
-    // validateLines(lines);
-    // if (tracker.hasError) return;
-    // console.log("validated lines.");
+    console.log("\n\n---------- Input Processing ---------------");
+    populateUserScope(fields);
+    if (tracker.hasError) return;
+    console.log("User Scope populated.");
+    console.log("current scope: ", scope);
+    const lines = classifyInput(fields);
+    if (tracker.hasError) return;
+    console.log("input classified.");
+    console.log("lines: ", lines);
+    validateLines(lines);
+    if (tracker.hasError) return;
+    console.log("validated lines.");
 
-    // const varsAndFuncs = lines["functions"].concat(lines["variables"]);
-    // const newOpsString = " " + varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
-    // MQ.config({
-    //     autoOperatorNames: opsString + newOpsString,
-    // });
-    // mathField.latex(mathField.latex());
-    // exitEarly = true;
-    // console.log("User defined variables added to autoOperatorNames: ", newOpsString);
+    const varsAndFuncs = lines["functions"].concat(lines["variables"]);
+    const newOpsString = varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
+    MQ.config({
+        autoOperatorNames: [opsString + newOpsString].join(" "),
+    });
+    mathField.latex(mathField.latex());
+    exitEarly = true;
+    console.log("User defined variables added to autoOperatorNames: ", newOpsString);
 
-    // console.log("\n\n--------- Input Processed Successfully -----------");
-    // return;
+    console.log("\n\n--------- Input Processed Successfully -----------");
+    return;
 
     if (RENDERER === "WebGL") {
         plot.needsUpdate = true;

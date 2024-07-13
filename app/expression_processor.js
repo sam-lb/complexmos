@@ -228,6 +228,11 @@ function validateLines(lines) {
 }
 
 
+function validateAST(ast) {
+    
+}
+
+
 module.exports = {
     classifyInput,
     validateLines,
