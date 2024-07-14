@@ -23,8 +23,8 @@ const { stereographic, inverseStereoProject, perspectiveProject } = require("../
 const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
-const { translateToGLSL } = require("./translator.js");
 const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
+const { translateToGLSL } = require("./translator.js");
 
 /** -------------------------------------------------------------- */
 
@@ -215,25 +215,18 @@ function fieldEditHandler(mathField) {
         return;
     }
 
-    console.log("\n\n---------- Input Processing ---------------");
     populateUserScope(fields);
     if (tracker.hasError) return;
-    console.log("User Scope populated.");
-    console.log("current scope: ", scope);
     const lines = classifyInput(fields);
     if (tracker.hasError) return;
-    console.log("input classified.");
-    console.log("lines: ", lines);
     validateLines(lines);
     if (tracker.hasError) return;
-    console.log("validated lines.");
     for (const line of Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"])) {
         line.buildAST();
         if (tracker.hasError) return;
         validateAST(line.ast);
         if (tracker.hasError) return;
     }
-    console.log("validated ASTs");
 
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
     let newOpsString = opsString + " " + varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
@@ -243,9 +236,10 @@ function fieldEditHandler(mathField) {
     });
     mathField.latex(mathField.latex());
     exitEarly = true;
-    console.log("autoOperatorNames: ", newOpsString);
 
-    console.log("\n\n--------- Input Processed Successfully -----------");
+    const emittedGLSL = translateToGLSL(varsAndFuncs);
+    console.log(emittedGLSL);
+
     return;
 
     if (RENDERER === "WebGL") {

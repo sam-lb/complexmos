@@ -12,10 +12,47 @@ const {
     NumberExpression, OperatorExpression,
     PrefixExpression
 } = require("../parsing/pratt/expressions.js");
+const { FunctionDefinition, VariableDefinition } = require("./input_expressions.js");
 
 let newVars = [];
 
-function translateToGLSL(fields) {
+function sortByDependence(lines) {
+    return lines.sort((a, b) => {
+        const aDependsOnB = a.requirements.includes(b.name);
+        const bDependsOnA = b.requirements.includes(a.name);
+
+        if (aDependsOnB && bDependsOnA) {
+            tracker.error("circular definitions");
+        } else if (aDependsOnB) {
+            return 1;
+        } else if (bDependsOnA) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+}
+
+function translateToGLSL(lines) {
+    if (!(lines instanceof Array)) return {};
+    lines = sortByDependence(lines);
+
+    let glslString = "";
+
+    for (const line of lines) {
+        let args = "";
+        if (line instanceof FunctionDefinition) {
+            const locals = (scope.builtin[line.name]) ? Object.keys(scope.builtin[line.name].locals) : Object.keys(scope.userGlobal[line.name].locals);
+            args = locals.sort(key => locals[key].index).map(req => "vec2 " + req).join(",");
+        }
+        const body = astToGLSL(line.ast);
+        glslString += `vec2 ${line.name}(${args}) {\n\treturn ${body};\n}\n\n`;
+    }
+
+    return glslString;
+}
+
+function htranslateToGLSL(fields) {
     newVars = [];
     const expressions = [];
     scope.userGlobal = {"f": {isFunction: true}};

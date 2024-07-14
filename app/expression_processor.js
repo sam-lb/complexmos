@@ -7,7 +7,7 @@
  */
 
 
-const { valueScope, scope } = require("./scope.js");
+const { scope } = require("./scope.js");
 const { tracker } = require("../parsing/errors.js");
 const {
     Expression, AssignExpression,
@@ -83,7 +83,6 @@ function populateLocalUserScopes(functionAssignments) {
             assignment.push(token);
         }
         const locals = {};
-        console.log(assignment, "assignment");
         const ast = (new ExpressionParser(assignment)).parseExpression();
         if (tracker.hasError) return null;
         // if (!(ast instanceof AssignExpression) || !(ast.mLeft instanceof CallExpression)) {
@@ -93,6 +92,7 @@ function populateLocalUserScopes(functionAssignments) {
         }
 
         const args = ast.mArgs;
+        const index = 0;
         for (const arg of args) {
             let argName;
             if (arg instanceof NameExpression) {
@@ -118,6 +118,7 @@ function populateLocalUserScopes(functionAssignments) {
             locals[argName] = {
                 isFunction: false,
                 type: "complex",
+                index: index,
             };
         }
 
@@ -159,7 +160,7 @@ function classifyInput(fields) {
         lexer.setText(latex);
         lexer.tokenize();
         const tokens = lexer.getTokens();
-        
+
         if (latex.includes("=")) {
             if (tokens[1]?.mtype === TokenType.LEFT_PAREN) {
                 // re-tokenize with local scope
@@ -216,7 +217,6 @@ function noInvalidRequirements(varsAndFuncs, lines) {
 }
 
 function noRepeatDefinitions(names) {
-    console.log(names);
     if (!(Array.from(new Set(names)).length === names.length)) {
         tracker.error("Repeated definitions");
         return false;

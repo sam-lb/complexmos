@@ -144,7 +144,6 @@ class EvaluatableLine extends InputExpression {
 
 }
 
-
 module.exports = {
     FunctionDefinition,
     VariableDefinition,
