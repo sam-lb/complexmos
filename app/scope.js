@@ -18,122 +18,152 @@ const scope = {
         "norm": {
             isFunction: true,
             shaderAlias: "normC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "normSq": {
             isFunction: true,
             shaderAlias: "normSqC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "arg": {
             isFunction: true,
             shaderAlias: "argC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "inv": {
             isFunction: true,
             shaderAlias: "invC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "exp": { 
             isFunction: true,
             shaderAlias: "expC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "ln": { 
             isFunction: true,
             shaderAlias: "lnC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "sqrt": { 
             isFunction: true,
             shaderAlias: "sqrtC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "sin": { 
             isFunction: true,
             shaderAlias: "sinC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "cos": { 
             isFunction: true,
             shaderAlias: "cosC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "tan": {
             isFunction: true,
             shaderAlias: "tanC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "asin": {
             isFunction: true,
             shaderAlias: "asinC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "acos": {
             isFunction: true,
             shaderAlias: "acosC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "atan": {
             isFunction: true,
             shaderAlias: "atanC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "sinh": {
             isFunction: true,
             shaderAlias: "sinhC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "cosh": {
             isFunction: true,
             shaderAlias: "coshC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "tanh": {
             isFunction: true,
             shaderAlias: "tanhC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "re": {
             isFunction: true,
             shaderAlias: "reC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "im": {
             isFunction: true,
             shaderAlias: "imC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "Gamma": {
             isFunction: true,
             shaderAlias: "GammaC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "beta": {
             isFunction: true,
             shaderAlias: "betaC",
+            locals: { "z": { isFunction: false, type: "complex" }, "w": { isFunction: false, type: "complex" } },
         },
         "min": {
             isFunction: true,
             shaderAlias: "minC",
+            locals: { "z": { isFunction: false, type: "complex" }, "w": { isFunction: false, type: "complex" } },
         },
         "max": {
             isFunction: true,
             shaderAlias: "maxC",
+            locals: { "z": { isFunction: false, type: "complex" }, "w": { isFunction: false, type: "complex" } },
         },
         "lerp": {
             isFunction: true,
             shaderAlias: "lerpC",
+            locals: { "z": { isFunction: false, type: "complex" }, "w": { isFunction: false, type: "complex" }, "t": { isFunction: false, type: "complex" } },
         },
         "conj": {
             isFunction: true,
             shaderAlias: "conjC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "clamp": {
             isFunction: true,
             shaderAlias: "clampC",
+            locals: { "z": { isFunction: false, type: "complex" }, "w": { isFunction: false, type: "complex" }, "t": { isFunction: false, type: "complex" } },
         },
         "frac": {
             isFunction: true,
             shaderAlias: "fracC",
+            locals: { "z": { isFunction: false, type: "complex" } },
         },
         "inverseSC": {
             isFunction: true,
             shaderAlias: "inverseSCC",
+            locals: { "z": { isFunction: false, type: "complex" }, "p": { isFunction: false, type: "complex" } },
         },
         "sc": {
             isFunction: true,
             shaderAlias: "scC",
+            locals: { "z": { isFunction: false, type: "complex" }, "p": { isFunction: false, type: "complex" } },
         },
         "planeToP": {
             isFunction: true,
             shaderAlias: "planeToPC",
+            locals: { "z": { isFunction: false, type: "complex" }, "p": { isFunction: false, type: "complex" } },
         },
         "pToPlane": {
             isFunction: true,
             shaderAlias: "pToPlaneC",
+            locals: { "z": { isFunction: false, type: "complex" }, "p": { isFunction: false, type: "complex" } },
         },
 
         "i": {

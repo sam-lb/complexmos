@@ -1,9 +1,10 @@
 
 
 const { tracker } = require("../parsing/errors.js");
-const { Token } = require("../parsing/pratt/token");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
 const { scope } = require("./scope.js");
+const { validateAST } = require("./expression_processor.js");
+const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
 
 
 
@@ -30,6 +31,10 @@ class InputExpression {
 
     readTokens() {
         
+    }
+
+    buildAST() {
+        this.ast = (new ExpressionParser(this.tokens).parseExpression());
     }
 
 }
@@ -77,7 +82,11 @@ class FunctionDefinition extends InputExpression {
             arg1: "type1",
         };
         this.definition = null;
-        // this.ast = parse(this.tokens);
+    }
+
+    buildAST() {
+        super.buildAST();
+        if (!tracker.hasError) this.ast = this.ast.mRight;
     }
 
 }
@@ -106,6 +115,11 @@ class VariableDefinition extends InputExpression {
         this.definition = null;
         this.sliderable = false;
         this.type = "type";
+    }
+
+    buildAST() {
+        super.buildAST();
+        if (!tracker.hasError) this.ast = this.ast.mRight;
     }
 
 }

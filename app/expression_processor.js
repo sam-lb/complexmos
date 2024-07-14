@@ -77,16 +77,22 @@ function populateGlobalUserScope(fields) {
 function populateLocalUserScopes(functionAssignments) {
     // specify local variables for functions
     for (const name in functionAssignments) {
-        const assignment = functionAssignments[name];
+        const assignment = [];
+        for (const token of functionAssignments[name]) {
+            if (token.text === "=") break;
+            assignment.push(token);
+        }
         const locals = {};
+        console.log(assignment, "assignment");
         const ast = (new ExpressionParser(assignment)).parseExpression();
         if (tracker.hasError) return null;
-        if (!(ast instanceof AssignExpression) || !(ast.mLeft instanceof CallExpression)) {
+        // if (!(ast instanceof AssignExpression) || !(ast.mLeft instanceof CallExpression)) {
+        if (!(ast instanceof CallExpression)) {
             tracker.error("Invalid assignment"); // not a lot of detail in the error message because it's not clear when this might happen
             return null;
         }
 
-        const args = ast.mLeft.mArgs;
+        const args = ast.mArgs;
         for (const arg of args) {
             let argName;
             if (arg instanceof NameExpression) {
@@ -229,7 +235,33 @@ function validateLines(lines) {
 
 
 function validateAST(ast) {
-    
+    if (
+        ast instanceof AssignExpression ||
+        ast instanceof OperatorExpression
+    ) {
+        validateAST(ast.mLeft);
+        if (tracker.hasError) return;
+        validateAST(ast.mRight);
+    } else if (ast instanceof PrefixExpression) {
+        validateAST(ast.mRight);
+    } else if (ast instanceof CallExpression) {
+        // Validate argument count (and later, type);
+        let requiredArgCount;
+        if (scope.userGlobal[ast.mFunction]?.locals) {
+            requiredArgCount = Object.keys(scope.userGlobal[ast.mFunction].locals).length;
+        } else {
+            requiredArgCount = Object.keys(scope.builtin[ast.mFunction].locals).length;
+        }
+        const passedArgCount = ast.mArgs.length;
+        if (requiredArgCount !== passedArgCount) {
+            tracker.error(`Wrong number of arguments passed to ${ast.mFunction} (expected ${requiredArgCount}, received ${passedArgCount})`);
+            return;
+        }
+        for (const arg of ast.mArgs) {
+            validateAST(arg);
+            if (tracker.hasError) return;
+        }
+    }
 }
 
 
@@ -237,4 +269,5 @@ module.exports = {
     classifyInput,
     validateLines,
     populateUserScope,
+    validateAST,
 };

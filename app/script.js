@@ -24,7 +24,7 @@ const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { translateToGLSL } = require("./translator.js");
-const { classifyInput, validateLines, populateUserScope } = require("./expression_processor.js");
+const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 
 /** -------------------------------------------------------------- */
 
@@ -227,11 +227,18 @@ function fieldEditHandler(mathField) {
     validateLines(lines);
     if (tracker.hasError) return;
     console.log("validated lines.");
+    for (const line of Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"])) {
+        line.buildAST();
+        if (tracker.hasError) return;
+        validateAST(line.ast);
+        if (tracker.hasError) return;
+    }
+    console.log("validated ASTs");
 
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
     const newOpsString = varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
     MQ.config({
-        autoOperatorNames: [opsString + newOpsString].join(" "),
+        autoOperatorNames: [opsString, newOpsString].join(" "),
     });
     mathField.latex(mathField.latex());
     exitEarly = true;
