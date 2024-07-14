@@ -236,13 +236,14 @@ function fieldEditHandler(mathField) {
     console.log("validated ASTs");
 
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
-    const newOpsString = varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
+    let newOpsString = opsString + " " + varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
+    if (newOpsString[newOpsString.length-1] === " ") newOpsString = newOpsString.slice(0, -1);
     MQ.config({
-        autoOperatorNames: [opsString, newOpsString].join(" "),
+        autoOperatorNames: newOpsString,
     });
     mathField.latex(mathField.latex());
     exitEarly = true;
-    console.log("User defined variables added to autoOperatorNames: ", newOpsString);
+    console.log("autoOperatorNames: ", newOpsString);
 
     console.log("\n\n--------- Input Processed Successfully -----------");
     return;
