@@ -152,6 +152,10 @@ function classifyInput(fields) {
     for (const id in fields) {
         const field = fields[id];
         const latex = cleanLatex(field.field.latex());
+        if (latex === "") {
+            // skip empty lines
+            continue;
+        }
         lexer.setText(latex);
         lexer.tokenize();
         const tokens = lexer.getTokens();
