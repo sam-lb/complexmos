@@ -1493,6 +1493,7 @@ function setupP5() {
 
     plot = new Plot(width, height, null, Plot.modes.PLANE, false);
     tabSwitch(plot.mode-1);
+    fieldEditHandler(null);
 }
 
 function setupWebGL() {
@@ -1507,6 +1508,7 @@ function setupWebGL() {
                     console.warn(`Could not load WebGL! Maybe your browser doesn't support it? Using vanilla canvas instead. Specific error: ${err}`);
                     RENDERER = "p5";
                     setupP5();
+                    fieldEditHandler(null);
                     return;
                 }
 
