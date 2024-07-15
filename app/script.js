@@ -287,19 +287,6 @@ function linspace(min, max, n) {
 	return result;
 }
 
-function roundTo(x, places) {
-	/* Rounds x to the specified number of places after the decimal */
-	return Math.round(x * Math.pow(10, places)) / Math.pow(10, places);
-}
-
-function randInt(a, b) {
-    /*
-    Generate random integer between a and b
-    */
-   return Math.floor(a + (b - a + 1) * 0.9999 *Math.random());
-}
-
-
 
 class Plot {
 
