@@ -46,7 +46,8 @@ function translateToGLSL(lines) {
             args = locals.sort(key => locals[key].index).map(req => "vec2 " + req).join(",");
         }
         const body = astToGLSL(line.ast);
-        glslString += `vec2 ${line.name}(${args}) {\n\treturn ${body};\n}\n\n`;
+        const alias = scope.builtin[line.name]?.shaderAlias ?? scope.userGlobal[line.name]?.shaderAlias;
+        glslString += `vec2 ${alias}(${args}) {\n\treturn ${body};\n}\n\n`;
     }
 
     return glslString;
@@ -189,12 +190,18 @@ function astToGLSL(ast) {
     } else if (ast instanceof PrefixExpression) {
         return `-${astToGLSL(ast.mRight)}`;
     } else if (ast instanceof CallExpression) {
-        return `${ast.mFunction}(${ast.mArgs.map(astToGLSL).join(",")})`;
+        const alias = scope.builtin[ast.mFunction]?.shaderAlias ?? scope.userGlobal[ast.mFunction]?.shaderAlias;
+        return `${alias}(${ast.mArgs.map(astToGLSL).join(",")})`;
     } else if (ast instanceof NameExpression) {
-        if (!(ast.mName.slice(0, 4) === "udf_") || !newVars.includes(ast.mName)) {
+        const alias = scope.builtin[ast.mName]?.shaderAlias ?? scope.userGlobal[ast.mName]?.shaderAlias;
+        // if (!(ast.mName.slice(0, 4) === "udf_") || !newVars.includes(ast.mName)) {
+        if (alias === undefined) {
+            // it's a local
             return ast.mName;
+        } else if (!(alias.slice(0, 4) === "udf_")) {
+            return alias;
         } else {
-            return `${ast.mName}()`;
+            return `${alias}()`;
         }
     } else if (ast instanceof NumberExpression) {
         return `vec2(${ast.toString()}, 0.)`;

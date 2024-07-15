@@ -57,12 +57,14 @@ function populateGlobalUserScope(fields) {
         if (second.mtype === TokenType.ASSIGN) {
             scope.userGlobal[name.text] = {
                 isFunction: false,
+                shaderAlias: "udf_" + name.text,
             };
         } else if (second.mtype === TokenType.ASTERISK && tokens[2]?.mtype === TokenType.LEFT_PAREN) {
             // account for implicit multiplication
             tokens.splice(1, 1);
             scope.userGlobal[name.text] = {
                 isFunction: true,
+                shaderAlias: "udf_" + name.text,
             };
             functionAssignments[name.text] = tokens;
         } else {
