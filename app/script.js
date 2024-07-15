@@ -244,7 +244,8 @@ function fieldEditHandler(mathField) {
             plot.setShaderReplacement(null);
         } else {
             const emittedGLSL = translateToGLSL(lines);
-            if (emittedGLSL) {
+            if (emittedGLSL && emittedGLSL.includes("vec2 udf_f(vec2 z)")) {
+                // second condition is temporary until visibility is integrated into UI as a setting
                 plot.setShaderReplacement(emittedGLSL);
             } else {
                 plot.setShaderReplacement(null);
@@ -977,7 +978,7 @@ class Plot {
     drawFn3D() {
         const mesh = this.planeMesh;
         const vertexCount = mesh.length;
-        
+
         let frag = this.shaders["complexmos_cube.frag"];
         let vert = this.shaders["complexmos_cube.vert"];
         if (this.shaderReplacement !== null) {
