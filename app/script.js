@@ -7,17 +7,13 @@ const { cleanLatex } = require("../parsing/latex_convert.js");
 const { tracker } = require("../parsing/errors.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
 const {
-    Expression, AssignExpression,
-    CallExpression, NameExpression,
-    NumberExpression, OperatorExpression,
-    PrefixExpression
+    CallExpression, NameExpression, OperatorExpression
 } = require("../parsing/pratt/expressions.js");
 const { Lexer } = require("../parsing/pratt/lexer.js");
 const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
 const { Complex, complex } = require("../math/complex.js");
 const { Matrix, matrix } = require("../math/matrix.js");
-const { Euclid, Poincare } = require("../math/geometry.js");
-const { parameterizePoints, fourierCoefficients, fourierSeries } = require("../math/fourier.js");
+const { Euclid } = require("../math/geometry.js");
 const { sscale, ssub, icosphere, icosphere_flat, icosphere_flat_lopsided } = require("../math/icosphere.js"); // fix this garbage
 const { stereographic, inverseStereoProject, perspectiveProject } = require("../math/projection.js");
 const { rvec } = require("../math/rvector.js");
@@ -212,7 +208,7 @@ function getCallbacks(id) {
     };
 }
 
-function validateInput(mathField) {
+function validateInput() {
     populateUserScope(fields);
     if (tracker.hasError) return null;
     const lines = classifyInput(fields);
@@ -237,7 +233,7 @@ function validateInput(mathField) {
 }
 
 function fieldEditHandler(mathField) {
-    const lines = validateInput(mathField);
+    const lines = validateInput();
 
     if (RENDERER === "WebGL") {
         if (lines === null) {
@@ -1523,87 +1519,6 @@ function setup() {
     }
 
     registerMouseEvents();
-
-    // const circ = new Parametric(
-    //     t => complex(Math.cos(t), Math.sin(t)),
-    //     {start: 0, stop: 2 * Math.PI},
-    // );
-    // plot.addPlottable(circ);
-
-    /** Domain coloring example */
-    // const f = (z) => {
-    //     return z.mobius(
-    //         complex(1, 0),
-    //         complex(0, -1),
-    //         complex(1, 0),
-    //         complex(0, 1),
-    //     );
-    // };
-    // const f = (z) => {
-    //     // return Complex.exp(z);
-    //     // return z;
-    //     // return Complex.sqrt(z);
-    //     // return Complex.mult(z, z);
-    //     // return Complex.pow(z, complex(5, 0)).sub(complex(1, 0));
-    //     return Complex.cos(z);
-    //     // return Complex.sqrt(z.mult(z).scale(-4).sub(complex(1, 0))).sub(Complex.mult(complex(0, 2), z));
-    // };
-    // const dcPlot = new DomainColoring(f);
-    // plot.addPlottable(dcPlot);
-
-    /** Example: chaos game */
-    // const maxPoints = 10000;
-    // let point = complex(0, 0);
-    // const vertices = [];
-    // const p = 5;
-    // const rad = Poincare.regPolyDist(p, 100);
-    // for (let j=0; j<p; j++) {
-    //     vertices.push(complex(0, j / p * 2 * Math.PI).exp().scale(rad));
-    // }
-    // const phi = 2 / (1 + Math.sqrt(5));
-    // for (let i=0; i<maxPoints; i++) {
-    //     point = Euclid.lerp(point, vertices[randInt(0, p-1)], phi);
-    //     // point = Poincare.segment(phi, point, vertices[randInt(0, p-1)]);
-
-    //     plot.addPlottable(new Point(
-    //         point
-    //     ));
-    // }
-    // vertices.push(vertices[0]);
-    // plot.addPlottable(new Parametric(parameterizePoints(vertices)));
-
-    /** Fourier Series Example */
-    // fetch("./data/points.json")
-    //     .then((response) => response.json())
-    //     .then((json) => {
-    //         const points = json.points1;
-    //         const result = [];
-    //         for (let i=0; i<points["x"].length; i++) {
-    //             result.push(complex(points["x"][i], points["y"][i]));
-    //         }
-    //         const f = parameterizePoints(result);
-    //         const para = new Parametric(
-    //             f,
-    //             {start: 0, stop: 1},
-    //         );
-
-    //         const fourierTest = new Parametric(
-    //             fourierSeries(f, 4),
-    //             {start: 0, stop: 1},
-    //             200
-    //         );
-
-    //         for (let point of result) {
-    //             plot.addPlottable(new Point(point));
-    //         }
-    //         plot.addPlottable(para);
-    //         plot.addPlottable(fourierTest);
-    //     });
-
-    /** Example: icosphere model */
-    // const icosphereTris = icosphere(3);
-    // const sphere = new Model(icosphereTris);
-    // plot.addPlottable(sphere);
 }
 
 function wheelHandler(event) {
