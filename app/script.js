@@ -1,15 +1,8 @@
-const { cleanLatex } = require("../parsing/latex_convert.js");
 const { tracker } = require("../parsing/errors.js");
-const { TokenType } = require("../parsing/pratt/tokentype.js");
-const {
-    CallExpression, NameExpression, OperatorExpression
-} = require("../parsing/pratt/expressions.js");
-const { Lexer } = require("../parsing/pratt/lexer.js");
-const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
 const { Complex, complex } = require("../math/complex.js");
 const { Matrix, matrix } = require("../math/matrix.js");
 const { Euclid } = require("../math/geometry.js");
-const { sscale, ssub, icosphere, icosphere_flat, icosphere_flat_lopsided } = require("../math/icosphere.js"); // fix this garbage
+const { sscale, ssub, icosphere, icosphere_flat } = require("../math/icosphere.js"); // fix this garbage
 const { stereographic, inverseStereoProject, perspectiveProject } = require("../math/projection.js");
 const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
