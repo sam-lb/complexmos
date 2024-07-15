@@ -239,6 +239,8 @@ function configureRenderers(lines) {
     } else {
         // use evaluate() and scope.userGlobal to populate valueScope
         plot.clear();
+        Object.keys(valueScope).forEach(key => delete valueScope[key]);
+        Object.keys(defaultValueScope).forEach(key => valueScope[key] = defaultValueScope[key]);
         if (lines === null) return;
         let found = false; // temporary until visibility is in UI
         for (const line of lines) {
@@ -1516,7 +1518,8 @@ function setupWebGL() {
 
                 const canvasDiv = document.querySelector("#canvas-div");
                 plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, Plot.modes.PLANE, false, regl, shaders);
-                tabSwitch(plot.mode-1);         
+                tabSwitch(plot.mode-1);    
+                fieldEditHandler(null);     
             }
         });
     });

@@ -244,7 +244,7 @@ const defaultValueScope = {
     "imagBounds": complex(0, 0),
 };
 
-const valueScope = {};
+let valueScope = {};
 
 module.exports = {
     scope, defaultValueScope, valueScope,
