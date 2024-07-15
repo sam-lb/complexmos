@@ -93,20 +93,28 @@ function addField(parent=null) {
     /** add new math input field. parent: parent element */
 
     const newDiv = document.createElement("div");
-    newDiv.setAttribute("class", "math-input-div");
+    newDiv.setAttribute("class", "math-input-div-container");
+
+    const subDiv = document.createElement("div");
+    subDiv.setAttribute("class", "math-input-div");
 
     const newSpan = document.createElement("span");
     newSpan.setAttribute("class", "math-input");
 
     const newField = MQ.MathField(newSpan, {});
-    newDiv.setAttribute("id", `math-input-div-${newField.id}`);
+    newDiv.setAttribute("id", `math-input-div-container-${newField.id}`);
 
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
     newMenu.setAttribute("id", `math-input-side-menu-${newField.id}`);
     newMenu.innerHTML = menuHTML(newField.id);
-    newDiv.appendChild(newMenu);
-    newDiv.appendChild(newSpan);
+
+    const bottomDiv = document.createElement("div");
+    bottomDiv.setAttribute("id", `math-input-bottom-div-${newField.id}`);
+    subDiv.appendChild(newMenu);
+    subDiv.appendChild(newSpan);
+    newDiv.appendChild(subDiv);
+    newDiv.appendChild(bottomDiv);
 
     if (parent === null) {
         const container = document.querySelector("#math-input-container");
@@ -120,7 +128,7 @@ function addField(parent=null) {
             container: newDiv,
         };
     } else {
-        const lastDiv = document.querySelector(`#math-input-div-${parent.id}`);
+        const lastDiv = document.querySelector(`#math-input-div-container-${parent.id}`);
         lastDiv.after(newDiv);
 
         fields[newField.id] = {
@@ -204,28 +212,18 @@ function getCallbacks(id) {
     };
 }
 
-/*
-I acknowledge that this is horrible, but there's not really a better solution.
-*/
-let exitEarly = false;
-
-function fieldEditHandler(mathField) {
-    if (exitEarly) {
-        exitEarly = false;
-        return;
-    }
-
+function validateInput(mathField) {
     populateUserScope(fields);
-    if (tracker.hasError) return;
+    if (tracker.hasError) return null;
     const lines = classifyInput(fields);
-    if (tracker.hasError) return;
+    if (tracker.hasError) return null;
     validateLines(lines);
-    if (tracker.hasError) return;
+    if (tracker.hasError) return null;
     for (const line of Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"])) {
         line.buildAST();
-        if (tracker.hasError) return;
+        if (tracker.hasError) return null;
         validateAST(line.ast);
-        if (tracker.hasError) return;
+        if (tracker.hasError) return null;
     }
 
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
@@ -234,11 +232,27 @@ function fieldEditHandler(mathField) {
     MQ.config({
         autoOperatorNames: newOpsString,
     });
-    mathField.latex(mathField.latex());
-    exitEarly = true;
 
-    const emittedGLSL = translateToGLSL(varsAndFuncs);
-    console.log(emittedGLSL);
+    return varsAndFuncs;
+}
+
+function fieldEditHandler(mathField) {
+    const lines = validateInput(mathField);
+
+    if (RENDERER === "WebGL") {
+        if (lines === null) {
+            plot.setShaderReplacement(null);
+        } else {
+            const emittedGLSL = translateToGLSL(lines);
+            if (emittedGLSL) {
+                plot.setShaderReplacement(emittedGLSL);
+            } else {
+                plot.setShaderReplacement(null);
+            }
+        }
+    } else {
+        // use evaluate() and scope.userGlobal to populate valueScope
+    }
 
     return;
 
@@ -441,6 +455,7 @@ class Plot {
 
         this.reglInstance = reglInstance;
         this.shaders = shaders;
+        this.shaderReplacement = null;
 
         this.needsUpdate = true;
 
@@ -878,11 +893,15 @@ class Plot {
         return verts;
     }
 
+    setShaderReplacement(glslSource) {
+        this.shaderReplacement = glslSource;
+        this.needsUpdate = true;
+    }
+
     drawFnPlane() {
-        const emittedGLSL = translateToGLSL(fields);
         let frag = this.shaders["complexmos.frag"];
-        if (emittedGLSL.valid) {
-            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+        if (this.shaderReplacement !== null) {
+            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
         }
 
         return this.reglInstance({
@@ -915,10 +934,9 @@ class Plot {
         const mesh = this.sphereMesh;
         const vertexCount = mesh.length;
 
-        const emittedGLSL = translateToGLSL(fields);
         let frag = this.shaders["complexmos_sphere.frag"];
-        if (emittedGLSL.valid) {
-            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+        if (this.shaderReplacement !== null) {
+            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
         }
 
         return this.reglInstance({
@@ -959,14 +977,12 @@ class Plot {
     drawFn3D() {
         const mesh = this.planeMesh;
         const vertexCount = mesh.length;
-        console.log(vertexCount / 3);
-
-        const emittedGLSL = translateToGLSL(fields);
+        
         let frag = this.shaders["complexmos_cube.frag"];
         let vert = this.shaders["complexmos_cube.vert"];
-        if (emittedGLSL.valid) {
-            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
-            vert = vert.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, emittedGLSL.glsl);
+        if (this.shaderReplacement !== null) {
+            frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
+            vert = vert.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
         }
 
         return this.reglInstance({

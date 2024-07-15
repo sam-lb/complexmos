@@ -125,6 +125,12 @@ body {
     align-items: stretch;
 }
 
+.math-input-div-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid gray;
+}
+
 .math-input-side-menu {
     flex: 1;
     display: flex;

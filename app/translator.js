@@ -34,7 +34,6 @@ function sortByDependence(lines) {
 }
 
 function translateToGLSL(lines) {
-    if (!(lines instanceof Array)) return {};
     lines = sortByDependence(lines);
 
     let glslString = "";
