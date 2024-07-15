@@ -19,10 +19,10 @@ const { complex, Complex } = require("../math/complex.js");
 
 
 
-function evaluate(ast) {
+function evaluate(ast, args=null) {
     // at this point, the ast has gone through the lexer and parser's checks already
     if (ast instanceof AssignExpression) {
-        // the expression is trying to define a function
+        // the expression is trying to define a function or variable
         const left = ast.mLeft;
         if (left instanceof CallExpression) {
             // the expression is defining a function
@@ -31,11 +31,11 @@ function evaluate(ast) {
             );
         } else {
             // the expression is defining a variable
-            valueScope[left.mName] = new Evaluatable(ast.mRight);            
+            valueScope[left.mName] = new Evaluatable(ast.mRight);
         }
         return null;
     } else {
-        return new Evaluatable(ast);
+        return new Evaluatable(ast, args);
     }
 }
 
@@ -106,6 +106,7 @@ class Evaluatable {
                 tracker.error(`could not resolve function ${ast.mFunction}. Note: higher order functions are not yet supported`);
             }
         } else if (ast instanceof NameExpression) {
+            // console.log(ast.mName, "rear", args);
             if (args[ast.mName] !== undefined) {
                 return args[ast.mName];
             } else if (valueScope[ast.mName] !== undefined) {

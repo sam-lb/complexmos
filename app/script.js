@@ -1,8 +1,3 @@
-/**
- * imports
- */
-
-
 const { cleanLatex } = require("../parsing/latex_convert.js");
 const { tracker } = require("../parsing/errors.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
@@ -21,10 +16,6 @@ const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 const { translateToGLSL } = require("./translator.js");
-
-/** -------------------------------------------------------------- */
-
-
 
 
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
@@ -232,9 +223,7 @@ function validateInput() {
     return varsAndFuncs;
 }
 
-function fieldEditHandler(mathField) {
-    const lines = validateInput();
-
+function configureRenderers(lines) {
     if (RENDERER === "WebGL") {
         if (lines === null) {
             plot.setShaderReplacement(null);
@@ -249,7 +238,27 @@ function fieldEditHandler(mathField) {
         }
     } else {
         // use evaluate() and scope.userGlobal to populate valueScope
+        plot.clear();
+        if (lines === null) return;
+        let found = false; // temporary until visibility is in UI
+        for (const line of lines) {
+            if (scope.userGlobal[line.name].isFunction) {
+                if (line.name === "f") found = true;
+                const locals = scope.userGlobal[line.name].locals;
+                valueScope[line.name] = evaluate(line.ast, Object.keys(locals).sort(key => locals[key].index));
+            } else {
+                valueScope[line.name] = evaluate(line.ast);
+            }
+        }
+        if (!found) return;
+        console.log(valueScope);
+        plot.addPlottable(new DomainColoring((z) => valueScope["f"].call({z:z}),));
     }
+}
+
+function fieldEditHandler(mathField) {
+    const lines = validateInput();
+    configureRenderers(lines);
 
     return;
 
@@ -1319,7 +1328,7 @@ class DomainColoring extends Plottable {
 
             const output = this.fn(stereographic(centroid));
             const norm = output.norm();
-            if (Complex.infinite(output) || Complex.nan(output)) {
+            if (output === null || Complex.infinite(output) || Complex.nan(output)) {
                 this.polygons[i].fillColor = color(0, 0, 100);
             } else {
                 this.polygons[i].fillColor = color(angleTransform(output.arg()), highlightPoles(norm), normTransform(norm));
@@ -1377,7 +1386,7 @@ class DomainColoring extends Plottable {
                 const centroid = complex(x + step.re / 2, y + step.im / 2);
                 const output = this.fn(centroid);
                 let color1;
-                if (Complex.infinite(output) || Complex.nan(output)) {
+                if (output === null || Complex.infinite(output) || Complex.nan(output)) {
                     color1 = color(0, 0, 100);                    
                 } else {
                     color1 = color(angleTransform(output.arg()), 100, normTransform(output.norm()));
