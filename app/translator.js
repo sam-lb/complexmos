@@ -17,6 +17,7 @@ function sortByDependence(lines) {
 
         if (aDependsOnB && bDependsOnA) {
             tracker.error("circular definitions");
+            return 0;
         } else if (aDependsOnB) {
             return 1;
         } else if (bDependsOnA) {
