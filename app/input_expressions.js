@@ -107,7 +107,7 @@ class VariableDefinition extends InputExpression {
         }
 
         this.requirements = this.tokens.slice(2, this.tokens.length).filter(token => {
-            return token.mtype === TokenType.NAME && !scope.builtin[token.text];
+            return token.mtype === TokenType.NAME && (!scope.builtin[token.text] || scope.builtin[token.text].isParameter);
         }).map(token => token.text);
     }
 
@@ -133,7 +133,7 @@ class EvaluatableLine extends InputExpression {
 
     findRequirements() {
         this.requirements = this.tokens.filter(token => {
-            return token.mtype === TokenType.NAME && !scope.builtin[token.text];
+            return token.mtype === TokenType.NAME && (!scope.builtin[token.text] || scope.builtin[token.text].isParameter);
         }).map(token => token.text);
     }
 

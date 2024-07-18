@@ -21,7 +21,6 @@ function sortByDependence(lines) {
         for (let i=result.length-1; i>=0; i--) {
             const current = result[i];
             if (dependsOn(line, current)) {
-                console.log(2);
                 result.splice(i+1, 0, line);
                 added = true;
                 break;
@@ -70,6 +69,7 @@ function translateToGLSL(lines) {
     if (tracker.hasError) return;
     checkNoCycles(lines);
     if (tracker.hasError) return;
+
     lines = sortByDependence(lines);
 
     let glslString = "";

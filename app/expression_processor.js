@@ -185,7 +185,11 @@ function allRequirementsSatisfied(lines, names) {
     if (lines.some(line => {
         for (const req of line.requirements) {
             if (!names.includes(req)) {
-                tracker.error(`Unbound variable ${req}`);
+                if (scope.builtin[req]?.isParameter && line instanceof VariableDefinition) {
+                    tracker.error("Nah💀💀 you really thought you could do wackscopes get well-defined syntaxed bozo");
+                } else {
+                    tracker.error(`Unbound variable ${req}`);
+                }
                 return true;
             }
         }
