@@ -10,25 +10,66 @@ const {
 } = require("../parsing/pratt/expressions.js");
 const { FunctionDefinition } = require("./input_expressions.js");
 
-function sortByDependence(lines) {
-    return lines.sort((a, b) => {
-        const aDependsOnB = a.requirements.includes(b.name);
-        const bDependsOnA = b.requirements.includes(a.name);
 
-        if (aDependsOnB && bDependsOnA) {
-            tracker.error("circular definitions");
-            return 0;
-        } else if (aDependsOnB) {
-            return 1;
-        } else if (bDependsOnA) {
-            return -1;
-        } else {
-            return 0;
+function sortByDependence(lines) {
+    // "depends on" does not define a transitive ordering, so this can't be done with a custom compareFn to Array.prototype.sort
+    const result = [lines.pop()];
+    const dependsOn = (a, b) => a.fullDependence.includes(b.name); // a depends on b
+
+    for (const line of lines) {
+        let added = false;
+        for (let i=result.length-1; i>=0; i--) {
+            const current = result[i];
+            if (dependsOn(line, current)) {
+                console.log(2);
+                result.splice(i+1, 0, line);
+                added = true;
+                break;
+            }
         }
-    });
+        if (!added) {
+            result.unshift(line);
+        }
+    }
+
+    return result;
+}
+
+function buildFullDependence(lines) {
+    const getByName = (name) => lines.filter(line => line.name === name)[0];
+
+    for (const line of lines) {
+        let seen = [];
+        let needToSearch = [line.name];
+        while (needToSearch.length > 0) {
+            const dep = getByName(needToSearch.pop());
+            needToSearch = needToSearch.concat(dep.requirements.filter(req => !seen.includes(req)));
+            seen = seen.concat(dep.requirements);
+        }
+        line.fullDependence = seen.slice();
+    }
+}
+
+function checkNoCycles(lines) {
+    const dependsOn = (a, b) => a.fullDependence.includes(b.name); // a depends on b
+
+    for (let i=0; i<lines.length; i++) {
+        for (let j=i+1; j<lines.length; j++) {
+            const line1 = lines[i], line2 = lines[j];
+            if (dependsOn(line1, line2) && dependsOn(line2, line1)) {
+                tracker.error(`circular defintions for ${line1.name} and ${line2.name}`);
+                return;
+            }
+        }
+    }
 }
 
 function translateToGLSL(lines) {
+    if (lines.length === 0) return;
+    buildFullDependence(lines);
+    if (tracker.hasError) return;
+    checkNoCycles(lines);
+    if (tracker.hasError) return;
     lines = sortByDependence(lines);
 
     let glslString = "";
