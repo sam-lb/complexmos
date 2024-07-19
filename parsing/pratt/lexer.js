@@ -76,7 +76,7 @@ class Lexer {
                             (
                                 (
                                     assignmentEncountered &&
-                                    this.mPunctuators.some((token) => token.mtype === TokenType.NAME && token.text === possibleIdentifier)
+                                    this.mPunctuators.some((token) => token.mtype === TokenType.NAME && token.text === buffer)
                                 ) || !assignmentEncountered
                             )
                         )

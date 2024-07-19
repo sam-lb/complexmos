@@ -77,8 +77,8 @@ function translateToGLSL(lines) {
     for (const line of lines) {
         let args = "";
         if (line instanceof FunctionDefinition) {
-            const locals = (scope.builtin[line.name]) ? Object.keys(scope.builtin[line.name].locals) : Object.keys(scope.userGlobal[line.name].locals);
-            args = locals.sort(key => locals[key].index).map(req => "vec2 " + req).join(",");
+            const locals = (scope.builtin[line.name]) ? scope.builtin[line.name].locals : scope.userGlobal[line.name].locals;
+            args = Object.keys(locals).sort(key => locals[key].index).map(req => "vec2 " + req).join(",");
         }
         const body = astToGLSL(line.ast);
         const alias = scope.builtin[line.name]?.shaderAlias ?? scope.userGlobal[line.name]?.shaderAlias;
