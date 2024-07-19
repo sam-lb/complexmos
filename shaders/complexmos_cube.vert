@@ -50,6 +50,6 @@ void main() {
     vec3 newPosition = vec3(position.x, position.y, -normC(udf_f(z)).x);
 
     vec3 transformed = transform(newPosition);   
-    vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9 - 0.5);
+    vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9);
     gl_Position = vec4(projected, -transformed.y, 1.0);
 }
