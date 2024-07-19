@@ -10,15 +10,12 @@
 const { scope } = require("./scope.js");
 const { tracker } = require("../parsing/errors.js");
 const {
-    Expression, AssignExpression,
-    CallExpression, NameExpression,
-    NumberExpression, OperatorExpression,
-    PrefixExpression
+    AssignExpression, CallExpression, NameExpression,
+    OperatorExpression, PrefixExpression
 } = require("../parsing/pratt/expressions.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
 const { Lexer } = require("../parsing/pratt/lexer.js");
 const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
-const { complex, Complex } = require("../math/complex.js");
 const {
     FunctionDefinition, VariableDefinition,
     EvaluatableLine,

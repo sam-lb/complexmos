@@ -196,6 +196,7 @@ function validateInput() {
     populateUserScope(fields);
     if (tracker.hasError) return null;
     const lines = classifyInput(fields);
+    console.log(lines);
     if (tracker.hasError) return null;
     validateLines(lines);
     if (tracker.hasError) return null;

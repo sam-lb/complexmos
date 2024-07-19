@@ -64,7 +64,7 @@ class Lexer {
                     break;
                 }
             }
-            if (matchFound) {
+            if (matchFound && !(this.scope.builtin[possibleIdentifier]?.isParameter ?? this.scope.userGlobal[possibleIdentifier]?.isParameter)) {
                 identifiers.push(possibleIdentifier);
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
