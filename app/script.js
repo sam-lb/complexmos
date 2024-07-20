@@ -62,6 +62,16 @@ function displayOverlayMenu(id) {
     `;
 }
 
+function bottomHTML() {
+    // temp function for slider design
+    return `
+    <div class="slider-container">
+        <label for="sliderID">slider</label>
+        <input type="range" min="0" max="1" step="0.01" id="sliderID" class="variable-slider">
+    </div>
+    `;
+}
+
 document.addEventListener("mousedown", (event) => {
     const overlay = document.querySelector("#overlay-menu-container");
     if (!overlay.contains(event.target)) {
@@ -91,6 +101,7 @@ function addField(parent=null) {
 
     const bottomDiv = document.createElement("div");
     bottomDiv.setAttribute("id", `math-input-bottom-div-${newField.id}`);
+    bottomDiv.innerHTML = bottomHTML();
     subDiv.appendChild(newMenu);
     subDiv.appendChild(newSpan);
     newDiv.appendChild(subDiv);
@@ -196,7 +207,6 @@ function validateInput() {
     populateUserScope(fields);
     if (tracker.hasError) return null;
     const lines = classifyInput(fields);
-    console.log(lines);
     if (tracker.hasError) return null;
     validateLines(lines);
     if (tracker.hasError) return null;
