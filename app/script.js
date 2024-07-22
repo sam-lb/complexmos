@@ -62,14 +62,42 @@ function displayOverlayMenu(id) {
     `;
 }
 
-function bottomHTML() {
+function bottomHTML(div, id) {
     // temp function for slider design
-    return `
-    <div class="slider-container">
-        <label for="sliderID">slider</label>
-        <input type="range" min="0" max="1" step="0.01" id="sliderID" class="variable-slider">
-    </div>
-    `;
+    // div.innerHTML = `
+    // <div class="slider-container">
+    //     <span id="start-field-${id}></span>
+    //     <input type="range" min="0" max="1" step="0.01" id="sliderID" class="variable-slider">
+    //     <span id="end-field-${id}></span>
+    // </div>
+    // `;
+
+    const container = document.createElement("div");
+    container.setAttribute("class", "slider-container");
+    const startSpan = document.createElement("span");
+    
+    const slider = document.createElement("input");
+    slider.setAttribute("type", "range");
+    slider.setAttribute("min", "0");
+    slider.setAttribute("max", "1");
+    slider.setAttribute("step", "0.01");
+    slider.setAttribute("id", `slider-${id}`);
+    slider.setAttribute("class", "variable-slider");
+
+    const endSpan = document.createElement("span");
+    startSpan.setAttribute("id", `start-field-${id}`);
+    endSpan.setAttribute("id", `end-field-${id}`);
+
+    container.appendChild(startSpan);
+    container.appendChild(slider);
+    container.appendChild(endSpan);
+    div.appendChild(container);
+
+    const startField = MQ.MathField(startSpan, {});
+    const endField = MQ.MathField(endSpan, {});
+
+    startField.latex("0");
+    endField.latex("1");
 }
 
 document.addEventListener("mousedown", (event) => {
@@ -101,7 +129,7 @@ function addField(parent=null) {
 
     const bottomDiv = document.createElement("div");
     bottomDiv.setAttribute("id", `math-input-bottom-div-${newField.id}`);
-    bottomDiv.innerHTML = bottomHTML();
+    bottomHTML(bottomDiv, newField.id);
     subDiv.appendChild(newMenu);
     subDiv.appendChild(newSpan);
     newDiv.appendChild(subDiv);
