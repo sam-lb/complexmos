@@ -1,20 +1,26 @@
 {
   "name": "complexmos",
   "author": "Sam Brunacini",
-  "version": "0.25.3",
+  "version": "0.25.4",
   "dependencies": {
     "jest-environment-jsdom": "^29.7.0",
     "regl": "^2.1.0"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "snapshot-diff": "^0.10.0"
   },
   "scripts": {
     "test": "jest"
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/mathquill/"],
-    "testMatch": ["<rootDir>/tests/*.test.js"]
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/mathquill/"
+    ],
+    "testMatch": [
+      "<rootDir>/tests/*.test.js"
+    ]
   }
 }
