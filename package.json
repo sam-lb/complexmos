@@ -1,7 +1,7 @@
 {
   "name": "complexmos",
   "author": "Sam Brunacini",
-  "version": "0.25.2",
+  "version": "0.25.3",
   "dependencies": {
     "jest-environment-jsdom": "^29.7.0",
     "regl": "^2.1.0"
@@ -13,6 +13,8 @@
     "test": "jest"
   },
   "jest": {
-    "testEnvironment": "jsdom"
+    "testEnvironment": "jsdom",
+    "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/mathquill/"],
+    "testMatch": ["<rootDir>/tests/*.test.js"]
   }
 }
