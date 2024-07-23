@@ -1,8 +1,18 @@
 {
   "name": "complexmos",
   "author": "Sam Brunacini",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "dependencies": {
+    "jest-environment-jsdom": "^29.7.0",
     "regl": "^2.1.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
   }
 }
