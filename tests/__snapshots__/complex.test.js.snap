@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test complex addition 1`] = `
+Complex {
+  "im": 55.7,
+  "re": 52.428999999999995,
+}
+`;
