@@ -5,7 +5,7 @@ const scopes = require("../app/scope.js");
 const scope = scopes.scope.builtin;
 
 const descriptions = {
-
+    "Gamma": "The Gamma function",
 };
 
 
@@ -15,12 +15,15 @@ const generateDescriptions = () => {
 
     for (const key of keys) {
         const description = descriptions[key] ?? "No description given";
-        result += `<div><span style="font-weight: bold">${key}</span>: ${description}</div>`;
+        result += `<div class="description-entry"><span style="font-weight: bold">${key}</span>: ${description}</div>`;
     }
 
     return result;
 };
 
-module.exports = {
-    generateDescriptions
-};
+const outputDescriptions = (targetId) => {
+    const targetElement = document.querySelector(`#${targetId}`);
+    targetElement.innerHTML = generateDescriptions();
+}
+
+outputDescriptions("description-container");

@@ -10,7 +10,6 @@ const { evaluate } = require("./evaluator.js");
 const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 const { translateToGLSL } = require("./translator.js");
 const { VariableDefinition } = require("./input_expressions.js");
-const { generateDescriptions } = require("../docs/guide_gen.js");
 
 
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
@@ -18,7 +17,6 @@ window.plot = undefined;
 window.lastMouseX = undefined;
 window.lastMouseY = undefined;
 window.mouseIsDown = false;
-window.generateDescriptions = generateDescriptions;
 let RENDERER = "WebGL";
 
 const pValueArray = [
