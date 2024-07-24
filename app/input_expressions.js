@@ -4,7 +4,7 @@ const { tracker } = require("../parsing/errors.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
 const { scope } = require("./scope.js");
 const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
-const { NumberExpression } = require("../parsing/pratt/expressions.js");
+const { NumberExpression, PrefixExpression } = require("../parsing/pratt/expressions.js");
 
 
 
@@ -125,15 +125,15 @@ class VariableDefinition extends InputExpression {
     sliderBounds(fields) {
         // return the bounds of a slider for this variable, if applicable (if not, return null)
         const bounds = {};
-        if (this.ast instanceof NumberExpression) {
+        if (this.ast instanceof NumberExpression || (this.ast instanceof PrefixExpression && this.ast.mRight instanceof NumberExpression)) {
             // needs a slider
             const sliderName = fields[this.id]["sliderName"];
             if (sliderName === this.name) {
                 bounds.min = fields[this.id]["savedBounds"].min;
                 bounds.max = fields[this.id]["savedBounds"].max;
             } else {
-                bounds.min = 0;
-                bounds.max = 1;
+                bounds.min = Math.floor(this.ast.mNumber);
+                bounds.max = Math.floor(this.ast.mNumber + 1);
             }
 
             fields[this.id]["savedBounds"] = bounds;

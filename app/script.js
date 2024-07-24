@@ -38,6 +38,7 @@ const pValueArray = [
 const MQ = MathQuill.getInterface(2);
 const opsString = Object.keys(scope.builtin).filter(x => x.length > 1).join(" ");
 const fields = {};
+const sliderFields = {};
 
 const menuHTML = (id, error=null) => {
     let imageSrc, displayText;
@@ -63,12 +64,28 @@ function displayOverlayMenu(id) {
     `;
 }
 
+function handleSlider(id) {
+    const slider = document.querySelector(`#slider-${id}`);
+    const variable = fields[id].field;
+    const assignment = variable.latex().split("=")[0];
+    variable.latex(`${assignment}=${parseFloat(slider.value)}`);
+}
+
 function bottomHTML(target, bounds, id) {
     const div = document.querySelector(`#${target}`);
     const oldContainer = document.querySelector(`#slider-container-${id}`);
-    console.log(oldContainer);
-    if (oldContainer) div.removeChild(oldContainer);
-    if (bounds === null) return;
+    if (bounds === null) {
+        if (sliderFields[id]) delete sliderFields[id];
+        if (oldContainer) div.removeChild(oldContainer);
+        return;
+    }
+    if (oldContainer) {
+        const slider = document.querySelector(`#slider-${id}`);
+        slider.setAttribute("min", sliderFields[id].min.latex());
+        slider.setAttribute("max", sliderFields[id].max.latex());
+        slider.value = fields[id].field.latex().split("=")[1];
+        return;
+    }
 
     const container = document.createElement("div");
     container.setAttribute("class", "slider-container");
@@ -83,6 +100,8 @@ function bottomHTML(target, bounds, id) {
     slider.setAttribute("step", `${step}`);
     slider.setAttribute("id", `slider-${id}`);
     slider.setAttribute("class", "variable-slider");
+    slider.setAttribute("value", fields[id].field.latex().split("=")[1]);
+    slider.setAttribute("oninput", `handleSlider(${id});`);
 
     const endSpan = document.createElement("span");
     startSpan.setAttribute("id", `start-field-${id}`);
@@ -96,8 +115,13 @@ function bottomHTML(target, bounds, id) {
     const startField = MQ.MathField(startSpan, {});
     const endField = MQ.MathField(endSpan, {});
 
-    startField.latex("0");
-    endField.latex("1");
+    sliderFields[id] = {
+        "min": startField,
+        "max": endField,
+    };
+
+    startField.latex(`${bounds.min}`);
+    endField.latex(`${bounds.max}`);
 }
 
 document.addEventListener("mousedown", (event) => {
@@ -305,6 +329,9 @@ function fieldEditHandler(mathField) {
         const lines = validateInput();
         addSliders(lines);
         configureRenderers(lines);
+    } else {
+        // slider field
+        fieldEditHandler(null);
     }
 }
 
@@ -321,7 +348,13 @@ MQ.config({
         downOutOf: (mathField) => { advance(mathField.id, 1); },
         upOutOf: (mathField) => { advance(mathField.id, -1); },
         deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
-        edit: debounceWrapper(fieldEditHandler, 500),
+        edit: (mathField) => {
+            if (fields[mathField.id]) {
+                debounceWrapper(fieldEditHandler, 500)(mathField);
+            } else {
+                fieldEditHandler(mathField);
+            }
+        }
     },
 });
 
@@ -1549,3 +1582,4 @@ window.draw = draw;
 window.addEventListener("resize", debounceWrapper(windowResized, 100));
 window.toggleSettingsPopup = toggleSettingsPopup;
 window.setRenderer = setRenderer;
+window.handleSlider = handleSlider;
