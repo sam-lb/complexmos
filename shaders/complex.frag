@@ -93,6 +93,10 @@ vec2 tanhC(vec2 z) {
     return divC(sinhC(z), coshC(z));
 }
 
+vec2 atanhC(vec2 z) {
+    return scaleC(lnC(divC(addC(vec2(1., 0.), z), subC(vec2(1., 0.), z))), 0.5);
+}
+
 vec2 reC(vec2 z) {
     return vec2(z.x, 0.0);
 }
@@ -245,6 +249,13 @@ vec2 pToPlaneC(vec2 z, vec2 pC) {
 }
 
 // end SC stuff
+
+vec2 squeezeC(vec2 z, vec2 coverage, vec2 squeezeLength) {
+    float norm = normC(z).x;
+    float alpha = sqrt(atanhC(vec2(clamp(coverage.x, 0., 1.), 0.)).x / squeezeLength.x);
+    float ratio = tanhC(vec2(alpha * alpha * norm, 0.)).x / norm;
+    return scaleC(z, ratio);
+}
 
 bool fIsInvalid(float x) {
     return !(x <= 0. || 0. <= x) || (abs(x) > 1000000.0);

@@ -95,6 +95,11 @@ const scope = {
             shaderAlias: "tanhC",
             locals: { "z": { isFunction: false, type: "complex", index: 0 } },
         },
+        "atanh": {
+            isFunction: true,
+            shaderAlias: "atanhC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 } },
+        },
         "re": {
             isFunction: true,
             shaderAlias: "reC",
@@ -165,6 +170,11 @@ const scope = {
             shaderAlias: "pToPlaneC",
             locals: { "z": { isFunction: false, type: "complex", index: 0 }, "p": { isFunction: false, type: "complex", index: 1 } },
         },
+        "squeeze": {
+            isFunction: true,
+            shaderAlias: "squeezeC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 }, "coverage": { isFunction: false, type: "complex", index: 1 }, "length": { isFunction: false, type: "complex", index: 2 } },
+        },
 
         "i": {
             isFunction: false,
@@ -221,6 +231,7 @@ const defaultValueScope = {
     "sinh": Complex.sinh,
     "cosh": Complex.cosh,
     "tanh": Complex.tanh,
+    "atanh": (z) => complex(1, 0), // not implemented for p5 mode
     "re": (z) => complex(z.re, 0),
     "im": (z) => complex(z.im, 0),
     "Gamma": Complex.gamma,
@@ -231,10 +242,11 @@ const defaultValueScope = {
     "conj": (z) => z.conj(),
     "clamp": (z, min, max) => Complex.clamp(z, min.norm(), max.norm()),
     "frac": Complex.frac,
-    "inverseSC": (z, p) => complex(1, 0), // not implemented
-    "sc": (z, p) => complex(1, 0), // not implemented
-    "planeToP": (z, p) => complex(1, 0), // not implemented
-    "pToPlane": (z, p) => complex(1, 0), // not implemented
+    "inverseSC": (z, p) => complex(1, 0), // not implemented for p5 mode
+    "sc": (z, p) => complex(1, 0), // not implemented for p5 mode
+    "planeToP": (z, p) => complex(1, 0), // not implemented for p5 mode
+    "pToPlane": (z, p) => complex(1, 0), // not implemented for p5 mode
+    "squeeze": (z, coverage, length) => complex(1, 0), // not implemented for p5 mode
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),
