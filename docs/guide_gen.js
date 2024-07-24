@@ -15,8 +15,19 @@ const generateDescriptions = () => {
 
     for (const key of keys) {
         const description = descriptions[key] ?? "No description given";
-        const arguments = "none";
-        result += `<div class="description-entry"><span style="font-weight: bold">${key}</span><br>Arguments:${arguments}<br>Description:${description}</div>`;
+        let arguments = "";
+        if (scope[key].isFunction) {
+            arguments = "Arguments: ";
+            const locals = Object.keys(scope[key].locals).sort(local => local.index);
+            if (locals.length === 0) arguments += "none";
+            for (let i=0; i<locals.length; i++) {
+                const local = locals[i];
+                arguments += local + ` (${scope[key].locals[local].type})`;
+                if (i !== locals.length - 1) arguments += ", ";
+            }
+            arguments += "<br>";
+        }
+        result += `<div class="description-entry"><span style="font-weight: bold">${key}</span><br>${arguments}Description:${description}</div>`;
     }
 
     return result;
