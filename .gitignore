@@ -3,3 +3,4 @@
 mathquill/
 node_modules/
 bundle.js
+docs/guide_gen_bundle.js
