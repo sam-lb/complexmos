@@ -5,7 +5,7 @@ const scopes = require("../app/scope.js");
 const scope = scopes.scope.builtin;
 
 const descriptions = {
-    "Gamma": "The Gamma function",
+    "Gamma": "The Gamma function \\( \\Gamma(z) \\)",
 };
 
 
