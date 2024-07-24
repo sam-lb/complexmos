@@ -15,7 +15,8 @@ const generateDescriptions = () => {
 
     for (const key of keys) {
         const description = descriptions[key] ?? "No description given";
-        result += `<div class="description-entry"><span style="font-weight: bold">${key}</span>: ${description}</div>`;
+        const arguments = "none";
+        result += `<div class="description-entry"><span style="font-weight: bold">${key}</span><br>Arguments:${arguments}<br>Description:${description}</div>`;
     }
 
     return result;
@@ -26,4 +27,17 @@ const outputDescriptions = (targetId) => {
     targetElement.innerHTML = generateDescriptions();
 }
 
+const toggleDescriptions = () => {
+    const descDiv = document.querySelector("#description-container");
+    const collapseBtn = document.querySelector("#collapse-btn");
+    if (descDiv.style.display === "none") {
+        descDiv.style.display = "block";
+        collapseBtn.innerText = "Collapse";
+    } else {
+        descDiv.style.display = "none";
+        collapseBtn.innerText = "Expand";
+    }
+}
+
 outputDescriptions("description-container");
+window.toggleDescriptions = toggleDescriptions;
