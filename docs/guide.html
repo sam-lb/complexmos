@@ -29,7 +29,8 @@
                 <div class="section-header-div">
                     <h1>Plane</h1>
                 </div>
-                <div></div>
+                <div>This mode performs standard domain coloring: every point on the complex plane is passed through a function. The argument of the result determines the hue at that point, and the norm of the result determines the value (lightness/darkness).</div>
+                <div>Tip: plotting the identity function shows the current color map.</div>
             </section>
 
             <hr>
@@ -37,7 +38,7 @@
                 <div class="section-header-div">
                     <h1>Riemann Sphere</h1>
                 </div>
-                <div></div>
+                <div>This mode performs domain coloring on the Riemann Sphere. See <a href="https://en.wikipedia.org/wiki/Riemann_sphere">here</a> for more details.</div>
             </section>
             
             <hr>
@@ -45,7 +46,8 @@
                 <div class="section-header-div">
                     <h1>3D Mode</h1>
                 </div>
-                <div></div>
+                <div>This mode plots the norm of a complex function on the \( z \)-axis (vertical axis). The coloring at each point works the same as plane mode.</div>
+                <div>Tip: The norms of the outputs of complex functions can get big very quickly and change rapidly. Using \( \operatorname{squeeze} \) can help control the norms to make things easier to visualize. Recommended usage to plot the function \( f(z) \): \( \operatorname{squeeze}(z, 0.99, 10) \).</div>
             </section>
         </div>
         <script src="http://localhost:8000/docs/guide_gen_bundle.js"></script>
