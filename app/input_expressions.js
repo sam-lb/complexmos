@@ -3,8 +3,8 @@
 const { tracker } = require("../parsing/errors.js");
 const { TokenType } = require("../parsing/pratt/tokentype.js");
 const { scope } = require("./scope.js");
-const { validateAST } = require("./expression_processor.js");
 const { ExpressionParser } = require("../parsing/pratt/expression_parser.js");
+const { NumberExpression } = require("../parsing/pratt/expressions.js");
 
 
 
@@ -120,6 +120,28 @@ class VariableDefinition extends InputExpression {
     buildAST() {
         super.buildAST();
         if (!tracker.hasError) this.ast = this.ast.mRight;
+    }
+
+    sliderBounds(fields) {
+        // return the bounds of a slider for this variable, if applicable (if not, return null)
+        const bounds = {};
+        if (this.ast instanceof NumberExpression) {
+            // needs a slider
+            const sliderName = fields[this.id]["sliderName"];
+            if (sliderName === this.name) {
+                bounds.min = fields[this.id]["savedBounds"].min;
+                bounds.max = fields[this.id]["savedBounds"].max;
+            } else {
+                bounds.min = 0;
+                bounds.max = 1;
+            }
+
+            fields[this.id]["savedBounds"] = bounds;
+            fields[this.id]["sliderName"] = this.name;
+            return bounds;
+        } else {
+            return null;
+        }
     }
 
 }

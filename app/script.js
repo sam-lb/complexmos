@@ -9,6 +9,7 @@ const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 const { translateToGLSL } = require("./translator.js");
+const { VariableDefinition } = require("./input_expressions.js");
 
 
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
@@ -62,25 +63,24 @@ function displayOverlayMenu(id) {
     `;
 }
 
-function bottomHTML(div, id) {
-    // temp function for slider design
-    // div.innerHTML = `
-    // <div class="slider-container">
-    //     <span id="start-field-${id}></span>
-    //     <input type="range" min="0" max="1" step="0.01" id="sliderID" class="variable-slider">
-    //     <span id="end-field-${id}></span>
-    // </div>
-    // `;
+function bottomHTML(target, bounds, id) {
+    const div = document.querySelector(`#${target}`);
+    const oldContainer = document.querySelector(`#slider-container-${id}`);
+    console.log(oldContainer);
+    if (oldContainer) div.removeChild(oldContainer);
+    if (bounds === null) return;
 
     const container = document.createElement("div");
     container.setAttribute("class", "slider-container");
+    container.setAttribute("id", `slider-container-${id}`);
     const startSpan = document.createElement("span");
     
     const slider = document.createElement("input");
     slider.setAttribute("type", "range");
-    slider.setAttribute("min", "0");
-    slider.setAttribute("max", "1");
-    slider.setAttribute("step", "0.01");
+    slider.setAttribute("min", `${bounds.min}`);
+    slider.setAttribute("max", `${bounds.max}`);
+    const step = (bounds.max - bounds.min) / 100;
+    slider.setAttribute("step", `${step}`);
     slider.setAttribute("id", `slider-${id}`);
     slider.setAttribute("class", "variable-slider");
 
@@ -129,7 +129,6 @@ function addField(parent=null) {
 
     const bottomDiv = document.createElement("div");
     bottomDiv.setAttribute("id", `math-input-bottom-div-${newField.id}`);
-    bottomHTML(bottomDiv, newField.id);
     subDiv.appendChild(newMenu);
     subDiv.appendChild(newSpan);
     newDiv.appendChild(subDiv);
@@ -289,9 +288,24 @@ function configureRenderers(lines) {
     }
 }
 
+function addSliders(lines) {
+    if (lines === null) return;
+    for (const line of lines) {
+        if (line instanceof VariableDefinition) {
+            const bounds = line.sliderBounds(fields);
+            bottomHTML(`math-input-bottom-div-${line.id}`, bounds, line.id);
+        } else {
+            bottomHTML(`math-input-bottom-div-${line.id}`, null, line.id);
+        }
+    }
+}
+
 function fieldEditHandler(mathField) {
-    const lines = validateInput();
-    configureRenderers(lines);
+    if (mathField === null || fields[mathField.id]) {
+        const lines = validateInput();
+        addSliders(lines);
+        configureRenderers(lines);
+    }
 }
 
 const firstField = addField();
