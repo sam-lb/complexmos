@@ -81,7 +81,7 @@ const descriptions = {
 
     "sqrt": "The square root function.",
 
-    "squeeze": `Smoothly compresses a \\( 2\\cdot\\operatorname{length} \\) by \\( 2\\cdot\\operatorname{length} \\) square centered at the origin to the unit circle. The incircle of the square is mapped to a circle of radius \\( 0 \\leq \\operatorname{coverage} \\leq 1 \\). See <a href="https://www.desmos.com/calculator/imksvk6d42">here</a> for implementation details.`,
+    "squeeze": `Smoothly compresses a \\( 2\\cdot\\operatorname{length} \\) by \\( 2\\cdot\\operatorname{length} \\) square centered at the origin to the unit circle. The incircle of the square is mapped to a circle of radius \\( 0 \\leq \\operatorname{coverage} \\leq 1 \\). You can get a feel for what this does by trying it out on the identity function. See <a href="https://www.desmos.com/calculator/imksvk6d42">here</a> for implementation details.`,
 
     "tan": "The tangent function.",
 
