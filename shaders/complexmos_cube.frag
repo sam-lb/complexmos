@@ -63,7 +63,10 @@ void main() {
     vec2 z = (uv * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
 
     vec3 col;
+    
+//DISPLAY_REPLACE_BEGIN
     vec2 outp = udf_f(z);
+//DISPLAY_REPLACE_END
 
     if (isInvalid(outp)) {
         col = vec3(1., 1., 1.);

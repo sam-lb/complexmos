@@ -47,7 +47,11 @@ void main() {
     float aspect = yUnits / xUnits;
     vec2 z = (uv * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
 
-    vec3 newPosition = vec3(position.x, position.y, -normC(udf_f(z)).x);
+//DISPLAY_REPLACE_BEGIN
+    vec2 outp = udf_f(z);
+//DISPLAY_REPLACE_END
+
+    vec3 newPosition = vec3(position.x, position.y, -normC(outp).x);
 
     vec3 transformed = transform(newPosition);   
     vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9);

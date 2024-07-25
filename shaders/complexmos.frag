@@ -56,7 +56,10 @@ void main() {
     // for (int k=0; k<100; k++) {
     //     outp += powC(vec2(float(k), 0.), nz);
     // }
+
+//DISPLAY_REPLACE_BEGIN
     vec2 outp = udf_f(z);
+//DISPLAY_REPLACE_END
 
     vec3 col;
 

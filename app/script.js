@@ -89,8 +89,10 @@ function handleDisplayToggles(lines) {
             fields[id]["display"] = current.checked;
             continue;
         }
-        fields[id]["settingsHTML"] = `<label for="display-checkbox-${id}">Display?</label><input type="checkbox" id="display-checkbox-${id}" checked>`;       
-        fields[id]["display"] = true;
+        const checked = fields[id]["settingsHTML"] ? fields[id]["display"] : true;
+        const checkedString = checked ? " checked" : "";
+        fields[id]["settingsHTML"] = `<label for="display-checkbox-${id}">Display?</label><input type="checkbox" id="display-checkbox-${id}" oninput="plot.toggleDisplay(${id});"${checkedString}>`;
+        fields[id]["display"] = checked;
     }
 }
 
@@ -319,9 +321,12 @@ function configureRenderers(lines) {
             plot.setShaderReplacement(null);
         } else {
             const emittedGLSL = translateToGLSL(lines.slice());
-            if (emittedGLSL && emittedGLSL.includes("vec2 udf_f(vec2 z)")) {
+            // if (emittedGLSL && emittedGLSL.includes("vec2 udf_f(vec2 z)")) {
+            if (emittedGLSL) {
                 // second condition is temporary until visibility is integrated into UI as a setting
                 plot.setShaderReplacement(emittedGLSL);
+                const displayName = pickDisplay(lines);
+                plot.setDisplayReplacement(displayName);
             } else {
                 plot.setShaderReplacement(null);
             }
@@ -359,12 +364,21 @@ function addSliders(lines) {
     }
 }
 
+function pickDisplay(lines) {
+    const rev = Object.keys(fields).sort((a, b) => parseInt(b) - parseInt(a));
+    for (const id of rev) {
+        if (fields[id]["display"]) {
+            return lines.filter(l => l.id === id)[0]?.name;
+        }
+    }
+}
+
 function fieldEditHandler(mathField) {
     if (mathField === null || fields[mathField.id]) {
         const lines = validateInput();
         addSliders(lines);
-        configureRenderers(lines);
         handleDisplayToggles(lines);
+        configureRenderers(lines);
     } else {
         // slider field
         fieldEditHandler(null);
@@ -432,6 +446,7 @@ class Plot {
         this.reglInstance = reglInstance;
         this.shaders = shaders;
         this.shaderReplacement = null;
+        this.setDisplayReplacement(null);
 
         this.needsUpdate = true;
 
@@ -874,10 +889,26 @@ class Plot {
         this.needsUpdate = true;
     }
 
+    setDisplayReplacement(name) {
+        if (name) {
+            this.displayReplacement = `vec2 outp = udf_${name}(z);`;
+        } else {
+            this.displayReplacement = "vec2 outp = vec2(1., 0.);";
+        }
+        this.needsUpdate = true;
+    }
+
+    toggleDisplay(id) {
+        const checkbox = document.querySelector(`#display-checkbox-${id}`);
+        fields[id]["display"] = checkbox.checked;
+        fieldEditHandler(null);
+    }
+
     drawFnPlane() {
         let frag = this.shaders["complexmos.frag"];
         if (this.shaderReplacement !== null) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
+            frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
         }
 
         return this.reglInstance({
@@ -913,6 +944,7 @@ class Plot {
         let frag = this.shaders["complexmos_sphere.frag"];
         if (this.shaderReplacement !== null) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
+            frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
         }
 
         return this.reglInstance({
@@ -959,6 +991,8 @@ class Plot {
         if (this.shaderReplacement !== null) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
             vert = vert.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
+            frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
+            vert = vert.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
         }
 
         return this.reglInstance({

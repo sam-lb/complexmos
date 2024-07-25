@@ -73,7 +73,10 @@ void main() {
     //     outp += powC(vec2(float(k), 0.), nz);
     // }
     // vec2 outp = mandelbrot(z);
+    
+//DISPLAY_REPLACE_BEGIN
     vec2 outp = udf_f(z);
+//DISPLAY_REPLACE_END
 
     if (isInvalid(outp)) {
         col = vec3(1., 1., 1.);
