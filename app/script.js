@@ -9,7 +9,7 @@ const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 const { translateToGLSL } = require("./translator.js");
-const { VariableDefinition } = require("./input_expressions.js");
+const { VariableDefinition, FunctionDefinition } = require("./input_expressions.js");
 
 
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
@@ -58,10 +58,40 @@ const menuHTML = (id, error=null) => {
 function displayOverlayMenu(id) {
     const overlay = document.querySelector("#overlay-menu-container");
     overlay.style.display = "block";
+    const additionalSettings = fields[id]["settingsHTML"] ?? "";
     overlay.innerHTML = `
     Settings for expression ${id}
-    <hr>
+    <hr>${additionalSettings}
     `;
+}
+
+function handleDisplayToggles(lines) {
+    if (!lines) return;
+    const plottableIDs = [];
+    for (const line of lines) {
+        if (!(line instanceof FunctionDefinition)) {
+            fields[line.id]["settingsHTML"] = "";
+            continue;
+        }
+        const locals = Object.keys(scope.userGlobal[line.name].locals);
+        if (locals.length !== 1 || locals[0] !== "z") {
+            fields[line.id]["settingsHTML"] = "";
+            continue;
+        }
+
+        plottableIDs.push(line.id);
+    }
+
+    if (plottableIDs.length === 0) return;
+    for (id of plottableIDs) {
+        const current = document.querySelector(`#display-checkbox-${id}`);
+        if (current) {
+            fields[id]["display"] = current.checked;
+            continue;
+        }
+        fields[id]["settingsHTML"] = `<label for="display-checkbox-${id}">Display?</label><input type="checkbox" id="display-checkbox-${id}" checked>`;       
+        fields[id]["display"] = true;
+    }
 }
 
 function handleSlider(id) {
@@ -288,7 +318,7 @@ function configureRenderers(lines) {
         if (lines === null) {
             plot.setShaderReplacement(null);
         } else {
-            const emittedGLSL = translateToGLSL(lines);
+            const emittedGLSL = translateToGLSL(lines.slice());
             if (emittedGLSL && emittedGLSL.includes("vec2 udf_f(vec2 z)")) {
                 // second condition is temporary until visibility is integrated into UI as a setting
                 plot.setShaderReplacement(emittedGLSL);
@@ -334,6 +364,7 @@ function fieldEditHandler(mathField) {
         const lines = validateInput();
         addSliders(lines);
         configureRenderers(lines);
+        handleDisplayToggles(lines);
     } else {
         // slider field
         fieldEditHandler(null);
