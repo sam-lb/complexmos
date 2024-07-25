@@ -29,6 +29,9 @@ function populateGlobalUserScope(fields) {
     const functionAssignments = {};
 
     for (const id in fields) {
+        const callbacks = getCallbacks(id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
         const field = fields[id];
         const latex = cleanLatex(field.field.latex());
 
@@ -63,7 +66,10 @@ function populateGlobalUserScope(fields) {
                 isFunction: true,
                 shaderAlias: "udf_" + name.text,
             };
-            functionAssignments[name.text] = tokens;
+            functionAssignments[name.text] = {
+                tokens,
+                id
+            };
         } else {
             tracker.error("Invalid assignment: left hand side must be identifier or function with argument list");
             return null;
@@ -76,15 +82,17 @@ function populateGlobalUserScope(fields) {
 function populateLocalUserScopes(functionAssignments) {
     // specify local variables for functions
     for (const name in functionAssignments) {
+        const callbacks = getCallbacks(functionAssignments[name].id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
         const assignment = [];
-        for (const token of functionAssignments[name]) {
+        for (const token of functionAssignments[name].tokens) {
             if (token.text === "=") break;
             assignment.push(token);
         }
         const locals = {};
         const ast = (new ExpressionParser(assignment)).parseExpression();
         if (tracker.hasError) return null;
-        // if (!(ast instanceof AssignExpression) || !(ast.mLeft instanceof CallExpression)) {
         if (!(ast instanceof CallExpression)) {
             tracker.error("Invalid assignment"); // not a lot of detail in the error message because it's not clear when this might happen
             return null;
@@ -131,16 +139,13 @@ function populateUserScope(fields) {
     scope.userGlobal = {};
     tracker.clear();
 
-    tracker.setCallback((message, target) => console.log(message));
     const functionAssignments = populateGlobalUserScope(fields);
     if (functionAssignments === null) return;
     const success = populateLocalUserScopes(functionAssignments);
     if (success === null) return;
 }
 
-
 function classifyInput(fields) {
-    tracker.setCallback((message, target) => console.log(message));
     const lexer = new Lexer(null, false);
     lexer.setScope(scope);
     const inputExpressions = {
@@ -150,6 +155,9 @@ function classifyInput(fields) {
     };
 
     for (const id in fields) {
+        const callbacks = getCallbacks(id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
         const field = fields[id];
         const latex = cleanLatex(field.field.latex());
         if (latex === "") {
@@ -180,6 +188,9 @@ function classifyInput(fields) {
 
 function allRequirementsSatisfied(lines, names) {
     if (lines.some(line => {
+        const callbacks = getCallbacks(line.id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
         for (const req of line.requirements) {
             if (!names.includes(req)) {
                 if (scope.builtin[req]?.isParameter && line instanceof VariableDefinition) {
@@ -202,6 +213,9 @@ function noInvalidRequirements(varsAndFuncs, lines) {
     // check that there are no circular requirements (including self requirements)
     // check that there are no repeated definitions
     for (const line of varsAndFuncs) {
+        const callbacks = getCallbacks(line.id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
         for (const req of line.requirements) {
             const definitions = lines.filter(def => def.name === req);
             if (definitions.length > 1) {

@@ -237,7 +237,7 @@ function debounceWrapper(func, interval) {
     };
 }
 
-function getCallbacks(id) {
+window.getCallbacks = (id) => {
     const sideMenu = document.querySelector(`#math-input-side-menu-${id}`);
 
     const callback = (message, target) => {
@@ -262,6 +262,10 @@ function validateInput() {
     validateLines(lines);
     if (tracker.hasError) return null;
     for (const line of Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"])) {
+        const callbacks = getCallbacks(line.id);
+        
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
         line.buildAST();
         if (tracker.hasError) return null;
         validateAST(line.ast);
