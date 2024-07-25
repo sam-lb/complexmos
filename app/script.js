@@ -273,7 +273,8 @@ function validateInput() {
     }
 
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
-    let newOpsString = opsString + " " + varsAndFuncs.filter(line => line.name.length > 1).map(line => line.name).join(" ");
+    const noNumbers = (string) => !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].some((x) => string.includes(x)));
+    let newOpsString = opsString + " " + varsAndFuncs.filter(line => line.name.length > 1 && noNumbers(line.name)).map(line => line.name).join(" ");
     if (newOpsString[newOpsString.length-1] === " ") newOpsString = newOpsString.slice(0, -1);
     MQ.config({
         autoOperatorNames: newOpsString,
