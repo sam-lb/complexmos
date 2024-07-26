@@ -2,6 +2,8 @@
 
 A Desmos-style interactive graphing calculator with native complex number support. Complexmos compiles LaTeX expressions from MathQuill inputs to GLSL for rendering with WebGL, allowing for real-time editing and viewing of visualization of expressions.
 
+[Live link](http://complexmos.sambrunacini.com/app/)
+
 ### Screenshots
 
 ![A graph involving the Beta function and Gamma function](https://raw.githubusercontent.com/sam-lb/complexmos/master/data/cover/screenshot_1.png)
