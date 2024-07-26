@@ -89,6 +89,7 @@ class Evaluatable {
                 return arg1.scale(-1);
             } else {
                 tracker.error("unexpected prefix operator encountered");
+                return null;
             }
         } else if (ast instanceof CallExpression) {
             const functionArgs = ast.mArgs.map(arg => this._call(arg, args));
@@ -104,9 +105,9 @@ class Evaluatable {
                 }
             } else {
                 tracker.error(`could not resolve function ${ast.mFunction}. Note: higher order functions are not yet supported`);
+                return null;
             }
         } else if (ast instanceof NameExpression) {
-            // console.log(ast.mName, "rear", args);
             if (args[ast.mName] !== undefined) {
                 return args[ast.mName];
             } else if (valueScope[ast.mName] !== undefined) {
@@ -121,6 +122,7 @@ class Evaluatable {
             return complex(ast.mNumber, 0);
         } else {
             tracker.error("what is even going on");
+            return null;
         }
     }
 }

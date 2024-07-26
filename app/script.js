@@ -113,8 +113,11 @@ function bottomHTML(target, bounds, id) {
     }
     if (oldContainer) {
         const slider = document.querySelector(`#slider-${id}`);
-        slider.setAttribute("min", sliderFields[id].min.latex());
-        slider.setAttribute("max", sliderFields[id].max.latex());
+        // slider.setAttribute("min", sliderFields[id].min.latex());
+        // slider.setAttribute("max", sliderFields[id].max.latex());
+        const calculatedBounds = (sliderFields[id]["getBounds"] ?? (() => [0, 1]))();
+        slider.setAttribute("min", calculatedBounds[0].toString());
+        slider.setAttribute("max", calculatedBounds[1].toString());
         slider.value = fields[id].field.latex().split("=")[1];
         return;
     }
@@ -339,6 +342,35 @@ function validateSliderInput() {
         validateAST(maxLine.ast);
         if (tracker.hasError) return null;
     }
+
+    return sliderLines;
+}
+
+function setBoundCalculators(sliderLines) {
+    if (sliderLines === null) return;
+    for (const line of sliderLines) {
+        const minLine = line[0], maxLine = line[1];
+        const minEval = evaluate(minLine.ast), maxEval = evaluate(maxLine.ast);
+        sliderFields[minLine.id]["getBounds"] = () => {
+            const minBound = minEval.call();
+            const maxBound = maxEval.call();
+            return (minBound && maxBound) ? [minEval.call().re, maxEval.call().re] : [0, 1];
+        };
+    }
+}
+
+function populateValueScope(lines) {
+    Object.keys(valueScope).forEach(key => delete valueScope[key]);
+    Object.keys(defaultValueScope).forEach(key => valueScope[key] = defaultValueScope[key]);
+    if (lines === null) return;
+    for (const line of lines) {
+        if (scope.userGlobal[line.name].isFunction) {
+            const locals = scope.userGlobal[line.name].locals;
+            valueScope[line.name] = evaluate(line.ast, Object.keys(locals).sort(key => locals[key].index));
+        } else {
+            valueScope[line.name] = evaluate(line.ast);
+        }
+    }
 }
 
 function configureRenderers(lines) {
@@ -359,17 +391,6 @@ function configureRenderers(lines) {
     } else {
         // use evaluate() and scope.userGlobal to populate valueScope
         plot.clear();
-        Object.keys(valueScope).forEach(key => delete valueScope[key]);
-        Object.keys(defaultValueScope).forEach(key => valueScope[key] = defaultValueScope[key]);
-        if (lines === null) return;
-        for (const line of lines) {
-            if (scope.userGlobal[line.name].isFunction) {
-                const locals = scope.userGlobal[line.name].locals;
-                valueScope[line.name] = evaluate(line.ast, Object.keys(locals).sort(key => locals[key].index));
-            } else {
-                valueScope[line.name] = evaluate(line.ast);
-            }
-        }
         const displayName = pickDisplay(lines);
         if (!displayName) return;
         plot.addPlottable(new DomainColoring((z) => valueScope[displayName].call({z:z}),));
@@ -400,7 +421,9 @@ function pickDisplay(lines) {
 function fieldEditHandler(mathField) {
     if (mathField === null || fields[mathField.id]) {
         const lines = validateInput();
-        validateSliderInput();
+        const sliderLines = validateSliderInput();
+        populateValueScope(lines);
+        setBoundCalculators(sliderLines);
         addSliders(lines);
         handleDisplayToggles(lines);
         configureRenderers(lines);
@@ -1679,6 +1702,9 @@ function setRenderer() {
     }
 }
 
+
+window.fields = fields;
+window.sliderFields = sliderFields;
 
 // there might be a better way to do this, but it's actually fine
 window.preload = preload;
