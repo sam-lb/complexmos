@@ -2,10 +2,10 @@
 <html lang="en">
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"/>
-    <link rel="stylesheet" type="text/css" href="http://localhost:8000/mathquill/mathquill-basic.css"/>
+    <link rel="stylesheet" type="text/css" href="/mathquill/mathquill-basic.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> <!-- I hate jquery dependency but mathquill needs it for some reason -->
-    <script src="http://localhost:8000/mathquill/mathquill-basic.js"></script>
+    <script src="/mathquill/mathquill-basic.js"></script>
     <meta charset="utf-8"/>
     <title>Complexmos</title>
   </head>
@@ -21,13 +21,13 @@
         <div id="settings-content">
           <label for="webgl-toggle">Use webgl</label>
           <input type="checkbox" id="webgl-toggle" onchange="setRenderer();" checked><br>
-          <div><a href="http://localhost:8000/docs/guide.html" target="_blank">User guide (opens in new tab)</a></div>
+          <div><a href="/docs/guide.html" target="_blank">User guide (opens in new tab)</a></div>
         </div>
       </div>
 
       <div id="header-div">
         <div id="header-menu-container" class="header-panel">
-          <img src="http://localhost:8000/data/menu_transparent.png" style="width:25px; height:25px;" onclick="toggleSettingsPopup();">
+          <img src="/data/menu_transparent.png" style="width:25px; height:25px;" onclick="toggleSettingsPopup();">
         </div>
 
         <div id="header-title" class="header-panel">COMPLEXMOS</div>

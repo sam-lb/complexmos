@@ -43,10 +43,10 @@ const sliderFields = {};
 const menuHTML = (id, error=null) => {
     let imageSrc, displayText;
     if (error === null) {
-        imageSrc = "http://localhost:8000/data/settings_transparent.png";
+        imageSrc = "../data/settings_transparent.png";
         displayText = "Settings";
     } else {
-        imageSrc = "http://localhost:8000/data/error_transparent.png";
+        imageSrc = "../data/error_transparent.png";
         displayText = error;
     }
     return `<div>${id}</div>
@@ -1506,7 +1506,7 @@ class Model extends Plottable {
 
 let cImage;
 function preload() {
-    cImage = loadImage("http://localhost:8000/data/grid_3.png");
+    cImage = loadImage("../data/grid_3.png");
 }
 
 async function loadImage(src) {
@@ -1519,14 +1519,14 @@ async function loadImage(src) {
 }
 
 async function loadShaders() {
-    const frag = (await fetch("http://localhost:8000/shaders/complexmos.frag"));
-    const vert = (await fetch("http://localhost:8000/shaders/complexmos.vert"));
-    const fragSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.frag"));
-    const vertSphere = (await fetch("http://localhost:8000/shaders/complexmos_sphere.vert"));
-    const fragCube = (await fetch("http://localhost:8000/shaders/complexmos_cube.frag"));
-    const vertCube = (await fetch("http://localhost:8000/shaders/complexmos_cube.vert"));
-    const complexLib = (await fetch("http://localhost:8000/shaders/complex.frag"));
-    const sampleImage = await loadImage("http://localhost:8000/data/cat.jpg");
+    const frag = (await fetch("../shaders/complexmos.frag"));
+    const vert = (await fetch("../shaders/complexmos.vert"));
+    const fragSphere = (await fetch("../shaders/complexmos_sphere.frag"));
+    const vertSphere = (await fetch("../shaders/complexmos_sphere.vert"));
+    const fragCube = (await fetch("../shaders/complexmos_cube.frag"));
+    const vertCube = (await fetch("../shaders/complexmos_cube.vert"));
+    const complexLib = (await fetch("../shaders/complex.frag"));
+    const sampleImage = await loadImage("../data/cat.jpg");
 
     const complexLibSource = await complexLib.text().then(text => text);
     const importLib = (fileContents) => fileContents.replace(/\/\/IMPORT_COMPLEX/, complexLibSource);
