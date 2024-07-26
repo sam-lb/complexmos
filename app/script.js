@@ -659,7 +659,7 @@ class Plot {
     state() {
         const latex = [];
         for (const id of Object.keys(fields)) {
-            if (fields[id].latex) latex.push(fields[id].latex);
+            if (fields[id]) latex.push(fields[id].field.latex());
         }
         return JSON.stringify({
             camera: this.camera,
