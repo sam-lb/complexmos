@@ -1702,10 +1702,6 @@ function setRenderer() {
     }
 }
 
-
-window.fields = fields;
-window.sliderFields = sliderFields;
-
 // there might be a better way to do this, but it's actually fine
 window.preload = preload;
 window.setup = setup;

@@ -48,15 +48,6 @@ void main() {
     float aspect = yUnits / xUnits;
     vec2 z = ((uv - vec2(0.5, 0.5)) * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
 
-    // vec2 outp = lerpC(z, betaC(z, GammaC(z)), vec2(0.5, 1.));
-    // vec2 outp = sinhC(z);
-    // vec2 outp = GammaC(z);
-    // vec2 nz = scaleC(z, -1.);
-    // vec2 outp = vec2(0., 0.);
-    // for (int k=0; k<100; k++) {
-    //     outp += powC(vec2(float(k), 0.), nz);
-    // }
-
 //DISPLAY_REPLACE_BEGIN
     vec2 outp = udf_f(z);
 //DISPLAY_REPLACE_END
