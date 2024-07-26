@@ -7,7 +7,7 @@ const { stereographic, inverseStereoProject, perspectiveProject } = require("../
 const { rvec } = require("../math/rvector.js");
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
-const { classifyInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
+const { classifyInput, classifySliderInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 const { translateToGLSL } = require("./translator.js");
 const { VariableDefinition, FunctionDefinition } = require("./input_expressions.js");
 
@@ -289,13 +289,15 @@ window.getCallbacks = (id) => {
 function validateInput() {
     populateUserScope(fields);
     if (tracker.hasError) return null;
+
     const lines = classifyInput(fields);
     if (tracker.hasError) return null;
+
     validateLines(lines);
     if (tracker.hasError) return null;
+
     for (const line of Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"])) {
         const callbacks = getCallbacks(line.id);
-        
         tracker.setCallback(callbacks.callback);
         tracker.setSuccessCallback(callbacks.successCallback);
         line.buildAST();
@@ -313,6 +315,30 @@ function validateInput() {
     });
 
     return varsAndFuncs;
+}
+
+function validateSliderInput() {
+    const sliderLines = classifySliderInput(sliderFields);
+    if (tracker.hasError) return null;
+
+    for (const line of sliderLines) {
+        const minLine = line[0];
+        const maxLine = line[1];
+
+        const callbacks = getCallbacks(minLine.id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
+
+        minLine.buildAST();
+        if (tracker.hasError) return null;
+        validateAST(minLine.ast);
+        if (tracker.hasError) return null;
+
+        maxLine.buildAST();
+        if (tracker.hasError) return null;
+        validateAST(maxLine.ast);
+        if (tracker.hasError) return null;
+    }
 }
 
 function configureRenderers(lines) {
@@ -336,18 +362,17 @@ function configureRenderers(lines) {
         Object.keys(valueScope).forEach(key => delete valueScope[key]);
         Object.keys(defaultValueScope).forEach(key => valueScope[key] = defaultValueScope[key]);
         if (lines === null) return;
-        let found = false; // temporary until visibility is in UI
         for (const line of lines) {
             if (scope.userGlobal[line.name].isFunction) {
-                if (line.name === "f") found = true;
                 const locals = scope.userGlobal[line.name].locals;
                 valueScope[line.name] = evaluate(line.ast, Object.keys(locals).sort(key => locals[key].index));
             } else {
                 valueScope[line.name] = evaluate(line.ast);
             }
         }
-        if (!found) return;
-        plot.addPlottable(new DomainColoring((z) => valueScope["f"].call({z:z}),));
+        const displayName = pickDisplay(lines);
+        if (!displayName) return;
+        plot.addPlottable(new DomainColoring((z) => valueScope[displayName].call({z:z}),));
     }
 }
 
@@ -375,6 +400,7 @@ function pickDisplay(lines) {
 function fieldEditHandler(mathField) {
     if (mathField === null || fields[mathField.id]) {
         const lines = validateInput();
+        validateSliderInput();
         addSliders(lines);
         handleDisplayToggles(lines);
         configureRenderers(lines);
@@ -383,8 +409,6 @@ function fieldEditHandler(mathField) {
         fieldEditHandler(null);
     }
 }
-
-window.fields = fields;
 
 const firstField = addField();
 fields[firstField].field.focus();

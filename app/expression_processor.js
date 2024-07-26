@@ -145,6 +145,44 @@ function populateUserScope(fields) {
     if (success === null) return;
 }
 
+function classifySliderInput(sliderFields) {
+    const lexer = new Lexer(null, false);
+    lexer.setScope(scope);
+
+    const results = [];
+
+    for (const id in sliderFields) {
+        const callbacks = getCallbacks(id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
+
+        const minField = sliderFields[id].min;
+        const maxField = sliderFields[id].max;
+
+        const minLatex = cleanLatex(minField.latex()), maxLatex = cleanLatex(maxField.latex());
+
+        if (minLatex.includes("=") || maxLatex.includes("=")) {
+            tracker.error("Assignments are not allowed in slider bound fields!");
+            return;
+        }
+
+        lexer.setText(minLatex);
+        lexer.tokenize();
+        const minTokens = lexer.getTokens();
+
+        lexer.setText(maxLatex);
+        lexer.tokenize();
+        const maxTokens = lexer.getTokens();
+
+        results.push([
+            new EvaluatableLine(minTokens, id),
+            new EvaluatableLine(maxTokens, id),
+        ]);
+    }
+
+    return results;
+}
+
 function classifyInput(fields) {
     const lexer = new Lexer(null, false);
     lexer.setScope(scope);
@@ -241,7 +279,6 @@ function noRepeatDefinitions(names) {
     return true;
 }
 
-
 function validateLines(lines) {
     const varsAndFuncs = lines["functions"].concat(lines["variables"]);
     const allLines = Array.prototype.concat(lines["functions"], lines["variables"], lines["evaluatables"]);
@@ -288,6 +325,7 @@ function validateAST(ast) {
 
 module.exports = {
     classifyInput,
+    classifySliderInput,
     validateLines,
     populateUserScope,
     validateAST,
