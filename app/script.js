@@ -321,7 +321,6 @@ function configureRenderers(lines) {
             plot.setShaderReplacement(null);
         } else {
             const emittedGLSL = translateToGLSL(lines.slice());
-            // if (emittedGLSL && emittedGLSL.includes("vec2 udf_f(vec2 z)")) {
             if (emittedGLSL) {
                 // second condition is temporary until visibility is integrated into UI as a setting
                 plot.setShaderReplacement(emittedGLSL);
@@ -385,6 +384,8 @@ function fieldEditHandler(mathField) {
     }
 }
 
+window.fields = fields;
+
 const firstField = addField();
 fields[firstField].field.focus();
 
@@ -394,9 +395,21 @@ MQ.config({
     charsThatBreakOutOfSupSub: "",
     autoOperatorNames: opsString,
     handlers: {
-        enter: (mathField) => { advance(mathField.id, 1); },
-        downOutOf: (mathField) => { advance(mathField.id, 1); },
-        upOutOf: (mathField) => { advance(mathField.id, -1); },
+        moveOutOf: (direction, mathField) => {
+            if (!(direction === MQ.L || direction === MQ.R)) mathField.moveToLeftEnd();
+        },
+        enter: (mathField) => {
+            mathField.moveToLeftEnd();
+            advance(mathField.id, 1);
+        },
+        downOutOf: (mathField) => { 
+            mathField.moveToLeftEnd();
+            advance(mathField.id, 1);
+        },
+        upOutOf: (mathField) => {
+            mathField.moveToLeftEnd();
+            advance(mathField.id, -1);
+        },
         deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
         edit: (mathField) => {
             if (fields[mathField.id]) {

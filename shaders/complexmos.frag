@@ -76,7 +76,7 @@ void main() {
 
     float nm = normC(outp).x;
     float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
-    col = vec3(floor(mod(atan(outp.y, outp.x) + tpi,  tpi)) / tpi, 1., trm);
+    col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
     col = hsvToRgb(col);
 
     float tolerance = 0.01;
