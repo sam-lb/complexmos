@@ -137,7 +137,12 @@ function populateLocalUserScopes(functionAssignments) {
 
 function populateUserScope(fields) {
     scope.userGlobal = {};
-    tracker.clear();
+    for (const id in fields) {
+        const callbacks = getCallbacks(id);
+        tracker.setCallback(callbacks.callback);
+        tracker.setSuccessCallback(callbacks.successCallback);
+        tracker.clear();
+    }
 
     const functionAssignments = populateGlobalUserScope(fields);
     if (functionAssignments === null) return;
