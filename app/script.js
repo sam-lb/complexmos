@@ -17,6 +17,7 @@ window.plot = undefined;
 window.lastMouseX = undefined;
 window.lastMouseY = undefined;
 window.mouseIsDown = false;
+window.resizeBarStart = false;
 let RENDERER = "WebGL";
 
 const pValueArray = [
@@ -262,13 +263,13 @@ function advance(id, direction) {
 }
 
 
-function debounceWrapper(func, interval) {
-    let timer;
+function debounceWrapper(func, interval, initialTimer) {
+    let timer = initialTimer;
     return function() {
         const context = this;
         const args = arguments;
         clearTimeout(timer);
-        timer = setTimeout(() => func.apply(context, args), interval);
+        timer = setTimeout(() => {func.apply(context, args);console.log("timer out");}, interval);
     };
 }
 
@@ -391,6 +392,7 @@ function configureRenderers(lines) {
     } else {
         // use evaluate() and scope.userGlobal to populate valueScope
         plot.clear();
+        if (!lines) return;
         const displayName = pickDisplay(lines);
         if (!displayName) return;
         plot.addPlottable(new DomainColoring((z) => valueScope[displayName].call({z:z}),));
@@ -460,7 +462,7 @@ MQ.config({
         deleteOutOf: (direction, mathField) => { if (direction === MQ.L) deleteField(mathField.id); },
         edit: (mathField) => {
             if (fields[mathField.id]) {
-                debounceWrapper(fieldEditHandler, 500)(mathField);
+                debounceWrapper(fieldEditHandler, 500, -1)(mathField);
             } else {
                 fieldEditHandler(mathField);
             }
@@ -1516,33 +1518,45 @@ function setupP5(offset=null) {
     fieldEditHandler(null);
 }
 
-function setupWebGL(offset=null) {
-    loadShaders().then(shaders => {
+function reglLoaded(err, regl, shaders, offset) {
+    if (err) {
+        console.warn(`Could not load WebGL! Maybe your browser doesn't support it? Using vanilla canvas instead. Specific error: ${err}`);
+        RENDERER = "p5";
+        setupP5();
+        fieldEditHandler(null);
+        return;
+    }
+
+    console.log("regl loaded!");
+
+    const canvasDiv = document.querySelector("#canvas-div");
+    const mode = plot?.mode ?? Plot.modes.PLANE;
+    plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, mode, false, regl, shaders);
+    if (offset) plot.pan(offset)
+    tabSwitch(plot.mode-1);    
+    fieldEditHandler(null);
+}
+
+function shadersLoaded(shaders, offset=null) {
+    if (plot?.reglInstance) {
+        plot.reglInstance._refresh();
+        reglLoaded(null, plot.reglInstance, shaders, offset);
+    } else {
         // remove the loading shaders message
         document.querySelector("#canvas-div").innerHTML = "";
-
         require("regl")({
             container: "#canvas-div",
-            onDone: (err, regl) => {
-                if (err) {
-                    console.warn(`Could not load WebGL! Maybe your browser doesn't support it? Using vanilla canvas instead. Specific error: ${err}`);
-                    RENDERER = "p5";
-                    setupP5();
-                    fieldEditHandler(null);
-                    return;
-                }
-
-                console.log("regl loaded!");
-
-                const canvasDiv = document.querySelector("#canvas-div");
-                const mode = plot?.mode ?? Plot.modes.PLANE;
-                plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, mode, false, regl, shaders);
-                if (offset) plot.pan(offset)
-                tabSwitch(plot.mode-1);    
-                fieldEditHandler(null);
-            }
+            onDone: (err, regl) => reglLoaded(err, regl, shaders, offset),
         });
-    });
+    }
+}
+
+function setupWebGL(offset=null) {
+    if (plot?.shaders) {
+        shadersLoaded(plot.shaders, offset);
+    } else {
+        loadShaders().then(shaders => shadersLoaded(shaders, offset));
+    }
 }
 
 function setup(offset=null) {
@@ -1591,14 +1605,36 @@ function mousePressed(event) {
     mouseIsDown = true;
 }
 
+function exprBarMousePressed(event) {
+    resizeBarStart = true;
+}
+
 function mouseReleased(event) {
 	lastMouseX = 0;
 	lastMouseY = 0;
     mouseIsDown = false;
+    resizeBarStart = false;
+}
+
+function exprBarResize(event, callback) {
+    if (mouseIsDown && resizeBarStart) {
+        const target = document.querySelector("#drag-expr-bar");
+        const rect = target.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const dx = lastMouseX - mouseX;
+
+        let x = (rect.right - dx) / window.innerWidth;
+        x = Math.max(0.20, Math.min(0.75, x));
+        const p = 3 * x / (1 - x);
+
+        document.querySelector("#ui-container").style.flex = p.toString();
+        callback();
+    }
 }
 
 function registerMouseEvents() {
     const canvasDiv = document.querySelector("#canvas-div");
+    const dragDiv = document.querySelector("#drag-expr-bar");
 
     canvasDiv.addEventListener("wheel", wheelHandler);
     canvasDiv.addEventListener("mousemove", mouseDragged);
@@ -1607,11 +1643,12 @@ function registerMouseEvents() {
     document.addEventListener("touchstart", mousePressed);
     document.addEventListener("mouseup", mouseReleased);
     document.addEventListener("touchend", mouseReleased);
+    dragDiv.addEventListener("mousedown", exprBarMousePressed);
+    // document.addEventListener("mousemove", (event) => exprBarResize(event, debounceWrapper(windowResized), 100));
+    document.addEventListener("mousemove", (event) => exprBarResize(event, resizeDebounced));
 }
 
 function windowResized() {
-    const canvasDiv = document.querySelector("#canvas-div");
-    
     setTimeout(() => {
         setup(plot.offset);
     }, 100);
@@ -1664,12 +1701,13 @@ function setRenderer() {
 }
 
 // there might be a better way to do this, but it's actually fine
+window.resizeDebounced = debounceWrapper(windowResized, 250, -1);
 window.preload = preload;
 window.setup = setup;
 window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
 window.draw = draw;
-window.addEventListener("resize", debounceWrapper(windowResized, 250));
+window.addEventListener("resize", resizeDebounced);
 window.toggleSettingsPopup = toggleSettingsPopup;
 window.setRenderer = setRenderer;
 window.handleSlider = handleSlider;

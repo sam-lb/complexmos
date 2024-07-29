@@ -35,6 +35,7 @@ body {
     box-shadow: inset 0px 0px 4px 0px black;
     height: 90vh;
     flex-shrink: 0;
+    position: relative;
 }
 
 #ui-header {
@@ -71,6 +72,10 @@ body {
 .sick-button-design:hover {
     background-color: #aaa;
     box-shadow: 0 -2px 5px 1px rgba(0, 0, 0, 0.5);
+}
+
+canvas {
+    display: block;
 }
 
 #canvas-wrapper {
@@ -117,6 +122,7 @@ body {
 .math-input-container {
     width: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 .math-input-div {
@@ -243,4 +249,14 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]:focus::-moz-range-thumb {
     border: 1px solid lightgray;
     outline: none;
+}
+
+#drag-expr-bar {
+    width: 30px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    z-index: 100;
+    cursor: col-resize;
 }
