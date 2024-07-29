@@ -499,7 +499,7 @@ class Plot {
         this.gridlineSpacing = 1;
         this.boundsChangedSinceLastDraw = false;
         this.displayWindowInfo = displayWindowInfo;
-        this.configureWindow(displayWidth, displayHeight, bounds, bounds === null);
+        this.configureWindow(displayWidth, displayHeight, bounds);
         this.plottables = [];
         this.polygons = [];
 
@@ -524,61 +524,39 @@ class Plot {
         this.sphereMesh = icosphere_flat(5);
     }
 
-    configureWindow(newWidth=null, newHeight=null, bounds=null) {
-        let widthRatio, heightRatio;
-        if (newWidth === null) {
-            widthRatio = 1;
-            heightRatio = 1;
-            newWidth = this.dimensions.re;
-            newHeight = this.dimensions.im;
-        } else {
-            if (this.dimensions === undefined) {
-                widthRatio = 1;
-                heightRatio = 1;
-            } else {
-                widthRatio = this.dimensions.re / newWidth;
-                heightRatio = this.dimensions.im / newHeight;
-            }
-        }
-        
-        this.dimensions = complex(newWidth, newHeight)
-        this.aspect = newHeight / newWidth;
-        this.halfDimensions = this.dimensions.scale(0.5);
-
-        let fitToSquare = false;
+    configureWindow(newWidth, newHeight, bounds=null) {
         if (bounds === null) {
-            if (this.bounds === undefined) {
-                bounds = {
-                    xMin: -4,
-                    xMax: 4,
-                    yMin: -4,
-                    yMax: 4
-                };
-                fitToSquare = true;
+            if (!this.windowConfigured) {
+                // set to default of 8 real units, centered, and square unit aspect ratio
+                this.units = complex(8, 8 * newHeight / newWidth);
+                this.offset = complex(0, 0); // centered
             } else {
                 // retain ratio
-                const centerX = (this.bounds.xMin + this.bounds.xMax) / 2;
-                const centerY = (this.bounds.yMin + this.bounds.yMax) / 2;
-                const halfRangeX = this.units.re * heightRatio / 2;
-                const halfRangeY = this.units.im * widthRatio / 2;
-                bounds = {
-                    xMin: centerX - halfRangeX,
-                    xMax: centerX + halfRangeX,
-                    yMin: centerY - halfRangeY,
-                    yMax: centerY + halfRangeY,
-                }
+                // oldX / oldWidth = newX / newWidth --> newX = newWidth * (oldX / oldWidth)
+                // newY = newHeight * (oldY / oldHeight)
+                this.units = complex(
+                    newWidth * (this.units.re / this.dimensions.re),
+                    newHeight * (this.units.im / this.dimensions.im)
+                );
             }
+            this.bounds = {
+                xMin: this.offset.re - 0.5 * this.units.re,
+                xMax: this.offset.re + 0.5 * this.units.re,
+                yMin: this.offset.im - 0.5 * this.units.im,
+                yMax: this.offset.im + 0.5 * this.units.im,
+            };
+        } else {
+            // set bounds directly
+            this.bounds = bounds;
+            this.units = complex(this.bounds.xMax - this.bounds.xMin, this.bounds.yMax - this.bounds.yMin);
+            this.offset = complex(
+                (this.bounds.xMin + this.bounds.xMax) / 2,
+                (this.bounds.yMin + this.bounds.yMax) / 2,
+            );
         }
-
-        this.bounds = bounds;
-        this.offset = complex(
-            ( this.bounds.xMax + this.bounds.xMin ) / 2,
-            ( this.bounds.yMax + this.bounds.yMin ) / 2
-        );
-        this.units = complex(
-            this.bounds.xMax - this.bounds.xMin,
-            this.bounds.yMax - this.bounds.yMin
-        );
+        this.dimensions = complex(newWidth, newHeight);
+        this.aspect = newHeight / newWidth;
+        this.halfDimensions = this.dimensions.scale(0.5);
         this.pixelsPerUnit = complex(
             this.dimensions.re / this.units.re,
             this.dimensions.im / this.units.im
@@ -588,32 +566,9 @@ class Plot {
             this.units.im / this.gridlineSpacing
         );
 
-        if (fitToSquare) this.fitBoundsToSquare();
-
-        valueScope["realBounds"] = complex(this.bounds.xMin, this.bounds.xMax);
-        valueScope["imagBounds"] = complex(this.bounds.yMin, this.bounds.yMax);
-
-        this.needsUpdate = true;
         this.boundsChangedSinceLastDraw = true;
-
-        if (this.displayWindowInfo) {
-            console.log("Window configuration");
-            console.log("window bounds", this.bounds);
-            console.log("offset", this.offset);
-            console.log("window size", this.dimensions);
-            console.log("gridline count", this.gridlineCount);
-        }
-    }
-
-    fitBoundsToSquare() {
-        const centerY = (this.bounds.yMin + this.bounds.yMax) / 2;
-        const halfRangeY = (this.units.re * this.aspect) / 2;
-        this.configureWindow(this.dimensions.re, this.dimensions.im, {
-            xMin: this.bounds.xMin,
-            xMax: this.bounds.xMax,
-            yMin: centerY - halfRangeY,
-            yMax: centerY + halfRangeY
-        });
+        this.needsUpdate = true;
+        this.windowConfigured = true;
     }
 
     setCamera(camera) {
@@ -627,7 +582,7 @@ class Plot {
 
     pan(offset) {
         if (this.mode === Plot.modes.PLANE) {
-            this.configureWindow(null, null, {
+            this.configureWindow(this.dimensions.re, this.dimensions.im, {
                 xMin: this.bounds.xMin + offset.re,
                 xMax: this.bounds.xMax + offset.re,
                 yMin: this.bounds.yMin + offset.im,
@@ -648,7 +603,7 @@ class Plot {
             (this.bounds.yMin + this.bounds.yMax) / 2,
         );
 
-        this.configureWindow(null, null, {
+        this.configureWindow(this.dimensions.re, this.dimensions.im, {
             xMin: center.re - newHalfUnits.re,
             xMax: center.re + newHalfUnits.re,
             yMin: center.im - newHalfUnits.im,
@@ -673,7 +628,7 @@ class Plot {
         state = JSON.parse(state);
 
         this.setCamera(state.camera);
-        this.configureWindow(null, null, state.bounds);
+        this.configureWindow(this.dimensions.re, this.dimensions.im, state.bounds);
         tabSwitch(state.mode-1);
 
         for (const id of Object.keys(fields)) {
@@ -771,16 +726,15 @@ class Plot {
         this.mode = mode;
 
         if (mode === Plot.modes.PLANE) {
-            if (this.savedBounds !== undefined) this.configureWindow(null, null, this.savedBounds);
+            if (this.savedBounds !== undefined) this.configureWindow(this.dimensions.re, this.dimensions.im, this.savedBounds);
         } else {
             if (previousMode === Plot.modes.PLANE) this.savedBounds = this.bounds;
-            this.configureWindow(null, null, {
+            this.configureWindow(this.dimensions.re, this.dimensions.im, {
                 xMin: -2.5,
                 xMax: 2.5,
-                yMin: -1.5,
-                yMax: 1.5,
+                yMin: -2.5 * this.aspect,
+                yMax: 2.5 * this.aspect,
             });
-            this.fitBoundsToSquare();
         }
 
         this.boundsChangedSinceLastDraw = true;
@@ -1548,19 +1502,21 @@ async function loadShaders() {
     };
 }
 
-function setupP5() {
+function setupP5(offset=null) {
     const canvasDiv = document.querySelector("#canvas-div");
     canvasDiv.innerHTML = "";
     const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
     canvas.parent("canvas-div");
     canvasDiv.onwheel = wheelHandler;
 
-    plot = new Plot(width, height, null, Plot.modes.PLANE, false);
+    const mode = plot?.mode ?? Plot.modes.PLANE;
+    plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, mode, false);
+    if (offset) plot.pan(offset)
     tabSwitch(plot.mode-1);
     fieldEditHandler(null);
 }
 
-function setupWebGL() {
+function setupWebGL(offset=null) {
     loadShaders().then(shaders => {
         // remove the loading shaders message
         document.querySelector("#canvas-div").innerHTML = "";
@@ -1579,19 +1535,21 @@ function setupWebGL() {
                 console.log("regl loaded!");
 
                 const canvasDiv = document.querySelector("#canvas-div");
-                plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, Plot.modes.PLANE, false, regl, shaders);
+                const mode = plot?.mode ?? Plot.modes.PLANE;
+                plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, mode, false, regl, shaders);
+                if (offset) plot.pan(offset)
                 tabSwitch(plot.mode-1);    
-                fieldEditHandler(null);     
+                fieldEditHandler(null);
             }
         });
     });
 }
 
-function setup() {
+function setup(offset=null) {
     if (RENDERER === "p5") {
-        setupP5();
+        setupP5(offset);
     } else {
-        setupWebGL(); 
+        setupWebGL(offset); 
     }
 
     registerMouseEvents();
@@ -1653,7 +1611,10 @@ function registerMouseEvents() {
 
 function windowResized() {
     const canvasDiv = document.querySelector("#canvas-div");
-    plot.configureWindow(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
+    
+    setTimeout(() => {
+        setup(plot.offset);
+    }, 100);
 }
 
 function tabSwitch(tab) {
@@ -1708,7 +1669,7 @@ window.setup = setup;
 window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
 window.draw = draw;
-window.addEventListener("resize", debounceWrapper(windowResized, 100));
+window.addEventListener("resize", debounceWrapper(windowResized, 250));
 window.toggleSettingsPopup = toggleSettingsPopup;
 window.setRenderer = setRenderer;
 window.handleSlider = handleSlider;
