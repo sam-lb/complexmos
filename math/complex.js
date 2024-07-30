@@ -285,6 +285,18 @@ class Complex {
 		);
 	}
 
+	floor() {
+		return complex(Math.floor(this.re), Math.floor(this.im));
+	}
+
+	ceil() {
+		return complex(Math.ceil(this.re), Math.floor(this.im));
+	}
+
+	mod(b) {
+		return this.sub(b.mult(this.div(b).floor()));
+	}
+
 	/* ---------- Static functions -------------------- */
 
 	static norm(z) {
@@ -439,8 +451,20 @@ class Complex {
 		return z.clamp(min, max);
 	}
 
-	static frac() {
+	static frac(z) {
 		return z.frac();
+	}
+
+	static floor(z) {
+		return z.floor();
+	}
+
+	static ceil(z) {
+		return z.ceil();
+	}
+
+	static mod(z, b) {
+		return z.mod(b);
 	}
 
 	/* --------------- In-place operations --------------------- */

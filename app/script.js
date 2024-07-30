@@ -269,7 +269,7 @@ function debounceWrapper(func, interval, initialTimer) {
         const context = this;
         const args = arguments;
         clearTimeout(timer);
-        timer = setTimeout(() => {func.apply(context, args);console.log("timer out");}, interval);
+        timer = setTimeout(() => {func.apply(context, args);}, interval);
     };
 }
 

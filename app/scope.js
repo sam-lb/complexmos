@@ -150,6 +150,21 @@ const scope = {
             shaderAlias: "fracC",
             locals: { "z": { isFunction: false, type: "complex", index: 0 } },
         },
+        "floor": {
+            isFunction: true,
+            shaderAlias: "floorC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 } },
+        },
+        "ceil": {
+            isFunction: true,
+            shaderAlias: "ceilC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 } },
+        },
+        "mod": {
+            isFunction: true,
+            shaderAlias: "modC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 }, "b": { isFunction: false, type: "complex", index: 0 } },
+        },
         "inverseSC": {
             isFunction: true,
             shaderAlias: "inverseSCC",
@@ -242,6 +257,9 @@ const defaultValueScope = {
     "conj": (z) => z.conj(),
     "clamp": (z, min, max) => Complex.clamp(z, min.norm(), max.norm()),
     "frac": Complex.frac,
+    "floor": Complex.floor,
+    "ceil": Complex.ceil,
+    "mod": Complex.mod,
     "inverseSC": (z, p) => complex(1, 0), // not implemented for p5 mode
     "sc": (z, p) => complex(1, 0), // not implemented for p5 mode
     "planeToP": (z, p) => complex(1, 0), // not implemented for p5 mode

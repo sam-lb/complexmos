@@ -257,6 +257,18 @@ vec2 squeezeC(vec2 z, vec2 coverage, vec2 squeezeLength) {
     return scaleC(z, ratio);
 }
 
+vec2 floorC(vec2 z) {
+    return vec2(floor(z.x), floor(z.y));
+}
+
+vec2 ceilC(vec2 z) {
+    return vec2(ceil(z.x), floor(z.y));
+}
+
+vec2 modC(vec2 z, vec2 b) {
+    return subC(z, multC(b, floorC(divC(z, b))));
+}
+
 bool fIsInvalid(float x) {
     return !(x <= 0. || 0. <= x) || (abs(x) > 1000000.0);
 }
