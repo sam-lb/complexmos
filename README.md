@@ -15,3 +15,5 @@ A Desmos-style interactive graphing calculator with native complex number suppor
 ![A graph of the Gamma function displayed in 3D](https://raw.githubusercontent.com/sam-lb/complexmos/master/data/cover/screenshot_4.png)
 
 ![A graph of an interesting function displayed in 3D](https://raw.githubusercontent.com/sam-lb/complexmos/master/data/cover/screenshot_5.png)
+
+![A domain coloring using a modified form of IQ's star sdf](https://raw.githubusercontent.com/sam-lb/complexmos/master/data/cover/screenshot_6.jpg)
