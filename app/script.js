@@ -1644,8 +1644,9 @@ function registerMouseEvents() {
     document.addEventListener("mouseup", mouseReleased);
     document.addEventListener("touchend", mouseReleased);
     dragDiv.addEventListener("mousedown", exprBarMousePressed);
-    // document.addEventListener("mousemove", (event) => exprBarResize(event, debounceWrapper(windowResized), 100));
+    dragDiv.addEventListener("touchstart", exprBarMousePressed);
     document.addEventListener("mousemove", (event) => exprBarResize(event, resizeDebounced));
+    document.addEventListener("touchmove", (event) => exprBarResize(event, resizeDebounced));
 }
 
 function windowResized() {
