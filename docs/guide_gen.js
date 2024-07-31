@@ -90,6 +90,12 @@ const descriptions = {
     "tau": "The mathematical circle constant \\( \\tau \\approx 6.283 \\).",
 
     "z": "A parameter representing a complex number that ranges across the entire plane.",
+
+    "floor": "Returns the greatest integer less than each component of a complex number.",
+
+    "ceil": "Returns the least integer greater than each component of a complex number.",
+
+    "mod": "Returns the equivalence class of \\(z \\mod b\\) (component-wise).",
 };
 
 
