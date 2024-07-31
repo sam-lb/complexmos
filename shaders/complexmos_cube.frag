@@ -2,6 +2,7 @@ precision highp float;
 uniform float width, height;
 
 varying vec2 outPos;
+varying float clip;
 
 uniform float pValues[9]; // GLSL ES 2.0 sucks. There's no way to initialize an array
 uniform vec2 xBounds;
@@ -53,6 +54,10 @@ float round(float x) {
 }
 
 void main() {
+    if (clip > 0.0) {
+        discard;
+    }
+
     float xUnits = xBounds.y - xBounds.x;
     float yUnits = yBounds.y - yBounds.x;
     float xCenter = xBounds.x + 0.5 * xUnits;

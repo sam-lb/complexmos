@@ -18,6 +18,7 @@ const vec2 i = vec2(0., 1.);
 const float EPSILON = 0.0000001;
 
 varying vec2 outPos;
+varying float clip;
 
 //IMPORT_COMPLEX
 
@@ -51,9 +52,10 @@ void main() {
     vec2 outp = udf_f(z);
 //DISPLAY_REPLACE_END
 
-    vec3 newPosition = vec3(position.x, position.y, -normC(outp).x);
+    vec3 newPosition = vec3(position.x, position.y, -normC(outp).x) / 2.;
+    clip = dot(newPosition, vec3(0., 0., -1.)) - 1.;
 
     vec3 transformed = transform(newPosition);   
-    vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9);
-    gl_Position = vec4(projected, -transformed.y, 1.0);
+    vec2 projected = vec2(transformed.x / (-1.5 + transformed.y) * 0.9, transformed.z / (-1.5 + transformed.y) * 0.9 - .25);
+    gl_Position = vec4(2.*projected, -transformed.y, 1.0);
 }
