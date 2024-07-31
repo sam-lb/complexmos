@@ -1529,6 +1529,7 @@ function reglLoaded(err, regl, shaders, offset) {
 
     console.log("regl loaded!");
 
+    regl.on("lost", contextLost);
     const canvasDiv = document.querySelector("#canvas-div");
     const mode = plot?.mode ?? Plot.modes.PLANE;
     plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, mode, false, regl, shaders);
@@ -1567,6 +1568,15 @@ function setup(offset=null) {
     }
 
     registerMouseEvents();
+}
+
+function contextLost() {
+    const webGLToggle = document.querySelector("#webgl-toggle");
+    webGLToggle.checked = false;
+    webGLToggle.disabled = true;
+    alert("Your WebGL context has been lost :(");
+
+    setRenderer();
 }
 
 function wheelHandler(event) {
