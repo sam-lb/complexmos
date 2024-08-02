@@ -32,6 +32,14 @@ const pValueArray = [
     1.5056327351493116e-7
 ];
 
+const GRADIENTS = {
+    "monokai": [
+        [0.97647059, 0.99215686, 1.0, 0.65098039, 0.4, 0.68235294],
+        [0.14901961, 0.59215686, 0.84705882, 0.88627451, 0.85098039, 0.50588235],
+        [0.44705882, 0.12156863, 0.4, 0.18039216, 0.9372549, 1.0],            
+    ],
+};
+
 
 /** MathQuill handling */
 
@@ -949,15 +957,10 @@ class Plot {
 
                 pValues: pValueArray,
 
-                gradR: [
-                    0.97647059, 0.99215686, 1.0, 0.65098039, 0.4, 0.68235294, 
-                ],
-                gradG: [
-                    0.14901961, 0.59215686, 0.84705882, 0.88627451, 0.85098039, 0.50588235,
-                ],
-                gradB: [
-                    0.44705882, 0.12156863, 0.4, 0.18039216, 0.9372549, 1.0,
-                ],
+                gradR: GRADIENTS["monokai"][0],
+                gradG: GRADIENTS["monokai"][1],
+                gradB: GRADIENTS["monokai"][2],
+
                 texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
 
@@ -997,6 +1000,12 @@ class Plot {
                 row1: this.rotationMatrix.getRow(0),
                 row2: this.rotationMatrix.getRow(1),
                 row3: this.rotationMatrix.getRow(2),
+
+                gradR: GRADIENTS["monokai"][0],
+                gradG: GRADIENTS["monokai"][1],
+                gradB: GRADIENTS["monokai"][2],
+
+                texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
 
             count: vertexCount,
@@ -1045,6 +1054,12 @@ class Plot {
                 row1: this.rotationMatrix.getRow(0),
                 row2: this.rotationMatrix.getRow(1),
                 row3: this.rotationMatrix.getRow(2),
+
+                gradR: GRADIENTS["monokai"][0],
+                gradG: GRADIENTS["monokai"][1],
+                gradB: GRADIENTS["monokai"][2],
+
+                texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
 
             cull: {
@@ -1506,9 +1521,9 @@ async function loadShaders() {
 
     const fragShaderSource = await frag.text().then(importComplex).then(importColoring);
     const vertShaderSource = await vert.text().then(text => text);
-    const fragCubeShaderSource = await fragCube.text().then(importComplex);
+    const fragCubeShaderSource = await fragCube.text().then(importComplex).then(importColoring);
     const vertCubeShaderSource = await vertCube.text().then(importComplex); // yes the vert shader needs this
-    const fragSphereShaderSource = await fragSphere.text().then(importComplex);
+    const fragSphereShaderSource = await fragSphere.text().then(importComplex).then(importColoring);
     const vertSphereShaderSource = await vertSphere.text().then(text => text);
 
     return {

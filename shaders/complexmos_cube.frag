@@ -1,5 +1,6 @@
 precision highp float;
 uniform float width, height;
+uniform sampler2D texture;
 
 varying vec2 outPos;
 varying float clip;
@@ -10,6 +11,10 @@ uniform vec2 yBounds;
 
 uniform float alpha;
 uniform float beta;
+
+uniform float gradR[6]; // GLSL ES 2.0 sucks. can't index into an array with non-constant. Regl can't pass in vec3 arrays as uniforms
+uniform float gradG[6];
+uniform float gradB[6];
 
 const float pi = 3.1415926535897;
 const float tpi = 2.0 * pi;
@@ -27,23 +32,11 @@ vec2 udf_f(vec2 z) {
 }
 //REPLACE_END
 
+//IMPORT_COLORING
+
 vec2 stereoProject(vec3 P) {
     float denom = 1. + P.z;
     return vec2(P.x / denom, P.y / denom);
-}
-
-vec3 hsvToRgb(vec3 c){
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
-
-vec2 mandelbrot(vec2 z) {
-    vec2 z0 = vec2(0., 0.);
-    for (int i=0; i<50; i++) {
-        z0 = addC(multC(z0, z0), z);
-    }
-    return z0;
 }
 
 float round(float x) {
@@ -67,19 +60,15 @@ void main() {
     float aspect = yUnits / xUnits;
     vec2 z = (uv * xUnits + vec2(xCenter, yCenter)) * vec2(1, aspect);
 
-    vec3 col;
-    
 //DISPLAY_REPLACE_BEGIN
     vec2 outp = udf_f(z);
 //DISPLAY_REPLACE_END
 
+    vec3 col;
     if (isInvalid(outp)) {
-        col = vec3(1., 1., 1.);
+        col = vec3(0., 0., 0.);
     } else {
-        float nm = normC(outp).x;
-        float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
-        col = vec3(mod(atan(outp.y, outp.x) + tpi,  tpi) / tpi, 1., trm);
-        col = hsvToRgb(col);
+        col = getColorDefault(outp);
     }
 
     float tolerance = 0.01;
