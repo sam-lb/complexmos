@@ -87,13 +87,13 @@ function handleDisplayToggles(lines) {
     for (id of plottableIDs) {
         const current = document.querySelector(`#display-checkbox-${id}`);
         if (current) {
-            fields[id]["display"] = current.checked;
+            fields[id]["displaySettings"]["display"] = current.checked;
             continue;
         }
-        const checked = fields[id]["settingsHTML"] ? fields[id]["display"] : true;
+        const checked = fields[id]["settingsHTML"] ? fields[id]["displaySettings"]["display"] : true;
         const checkedString = checked ? " checked" : "";
         fields[id]["settingsHTML"] = `<label for="display-checkbox-${id}">Display?</label><input type="checkbox" id="display-checkbox-${id}" oninput="plot.toggleDisplay(${id});"${checkedString}>`;
-        fields[id]["display"] = checked;
+        fields[id]["displaySettings"]["display"] = checked;
     }
 }
 
@@ -204,6 +204,7 @@ function addField(parent=null) {
             last: null,
             next: null,
             container: newDiv,
+            displaySettings: {},
         };
     } else {
         const lastDiv = document.querySelector(`#math-input-div-container-${parent.id}`);
@@ -215,6 +216,7 @@ function addField(parent=null) {
             last: parent.field,
             next: parent.next,
             container: newDiv,
+            displaySettings: {},
         };
         fields[parent.field.id].next = newField;
 
@@ -414,7 +416,7 @@ function addSliders(lines) {
 function pickDisplay(lines) {
     const rev = Object.keys(fields).sort((a, b) => parseInt(b) - parseInt(a));
     for (const id of rev) {
-        if (fields[id]["display"]) {
+        if (fields[id]["displaySettings"]["display"]) {
             return lines.filter(l => l.id === id)[0]?.name;
         }
     }
@@ -916,7 +918,7 @@ class Plot {
 
     toggleDisplay(id) {
         const checkbox = document.querySelector(`#display-checkbox-${id}`);
-        fields[id]["display"] = checkbox.checked;
+        fields[id]["displaySettings"]["display"] = checkbox.checked;
         fieldEditHandler(null);
     }
 
@@ -946,7 +948,7 @@ class Plot {
                 yBounds: [this.bounds.yMin, this.bounds.yMax],
 
                 pValues: pValueArray,
-                
+
                 gradR: [
                     0.97647059, 0.99215686, 1.0, 0.65098039, 0.4, 0.68235294, 
                 ],
@@ -1492,15 +1494,21 @@ async function loadShaders() {
     const fragCube = (await fetch("../shaders/complexmos_cube.frag"));
     const vertCube = (await fetch("../shaders/complexmos_cube.vert"));
     const complexLib = (await fetch("../shaders/complex.frag"));
+    const coloringLib = (await fetch("../shaders/coloring.frag"));
     const sampleImage = await loadImage("../data/cat.jpg");
 
     const complexLibSource = await complexLib.text().then(text => text);
-    const importLib = (fileContents) => fileContents.replace(/\/\/IMPORT_COMPLEX/, complexLibSource);
-    const fragShaderSource = await frag.text().then(importLib);
+    const coloringLibSource = await coloringLib.text().then(text => text);
+
+    const importLib = (match, replacement) => (fileContents) => fileContents.replace(match, replacement);
+    const importComplex = importLib(/\/\/IMPORT_COMPLEX/, complexLibSource);
+    const importColoring = importLib(/\/\/IMPORT_COLORING/, coloringLibSource);
+
+    const fragShaderSource = await frag.text().then(importComplex).then(importColoring);
     const vertShaderSource = await vert.text().then(text => text);
-    const fragCubeShaderSource = await fragCube.text().then(importLib);
-    const vertCubeShaderSource = await vertCube.text().then(importLib); // yes the vert shader needs this
-    const fragSphereShaderSource = await fragSphere.text().then(importLib);
+    const fragCubeShaderSource = await fragCube.text().then(importComplex);
+    const vertCubeShaderSource = await vertCube.text().then(importComplex); // yes the vert shader needs this
+    const fragSphereShaderSource = await fragSphere.text().then(importComplex);
     const vertSphereShaderSource = await vertSphere.text().then(text => text);
 
     return {
