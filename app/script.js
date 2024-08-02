@@ -946,6 +946,16 @@ class Plot {
                 yBounds: [this.bounds.yMin, this.bounds.yMax],
 
                 pValues: pValueArray,
+                
+                gradR: [
+                    0.97647059, 0.99215686, 1.0, 0.65098039, 0.4, 0.68235294, 
+                ],
+                gradG: [
+                    0.14901961, 0.59215686, 0.84705882, 0.88627451, 0.85098039, 0.50588235,
+                ],
+                gradB: [
+                    0.44705882, 0.12156863, 0.4, 0.18039216, 0.9372549, 1.0,
+                ],
                 texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
 
