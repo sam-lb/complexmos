@@ -51,7 +51,7 @@ void main() {
     vec2 outp = udf_f(z);
 //DISPLAY_REPLACE_END
 
-    vec3 col = getColorTextureDefault(outp);
+    vec3 col = getColorDefault(outp);
 
     float tolerance = 0.01;
     if (abs(z.x - round(z.x)) < tolerance || abs(z.y - round(z.y)) < tolerance) {

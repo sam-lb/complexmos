@@ -259,4 +259,10 @@ input[type="range"]:focus::-moz-range-thumb {
     height: 100%;
     z-index: 100;
     cursor: col-resize;
+    border-radius: 5px;
+}
+
+#drag-expr-bar:hover {
+    background-color: rgba(0, 0, 0, 0.125);
+    border-right:3px solid rgba(0, 0, 0, 0.5);
 }
