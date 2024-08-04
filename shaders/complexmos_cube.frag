@@ -68,7 +68,7 @@ void main() {
     if (isInvalid(outp)) {
         col = vec3(0., 0., 0.);
     } else {
-        col = getColorDefault(outp);
+        col = getColorDiscreteGradient(outp);
     }
 
     float tolerance = 0.01;

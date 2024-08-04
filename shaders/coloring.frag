@@ -23,6 +23,33 @@ vec3 getColorAtIndex(int index) {
     }
 }
 
+float getDiscreteAngle(vec2 outp) {
+    float angle = atan(outp.y, outp.x);
+    return floor(mod(angle + tpi,  tpi));
+}
+
+vec3 getColorDiscreteGradient(vec2 outp) {
+    float angle = getDiscreteAngle(outp);
+    float nm = normC(outp).x;
+    float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
+    float sector = tpi / 6.;
+    float i0 = mod(floor(angle / sector), 6.) + 1.;
+    float i1 = mod(i0, 6.) + 1.;
+    vec3 firstColor = getColorAtIndex(int(i0) - 1);
+    vec3 secondColor = getColorAtIndex(int(i1) - 1);
+    float t0 = (angle - floor(angle / sector)) / sector;
+
+    return trm * ((1. - t0) * firstColor + t0 * secondColor);
+}
+
+vec3 getColorDiscreteDefault(vec2 outp) {
+    float angle = getDiscreteAngle(outp);
+    float nm = normC(outp).x;
+    float trm = .25 + .75 * floor((2. / pi * atan(sqrt(nm))) / 0.2) * 0.2;
+    vec3 col = vec3(angle / tpi, 1., trm);
+    return hsvToRgb(col);
+}
+
 vec3 getColorGradient(vec2 outp) {
     float angle = atan(outp.y, outp.x);
     float nm = normC(outp).x;
