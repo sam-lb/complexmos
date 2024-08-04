@@ -49,14 +49,13 @@ void main() {
 
 //DISPLAY_REPLACE_BEGIN
     vec2 outp = udf_f(z);
-//DISPLAY_REPLACE_END
-
     vec3 col;
     if (isInvalid(outp)) {
         col = vec3(0., 0., 0.);
     } else {
-        col = getColorDiscreteGradient(outp);
+        col = getColorDefault(outp);
     }
+//DISPLAY_REPLACE_END
 
     float tolerance = 0.01;
     if (abs(z.x - round(z.x)) < tolerance || abs(z.y - round(z.y)) < tolerance) {

@@ -74,6 +74,35 @@ function displayOverlayMenu(id) {
     `;
 }
 
+function generateSettingsHTML(id) {
+    let checked, colorMode;
+    if (fields[id]["settingsHTML"] || document.querySelector(`#display-checkbox-${id}`)) {
+        checked = fields[id]["displaySettings"]["display"];
+        colorMode = fields[id]["displaySettings"]["colorMode"];
+    } else {
+        checked = true;
+        colorMode = "default";
+    }
+    const checkedString = checked ? " checked" : "";
+    fields[id]["displaySettings"] = {
+        "display": checked,
+        "colorMode": colorMode,
+    }
+
+    return `<label for="display-checkbox-${id}">Display?</label>
+    <input type="checkbox" id="display-checkbox-${id}" oninput="plot.toggleDisplay(${id});"${checkedString}><br>
+    <label for="display-coloring-dropdown-${id}">Coloring mode</label>
+    <select id="display-coloring-dropdown-${id}" onchange="plot.setColorMode(${id});">
+        <option value="default">Default (HSV rainbow)</option>
+        <option value="default-discrete">Discrete Default</option>
+        <option value="gradient">Gradient</option>
+        <option value="gradient-discrete">Discrete Gradient</option>
+        <option value="image-repeat">Image (repeated)</option>
+        <option value="image-stretch">Image (stretch)</option>
+    </select>
+    `.replace(`value="${colorMode}">`, `value="${colorMode}" selected>`); // ah yes
+}
+
 function handleDisplayToggles(lines) {
     if (!lines) return;
     const plottableIDs = [];
@@ -93,15 +122,7 @@ function handleDisplayToggles(lines) {
 
     if (plottableIDs.length === 0) return;
     for (id of plottableIDs) {
-        const current = document.querySelector(`#display-checkbox-${id}`);
-        if (current) {
-            fields[id]["displaySettings"]["display"] = current.checked;
-            continue;
-        }
-        const checked = fields[id]["settingsHTML"] ? fields[id]["displaySettings"]["display"] : true;
-        const checkedString = checked ? " checked" : "";
-        fields[id]["settingsHTML"] = `<label for="display-checkbox-${id}">Display?</label><input type="checkbox" id="display-checkbox-${id}" oninput="plot.toggleDisplay(${id});"${checkedString}>`;
-        fields[id]["displaySettings"]["display"] = checked;
+        fields[id]["settingsHTML"] = generateSettingsHTML(id);        
     }
 }
 
@@ -388,22 +409,27 @@ function configureRenderers(lines) {
     if (RENDERER === "WebGL") {
         if (lines === null) {
             plot.setShaderReplacement(null);
+            plot.setDisplayReplacement(null);
         } else {
             const emittedGLSL = translateToGLSL(lines.slice());
             if (emittedGLSL) {
-                // second condition is temporary until visibility is integrated into UI as a setting
                 plot.setShaderReplacement(emittedGLSL);
                 const displayName = pickDisplay(lines);
-                plot.setDisplayReplacement(displayName);
+                if (displayName) {
+                    plot.setDisplayReplacement(displayName.name, colorGLSLFromSettings(displayName.id));
+                } else {
+                    plot.setDisplayReplacement(null);
+                }
             } else {
                 plot.setShaderReplacement(null);
+                plot.setDisplayReplacement(null);
             }
         }
     } else {
         // use evaluate() and scope.userGlobal to populate valueScope
         plot.clear();
         if (!lines) return;
-        const displayName = pickDisplay(lines);
+        const displayName = pickDisplay(lines).name;
         if (!displayName) return;
         plot.addPlottable(new DomainColoring((z) => valueScope[displayName].call({z:z}),));
     }
@@ -425,9 +451,28 @@ function pickDisplay(lines) {
     const rev = Object.keys(fields).sort((a, b) => parseInt(b) - parseInt(a));
     for (const id of rev) {
         if (fields[id]["displaySettings"]["display"]) {
-            return lines.filter(l => l.id === id)[0]?.name;
+            return {id: id, name: lines.filter(l => l.id === id)[0]?.name };
+            // return lines.filter(l => l.id === id)[0]?.name;
         }
     }
+}
+
+const colorFunctionMap = {
+    "default": "getColorDefault",
+    "default-discrete": "getColorDiscreteDefault",
+    "gradient": "getColorGradient",
+    "gradient-discrete": "getColorDiscreteGradient",
+    "image-repeat": "getColorTextureRepeat",
+    "image-stretch": "getColorTextureStretch",
+};
+
+function colorGLSLFromSettings(id) {
+    return `vec3 col;
+    if (isInvalid(outp)) {
+        col = vec3(0., 0., 0.);
+    } else {
+        col = ${colorFunctionMap[fields[id]["displaySettings"]["colorMode"]]}(outp);
+    }`;
 }
 
 function fieldEditHandler(mathField) {
@@ -915,11 +960,13 @@ class Plot {
         this.needsUpdate = true;
     }
 
-    setDisplayReplacement(name) {
+    setDisplayReplacement(name, colorGLSL) {
         if (name) {
-            this.displayReplacement = `vec2 outp = udf_${name}(z);`;
+            this.displayReplacement = `vec2 outp = udf_${name}(z);\n${colorGLSL}`;
+            this.displayReplacementFunction = `vec2 outp = udf_${name}(z);`
         } else {
-            this.displayReplacement = "vec2 outp = vec2(1., 0.);";
+            this.displayReplacement = "vec2 outp = vec2(1., 0.);vec3 col=vec3(0.9, 0.9, 0.9);";
+            this.displayReplacementFunction = "vec2 outp = vec2(1., 0.);";
         }
         this.needsUpdate = true;
     }
@@ -930,12 +977,18 @@ class Plot {
         fieldEditHandler(null);
     }
 
+    setColorMode(id) {
+        const select = document.querySelector(`#display-coloring-dropdown-${id}`);
+        fields[id]["displaySettings"]["colorMode"] = select.value;
+        fieldEditHandler(null);
+    }
+
     drawFnPlane() {
         let frag = this.shaders["complexmos.frag"];
         if (this.shaderReplacement !== null) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
-            frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
         }
+        frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
 
         return this.reglInstance({
             frag: frag,
@@ -975,8 +1028,8 @@ class Plot {
         let frag = this.shaders["complexmos_sphere.frag"];
         if (this.shaderReplacement !== null) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
-            frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
         }
+        frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
 
         return this.reglInstance({
             frag: frag,
@@ -1028,9 +1081,9 @@ class Plot {
         if (this.shaderReplacement !== null) {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
             vert = vert.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
-            frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
-            vert = vert.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
+            vert = vert.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacementFunction);
         }
+        frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
 
         return this.reglInstance({
             frag: frag,
