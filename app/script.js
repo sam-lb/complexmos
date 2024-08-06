@@ -1563,7 +1563,7 @@ async function loadShaders() {
     const vertCube = (await fetch("../shaders/complexmos_cube.vert"));
     const complexLib = (await fetch("../shaders/complex.frag"));
     const coloringLib = (await fetch("../shaders/coloring.frag"));
-    const sampleImage = await loadImage("../data/cat.jpg");
+    const sampleImage = await loadImage("../grotle.jpg");
 
     const complexLibSource = await complexLib.text().then(text => text);
     const coloringLibSource = await coloringLib.text().then(text => text);
@@ -1674,8 +1674,8 @@ function wheelHandler(event) {
 function mouseDragged(event) {
     if (mouseIsDown) {
         const rect = event.target.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
+        const mouseX = (event.touches) ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
+        const mouseY = (event.touches) ? event.touches[0].clientY - rect.top : event.clientY - rect.top;
         const canvasDiv = document.querySelector("#canvas-div");
         
         if ((0 <= mouseX && mouseX <= canvasDiv.offsetWidth) && (0 <= mouseY && mouseY <= canvasDiv.offsetHeight)) {
@@ -1693,8 +1693,8 @@ function mouseDragged(event) {
 
 function mousePressed(event) {
     const rect = event.target.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    const mouseX = (event.touches) ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
+    const mouseY = (event.touches) ? event.touches[0].clientY - rect.top : event.clientY - rect.top;
 	
     lastMouseX = mouseX;
 	lastMouseY = mouseY;
@@ -1716,7 +1716,7 @@ function exprBarResize(event, callback) {
     if (mouseIsDown && resizeBarStart) {
         const target = document.querySelector("#drag-expr-bar");
         const rect = target.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
+        const mouseX = (event.touches) ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
         const dx = lastMouseX - mouseX;
 
         let x = (rect.right - dx) / window.innerWidth;
