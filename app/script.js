@@ -1563,7 +1563,7 @@ async function loadShaders() {
     const vertCube = (await fetch("../shaders/complexmos_cube.vert"));
     const complexLib = (await fetch("../shaders/complex.frag"));
     const coloringLib = (await fetch("../shaders/coloring.frag"));
-    const sampleImage = await loadImage("../grotle.jpg");
+    const sampleImage = await loadImage("../data/cat.jpg");
 
     const complexLibSource = await complexLib.text().then(text => text);
     const coloringLibSource = await coloringLib.text().then(text => text);
@@ -1800,7 +1800,6 @@ function setRenderer() {
 // there might be a better way to do this, but it's actually fine
 window.resizeDebounced = debounceWrapper(windowResized, 250, -1);
 window.preload = preload;
-window.setup = setup;
 window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
 window.draw = draw;
@@ -1808,3 +1807,13 @@ window.addEventListener("resize", resizeDebounced);
 window.toggleSettingsPopup = toggleSettingsPopup;
 window.setRenderer = setRenderer;
 window.handleSlider = handleSlider;
+
+window.onload = () => {
+    const aspect = window.innerWidth / window.innerHeight;
+    if (aspect <= 1) {
+        alert("Rotate your device for the best experience. Note that features may not work as expected on mobile.");
+    } else if (aspect < 4 / 3) {
+        alert(`It is recommended to use this app on a device with 4:3 (1.33:1) aspect ratio or greater. Your device aspect ratio: ${Math.floor(100 * aspect) / 100}:1`);
+    }
+    setup();
+};
