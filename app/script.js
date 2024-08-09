@@ -99,7 +99,11 @@ function generateSettingsHTML(id) {
         <option value="gradient-discrete">Discrete Gradient</option>
         <option value="image-repeat">Image (repeated)</option>
         <option value="image-stretch">Image (stretch)</option>
-    </select>
+    </select><br>
+    <div style="display:flex;flex-direction:row;">
+        <button class="sick-btn-design" onclick="plot.uploadImage(${id});">Upload image</button>
+        <div>${fields[id]["imageFile"] ?? "none selected"}</div>
+    </div>
     `.replace(`value="${colorMode}">`, `value="${colorMode}" selected>`); // ah yes
 }
 
@@ -143,8 +147,6 @@ function bottomHTML(target, bounds, id) {
     }
     if (oldContainer) {
         const slider = document.querySelector(`#slider-${id}`);
-        // slider.setAttribute("min", sliderFields[id].min.latex());
-        // slider.setAttribute("max", sliderFields[id].max.latex());
         const calculatedBounds = (sliderFields[id]["getBounds"] ?? (() => [0, 1]))();
         slider.setAttribute("min", calculatedBounds[0].toString());
         slider.setAttribute("max", calculatedBounds[1].toString());
@@ -555,6 +557,7 @@ class Plot {
     ) {
         this.gridlineSpacing = 1;
         this.boundsChangedSinceLastDraw = false;
+        this.imageFile = null;
         this.displayWindowInfo = displayWindowInfo;
         this.configureWindow(displayWidth, displayHeight, bounds);
         this.plottables = [];
@@ -668,6 +671,35 @@ class Plot {
         });
     }
 
+    uploadImage(id) {
+        const tempEl = document.createElement("input");
+        tempEl.setAttribute("type", "file");
+        tempEl.setAttribute("accept", "image/*");
+        tempEl.setAttribute("id", "file-selector");
+        document.body.appendChild(tempEl);
+        tempEl.click();
+
+        tempEl.onchange = () => {
+            const selector = document.querySelector("#file-selector");
+            const files = selector.files;
+            if (files?.length <= 0) return;
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                loadImage(URL.createObjectURL(files[0])).then(result => {
+                    this.shaders["sample texture"] = result;
+                    fields[id]["imageFile"] = files[0].name;
+                    fieldEditHandler(null);
+                    fields[id]["settingsHTML"] = generateSettingsHTML(id, null);
+                    displayOverlayMenu(id);
+                });
+            }
+
+            reader.readAsText(files.item(0));
+            selector.parentNode.removeChild(selector);
+        }
+    }
+
     state() {
         const latex = [];
         for (const id of Object.keys(fields)) {
@@ -720,7 +752,7 @@ class Plot {
         tempEl.onchange = () => {
             const selector = document.querySelector("#file-selector");
             const files = selector.files;
-            if (files.length <= 0) return;
+            if (files?.length <= 0) return;
             const reader = new FileReader();
 
             reader.onload = (event) => {
