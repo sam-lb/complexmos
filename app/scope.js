@@ -246,7 +246,7 @@ const defaultValueScope = {
     "sinh": Complex.sinh,
     "cosh": Complex.cosh,
     "tanh": Complex.tanh,
-    "atanh": (z) => complex(1, 0), // not implemented for p5 mode
+    "atanh": Complex.atanh,
     "re": (z) => complex(z.re, 0),
     "im": (z) => complex(z.im, 0),
     "Gamma": Complex.gamma,

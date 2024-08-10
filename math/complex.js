@@ -249,6 +249,10 @@ class Complex {
 		return this.sinh().div(this.cosh())
 	}
 
+	atanh() {
+		return this.add(complex(1, 0)).div(complex(1, 0).sub(this)).ln().scale(0.5);
+	}
+
 	pow(z) {
 		/*
 		Calculate the zth power of the complex number
@@ -399,6 +403,13 @@ class Complex {
 		Return the hyperbolic tangent of z
 		*/
 		return z.tanh();
+	}
+
+	static atanh(z) {
+		/*
+		Return the inverse hyperbolic tangent of z
+		*/
+		return z.atanh();
 	}
 
 	static infinite(z) {
