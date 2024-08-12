@@ -480,7 +480,6 @@ function colorGLSLFromSettings(id) {
 function fieldEditHandler(mathField) {
     if (mathField === null || fields[mathField.id]) {
         const lines = validateInput();
-        console.log(lines);
         const sliderLines = validateSliderInput();
         populateValueScope(lines);
         setBoundCalculators(sliderLines);
