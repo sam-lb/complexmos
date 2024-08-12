@@ -69,6 +69,10 @@ class FunctionDefinition extends InputExpression {
                 if (!scope.builtin[token.text] && !this.locals.includes(token.text)) {
                     this.requirements.push(token.text);
                 }
+                if (scope.builtin[token.text]?.isParameter && !this.locals.includes(token.text)) {
+                    tracker.error(`Cannot use parameter ${token.text} here.`);
+                    return;
+                }
             } else {
                 if (!scope.builtin[token.text]?.isType) {
                     this.locals.push(token.text);
