@@ -64,7 +64,8 @@ class Lexer {
                     break;
                 }
             }
-            if (matchFound && !(this.scope.builtin[possibleIdentifier]?.isParameter ?? this.scope.userGlobal[possibleIdentifier]?.isParameter)) {
+            // if (matchFound && !(this.scope.builtin[possibleIdentifier]?.isParameter ?? this.scope.userGlobal[possibleIdentifier]?.isParameter)) {
+            if (matchFound) {
                 identifiers.push(possibleIdentifier);
                 buffer = buffer.slice(i+1, buffer.length);
             } else {
@@ -205,11 +206,6 @@ class Lexer {
             ) {
                 needsMultiplication = true;
             } else if (token.mtype === TokenType.NAME && nextToken.mtype === TokenType.LEFT_PAREN) {
-                // if (this.builtinLookup.containsKey(token.text)) {
-                //     needsMultiplication = !this.scope.builtin[token.text].isFunction;
-                // } else if (this.userGlobalLookup.containsKey(token.text)) {
-                //     needsMultiplication = !this.scope.userGlobal[token.text].isFunction;
-                // }
                 needsMultiplication = !this._checkIsFunction(token);
             }
 
