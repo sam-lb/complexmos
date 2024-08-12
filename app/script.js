@@ -1847,5 +1847,10 @@ window.onload = () => {
     } else if (aspect < 4 / 3) {
         alert(`It is recommended to use this app on a device with 4:3 (1.33:1) aspect ratio or greater. Your device aspect ratio: ${Math.floor(100 * aspect) / 100}:1`);
     }
+
+    fetch("../package.json").then(response => response.json().then(json => {
+        document.querySelector("#version-div").innerHTML = `<a href="https://github.com/sam-lb/complexmos/releases" target="_blank">v${json.version}</a>`;
+    }));
+
     setup();
 };

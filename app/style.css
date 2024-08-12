@@ -5,6 +5,15 @@ body {
     height: 0;
 }
 
+#version-div {
+    font-size:small;
+    text-align: center;
+}
+
+#version-div a {
+    color: lightgray;
+}
+
 #header-div {
     height: 10vh;
     background-color:darkslategray;
