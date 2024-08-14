@@ -49,6 +49,21 @@
                 <div>This mode plots the norm of a complex function on the \( z \)-axis (vertical axis). The coloring at each point works the same as plane mode.</div>
                 <div>Tip: The norms of the outputs of complex functions can get big very quickly and change rapidly. Using \( \operatorname{squeeze} \) can help control the norms to make things easier to visualize. Recommended usage to plot the function \( f(z) \): \( \operatorname{squeeze}(f(z), 0.99, 10) \).</div>
             </section>
+
+            <section>
+                <div class="section-header-div">
+                    <h1>Styling</h1>
+                </div>
+                <div>There are currently 6 options for styling domain coloring plots. These options are only available in WebGL mode. All modes have norm banding, so that regions of lower norm are darker. To see what each mode looks like, you can test it on the function \( f(z)=z \).</div>
+                <ol>
+                    <li>Default: A smooth HSV rainbow starting counterclockwise from the positive real axis.</li>
+                    <li>Discrete Default: A discrete HSV rainbow starting counterclockwise from the positive real axis.</li>
+                    <li>Gradient: A smooth color gradient starting counterclockwise from the positive real axis. Currently, the only gradient that is supported is monokai, but there are plans to allow arbitrary gradients or at least a larger selection of them.</li>
+                    <li>Discrete Gradient: A discrete color gradient starting counterclockwise from the positive real axis.</li>
+                    <li>Image (repeated): Tile the plane with unit squares filled with the uploaded image. The tiling is aligned so the origin touches the vertices of four unit square image copies.</li>
+                    <li>Image (stretch): Stretches the image to the entire plane by lifting it to a sphere and stereographically projecting it.</li>
+                </ol>
+            </section>
         </div>
         <script src="/docs/guide_gen_bundle.js"></script>
     </body>
