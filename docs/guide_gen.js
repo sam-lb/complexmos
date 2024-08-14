@@ -5,6 +5,7 @@ const scopes = require("../app/scope.js");
 const scope = scopes.scope.builtin;
 
 const descriptions = {
+
     "Gamma": "The Gamma function \\( \\Gamma(z) \\).",
 
     "acos": "The inverse cosine function.",
@@ -142,3 +143,7 @@ const toggleDescriptions = () => {
 
 outputDescriptions("description-container");
 window.toggleDescriptions = toggleDescriptions;
+
+window.onload = () => {
+    toggleDescriptions();
+};
