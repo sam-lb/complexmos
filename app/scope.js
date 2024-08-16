@@ -264,7 +264,7 @@ const defaultValueScope = {
     "sc": (z, p) => complex(1, 0), // not implemented for p5 mode
     "planeToP": (z, p) => complex(1, 0), // not implemented for p5 mode
     "pToPlane": (z, p) => complex(1, 0), // not implemented for p5 mode
-    "squeeze": (z, coverage, length) => complex(1, 0), // not implemented for p5 mode
+    "squeeze": (z, coverage, length) => Complex.squeeze(z, coverage.re, length.re),
   
     "i": complex(0, 1),
     "pi": complex(Math.PI, 0),

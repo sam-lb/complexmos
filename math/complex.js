@@ -301,6 +301,13 @@ class Complex {
 		return this.sub(b.mult(this.div(b).floor()));
 	}
 
+	squeeze(coverage, squeezeLength) {
+		const norm = this.norm();
+		const alpha = Math.sqrt(Math.atanh(clamp(coverage, 0, 1)) / squeezeLength);
+		const ratio = Math.tanh(alpha * alpha * norm) / norm;
+		return this.scale(ratio);
+	}
+
 	/* ---------- Static functions -------------------- */
 
 	static norm(z) {
@@ -476,6 +483,10 @@ class Complex {
 
 	static mod(z, b) {
 		return z.mod(b);
+	}
+
+	static squeeze(z, coverage, squeezeLength) {
+		return z.squeeze(coverage, squeezeLength);
 	}
 
 	/* --------------- In-place operations --------------------- */
