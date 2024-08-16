@@ -80,8 +80,10 @@ vec3 getColorTextureRepeat(vec2 outp) {
 }
 
 vec3 getColorTextureStretch(vec2 outp) {
-    float squareNorm = max(abs(outp.x), abs(outp.y));
-    vec2 texCoord = 1. / pi * atan(squareNorm) * outp / squareNorm + vec2(.5, .5);
+    float angle = atan(outp.y, outp.x);
+    float nm = normC(outp).x;
+    outp = outp / nm * tanhC(vec2(nm, 0.)).x;
+    vec2 texCoord = scaleC(outp, .5 / cos(mod(angle - tpi / 8., tpi / 4.) - tpi / 8.)) + vec2(.5, .5);
     texCoord = vec2(texCoord.x, 1. - texCoord.y);
     return texture2D(texture, texCoord).xyz;
 }
