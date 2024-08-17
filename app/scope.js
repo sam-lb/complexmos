@@ -95,6 +95,16 @@ const scope = {
             shaderAlias: "tanhC",
             locals: { "z": { isFunction: false, type: "complex", index: 0 } },
         },
+        "asinh": {
+            isFunction: true,
+            shaderAlias: "asinhC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 } },
+        },
+        "acosh": {
+            isFunction: true,
+            shaderAlias: "acoshC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0 } },
+        },
         "atanh": {
             isFunction: true,
             shaderAlias: "atanhC",
@@ -246,6 +256,8 @@ const defaultValueScope = {
     "sinh": Complex.sinh,
     "cosh": Complex.cosh,
     "tanh": Complex.tanh,
+    "asinh": Complex.asinh,
+    "acosh": Complex.acosh,
     "atanh": Complex.atanh,
     "re": (z) => complex(z.re, 0),
     "im": (z) => complex(z.im, 0),

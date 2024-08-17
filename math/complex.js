@@ -249,6 +249,14 @@ class Complex {
 		return this.sinh().div(this.cosh())
 	}
 
+	asinh() {
+		return this.mult(this).add(complex(1, 0)).sqrt().add(this).ln();
+	}
+
+	acosh() {
+		return this.mult(this).sub(complex(1, 0)).sqrt().add(this).ln();
+	}
+
 	atanh() {
 		return this.add(complex(1, 0)).div(complex(1, 0).sub(this)).ln().scale(0.5);
 	}
@@ -410,6 +418,20 @@ class Complex {
 		Return the hyperbolic tangent of z
 		*/
 		return z.tanh();
+	}
+
+	static asinh(z) {
+		/*
+		Return the inverse hyperbolic sine of z
+		*/
+		return z.asinh();
+	}
+
+	static acosh(z) {
+		/*
+		Return the inverse hyperbolic cosine of z
+		*/
+		return z.acosh();
 	}
 
 	static atanh(z) {

@@ -93,6 +93,14 @@ vec2 tanhC(vec2 z) {
     return divC(sinhC(z), coshC(z));
 }
 
+vec2 asinhC(vec2 z) {
+    return lnC(z + sqrtC(multC(z, z) + vec2(1., 0.)));
+}
+
+vec2 acoshC(vec2 z) {
+    return lnC(z + sqrtC(multC(z, z) - vec2(1., 0.)));
+}
+
 vec2 atanhC(vec2 z) {
     return scaleC(lnC(divC(addC(vec2(1., 0.), z), subC(vec2(1., 0.), z))), 0.5);
 }
