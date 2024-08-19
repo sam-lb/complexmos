@@ -59,7 +59,7 @@ const menuHTML = (id, error=null) => {
         displayText = error;
     }
     return `<div>${id}</div>
-    <div style="display:flex;">
+    <div style="display:flex;" id="icon-container-${id}">
         <img src="${imageSrc}" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="${displayText}"></img>
     </div>`;
 };
@@ -407,6 +407,17 @@ function populateValueScope(lines) {
     }
 }
 
+function highlightExpression(id) {
+    for (const exprID in fields) {
+        const icon = document.querySelector(`#icon-container-${exprID}`);
+        if (id === exprID) {
+            icon.style.outline = "thick double darkslategray";
+        } else {
+            icon.style.outline = "none";
+        }
+    }
+}
+
 function configureRenderers(lines) {
     if (RENDERER === "WebGL") {
         if (lines === null) {
@@ -417,6 +428,7 @@ function configureRenderers(lines) {
             if (emittedGLSL) {
                 plot.setShaderReplacement(emittedGLSL);
                 const displayName = pickDisplay(lines);
+                highlightExpression(displayName?.id);
                 if (displayName) {
                     plot.setDisplayReplacement(displayName.name, colorGLSLFromSettings(displayName.id));
                 } else {
@@ -431,8 +443,10 @@ function configureRenderers(lines) {
         // use evaluate() and scope.userGlobal to populate valueScope
         plot.clear();
         if (!lines) return;
-        const displayName = pickDisplay(lines).name;
+        const displayName = pickDisplay(lines);
+        highlightExpression(displayName?.id);
         if (!displayName) return;
+        displayName = displayName.name;
         plot.addPlottable(new DomainColoring((z) => valueScope[displayName].call({z:z}),));
     }
 }
@@ -454,7 +468,6 @@ function pickDisplay(lines) {
     for (const id of rev) {
         if (fields[id]["displaySettings"]["display"]) {
             return {id: id, name: lines.filter(l => l.id === id)[0]?.name };
-            // return lines.filter(l => l.id === id)[0]?.name;
         }
     }
 }
