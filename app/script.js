@@ -443,7 +443,7 @@ function configureRenderers(lines) {
         // use evaluate() and scope.userGlobal to populate valueScope
         plot.clear();
         if (!lines) return;
-        const displayName = pickDisplay(lines);
+        let displayName = pickDisplay(lines);
         highlightExpression(displayName?.id);
         if (!displayName) return;
         displayName = displayName.name;
