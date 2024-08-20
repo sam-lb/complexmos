@@ -261,6 +261,14 @@ class Complex {
 		return this.add(complex(1, 0)).div(complex(1, 0).sub(this)).ln().scale(0.5);
 	}
 
+	sinp() {
+		return complex(3, 0).sub(this.scale(-3).sub(complex(4, 0)).scale(0.5).asinh().scale(2 / 3).cosh().scale(2));
+	}
+
+	cosp() {
+		return this.scale(-3).sub(complex(4, 0)).scale(0.5).asinh().scale(1 / 3).sinh().scale(2)
+	}
+
 	pow(z) {
 		/*
 		Calculate the zth power of the complex number
@@ -439,6 +447,20 @@ class Complex {
 		Return the inverse hyperbolic tangent of z
 		*/
 		return z.atanh();
+	}
+
+	static sinp(z) {
+		/*
+		Return the parabolic sine of z
+		*/
+		return z.sinp();
+	}
+
+	static cosp(z) {
+		/*
+		Return the parabolic cosine of z
+		*/
+		return z.cosp();
 	}
 
 	static infinite(z) {
