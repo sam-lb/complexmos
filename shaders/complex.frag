@@ -105,6 +105,14 @@ vec2 atanhC(vec2 z) {
     return scaleC(lnC(divC(addC(vec2(1., 0.), z), subC(vec2(1., 0.), z))), 0.5);
 }
 
+vec2 sinpC(vec2 z) {
+    return vec2(3., 0.) - 2. * coshC(2. / 3. * asinhC(-1.5 * z - vec2(2., 0.)));
+}
+
+vec2 cospC(vec2 z) {
+    return -2. * sinhC(1. / 3. * asinhC(-1.5 * z - vec2(2., 0.)));
+}
+
 vec2 reC(vec2 z) {
     return vec2(z.x, 0.0);
 }
