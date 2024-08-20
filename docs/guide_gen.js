@@ -97,6 +97,10 @@ const descriptions = {
     "ceil": "Returns the least integer greater than each component of a complex number.",
 
     "mod": "Returns the equivalence class of \\(z \\mod b\\) (component-wise).",
+
+    "asinh": "The inverse hyperbolic sine function.",
+
+    "acosh": "The inverse hyperbolic cosine function.",
 };
 
 
