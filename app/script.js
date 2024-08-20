@@ -59,7 +59,7 @@ const menuHTML = (id, error=null) => {
         displayText = error;
     }
     return `<div>${id}</div>
-    <div style="display:flex;" id="icon-container-${id}">
+    <div style="display:flex;border-radius:5px;" id="icon-container-${id}">
         <img src="${imageSrc}" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="${displayText}"></img>
     </div>`;
 };
