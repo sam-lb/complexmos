@@ -38,6 +38,21 @@ const GRADIENTS = {
         [0.14901961, 0.59215686, 0.84705882, 0.88627451, 0.85098039, 0.50588235],
         [0.44705882, 0.12156863, 0.4, 0.18039216, 0.9372549, 1.0],            
     ],
+    "gradient 2": [
+        [0.796078431372549, 0.8666666666666667, 1.0, 0.7176470588235294, 0.6470588235294118, 0.4196078431372549],
+        [0.6, 0.7450980392156863, 0.9098039215686274, 0.7176470588235294, 0.6470588235294118, 0.4392156862745098],
+        [0.49411764705882355, 0.6627450980392157, 0.8392156862745098, 0.6431372549019608, 0.5529411764705883, 0.3607843137254902],
+    ],
+    "gradient 3": [
+        [1.0, 1.0, 0.996078431372549, 0.7254901960784313, 0.4745098039215686, 0.2235294117647059],
+        [0.34509803921568627, 0.5686274509803921, 0.788235294117647, 0.9333333333333333, 0.8274509803921568, 0.7215686274509804],
+        [0.5137254901960784, 0.6784313725490196, 0.8431372549019608, 0.8823529411764706, 0.7450980392156863, 0.6039215686274509],
+    ],
+    "viridis": [
+        [0.26666666666666666, 0.2549019607843137, 0.16470588235294117, 0.13333333333333333, 0.47843137254901963, 0.9921568627450981],
+        [0.00392156862745098, 0.26666666666666666, 0.47058823529411764, 0.6588235294117647, 0.8196078431372549, 0.9058823529411765],
+        [0.32941176470588235, 0.5294117647058824, 0.5568627450980392, 0.5176470588235295, 0.3176470588235294, 0.1450980392156863],
+    ],
 };
 
 
@@ -75,18 +90,34 @@ function displayOverlayMenu(id) {
 }
 
 function generateSettingsHTML(id) {
-    let checked, colorMode;
+    let checked, colorMode, currentGradient;
     if (fields[id]["settingsHTML"] || document.querySelector(`#display-checkbox-${id}`)) {
         checked = fields[id]["displaySettings"]["display"];
         colorMode = fields[id]["displaySettings"]["colorMode"];
+        currentGradient = fields[id]["displaySettings"]["gradient"] ?? "monokai";
     } else {
         checked = true;
         colorMode = "default";
+        currentGradient = "monokai";
     }
     const checkedString = checked ? " checked" : "";
     fields[id]["displaySettings"] = {
         "display": checked,
         "colorMode": colorMode,
+        "gradient": currentGradient,
+    };
+
+    let gradientDropdown = "";
+    if (["gradient", "gradient-discrete"].includes(colorMode)) {
+        let gradientOptions = "";
+        for (let gradient of Object.keys(GRADIENTS).sort()) {
+            const checkedGrad = (gradient === currentGradient) ? " selected" : "";
+            gradientOptions += `<option value="${gradient}" ${checkedGrad}>${gradient}</option>`;
+        }
+        gradientDropdown = `<label for="gradient-dropdown-${id}">Gradient</label>
+                            <select id="gradient-dropdown-${id}" onchange="plot.setGradientMode(${id});">
+                                ${gradientOptions}
+                            </select><br>`;
     }
 
     return `<label for="display-checkbox-${id}">Display?</label>
@@ -100,6 +131,7 @@ function generateSettingsHTML(id) {
         <option value="image-repeat">Image (repeated)</option>
         <option value="image-stretch">Image (stretch)</option>
     </select><br>
+    ${gradientDropdown}
     <div style="display:flex;flex-direction:row;">
         <button class="sick-btn-design" onclick="plot.uploadImage(${id});">Upload image</button>
         <div>${fields[id]["imageFile"] ?? "none selected"}</div>
@@ -126,7 +158,8 @@ function handleDisplayToggles(lines) {
 
     if (plottableIDs.length === 0) return;
     for (id of plottableIDs) {
-        fields[id]["settingsHTML"] = generateSettingsHTML(id);        
+        const a = generateSettingsHTML(id);
+        fields[id]["settingsHTML"] = a;
     }
 }
 
@@ -579,6 +612,7 @@ class Plot {
         this.reglInstance = reglInstance;
         this.shaders = shaders;
         this.shaderReplacement = null;
+        this.activeGradient = null;
         this.setDisplayReplacement(null);
 
         this.needsUpdate = true;
@@ -703,7 +737,7 @@ class Plot {
                     this.shaders["sample texture"] = result;
                     fields[id]["imageFile"] = files[0].name;
                     fieldEditHandler(null);
-                    fields[id]["settingsHTML"] = generateSettingsHTML(id, null);
+                    fields[id]["settingsHTML"] = generateSettingsHTML(id);
                     displayOverlayMenu(id);
                 });
             }
@@ -1025,6 +1059,15 @@ class Plot {
     setColorMode(id) {
         const select = document.querySelector(`#display-coloring-dropdown-${id}`);
         fields[id]["displaySettings"]["colorMode"] = select.value;
+        fields[id]["settingsHTML"] = generateSettingsHTML(id);
+        displayOverlayMenu(id);
+        fieldEditHandler(null);
+    }
+
+    setGradientMode(id) {
+        const select = document.querySelector(`#gradient-dropdown-${id}`);
+        fields[id]["displaySettings"]["gradient"] = select.value;
+        this.activeGradient = select.value;
         fieldEditHandler(null);
     }
 
@@ -1034,6 +1077,7 @@ class Plot {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
         }
         frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
+        const activeGradient = (this.activeGradient) ? this.activeGradient : "monokai";
 
         return this.reglInstance({
             frag: frag,
@@ -1055,9 +1099,9 @@ class Plot {
 
                 pValues: pValueArray,
 
-                gradR: GRADIENTS["monokai"][0],
-                gradG: GRADIENTS["monokai"][1],
-                gradB: GRADIENTS["monokai"][2],
+                gradR: GRADIENTS[activeGradient][0],
+                gradG: GRADIENTS[activeGradient][1],
+                gradB: GRADIENTS[activeGradient][2],
 
                 texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
@@ -1075,6 +1119,7 @@ class Plot {
             frag = frag.replace(/\/\/REPLACE_BEGIN.*\/\/REPLACE_END/ms, this.shaderReplacement);
         }
         frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
+        const activeGradient = (this.activeGradient) ? this.activeGradient : "monokai";
 
         return this.reglInstance({
             frag: frag,
@@ -1099,9 +1144,9 @@ class Plot {
                 row2: this.rotationMatrix.getRow(1),
                 row3: this.rotationMatrix.getRow(2),
 
-                gradR: GRADIENTS["monokai"][0],
-                gradG: GRADIENTS["monokai"][1],
-                gradB: GRADIENTS["monokai"][2],
+                gradR: GRADIENTS[activeGradient][0],
+                gradG: GRADIENTS[activeGradient][1],
+                gradB: GRADIENTS[activeGradient][2],
 
                 texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
@@ -1129,6 +1174,7 @@ class Plot {
             vert = vert.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacementFunction);
         }
         frag = frag.replace(/\/\/DISPLAY_REPLACE_BEGIN.*\/\/DISPLAY_REPLACE_END/ms, this.displayReplacement);
+        const activeGradient = (this.activeGradient) ? this.activeGradient : "monokai";
 
         return this.reglInstance({
             frag: frag,
@@ -1153,9 +1199,9 @@ class Plot {
                 row2: this.rotationMatrix.getRow(1),
                 row3: this.rotationMatrix.getRow(2),
 
-                gradR: GRADIENTS["monokai"][0],
-                gradG: GRADIENTS["monokai"][1],
-                gradB: GRADIENTS["monokai"][2],
+                gradR: GRADIENTS[activeGradient][0],
+                gradG: GRADIENTS[activeGradient][1],
+                gradB: GRADIENTS[activeGradient][2],
 
                 texture: this.reglInstance.texture(this.shaders["sample texture"]),
             },
