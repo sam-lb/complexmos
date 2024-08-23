@@ -9,6 +9,7 @@ const {
     PrefixExpression
 } = require("../parsing/pratt/expressions.js");
 const { FunctionDefinition } = require("./input_expressions.js");
+const { colorFunctionMap } = require("./coloring.js");
 
 
 function sortByDependence(lines) {
@@ -126,7 +127,16 @@ function astToGLSL(ast) {
     }
 }
 
+function colorGLSLFromSettings(id) {
+    return `vec3 col;
+    if (isInvalid(outp)) {
+        col = vec3(0., 0., 0.);
+    } else {
+        col = ${colorFunctionMap[fields[id]["displaySettings"]["colorMode"]]}(outp);
+    }`;
+}
+
 
 module.exports = {
-    translateToGLSL,
+    translateToGLSL, colorGLSLFromSettings,
 };

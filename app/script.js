@@ -6,9 +6,9 @@ const { inverseStereoProject, perspectiveProject } = require("../math/projection
 const { scope, defaultValueScope, valueScope } = require("./scope.js");
 const { evaluate } = require("./evaluator.js");
 const { classifyInput, classifySliderInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
-const { translateToGLSL } = require("./translator.js");
+const { translateToGLSL, colorGLSLFromSettings } = require("./translator.js");
 const { VariableDefinition, FunctionDefinition } = require("./input_expressions.js");
-const { GRADIENTS, colorFunctionMap } = require("./coloring.js");
+const { GRADIENTS } = require("./coloring.js");
 const {
     menuHTML, displayOverlayMenu, generateSettingsHTML,
     handleSlider, bottomHTML, addField, deleteField, advance,
@@ -231,15 +231,6 @@ function pickDisplay(lines) {
             return {id: id, name: lines.filter(l => l.id === id)[0]?.name };
         }
     }
-}
-
-function colorGLSLFromSettings(id) {
-    return `vec3 col;
-    if (isInvalid(outp)) {
-        col = vec3(0., 0., 0.);
-    } else {
-        col = ${colorFunctionMap[fields[id]["displaySettings"]["colorMode"]]}(outp);
-    }`;
 }
 
 function fieldEditHandler(mathField) {
