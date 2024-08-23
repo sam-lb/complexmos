@@ -16,14 +16,11 @@ const {
 } = require("./domhandler.js");
 const { DomainColoring } = require("./plottable.js");
 const { loadImage, loadShaders, preload } = require("./data_loading.js");
+const { registerMouseEvents, windowResized } = require("./event_handling.js");
 
 
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
 window.plot = undefined;
-window.lastMouseX = undefined;
-window.lastMouseY = undefined;
-window.mouseIsDown = false;
-window.resizeBarStart = false;
 let RENDERER = "WebGL";
 
 const pValueArray = [
@@ -69,13 +66,6 @@ function handleDisplayToggles(lines) {
         fields[id]["settingsHTML"] = generateSettingsHTML(id);;
     }
 }
-
-document.addEventListener("mousedown", (event) => {
-    const overlay = document.querySelector("#overlay-menu-container");
-    if (!overlay.contains(event.target)) {
-        overlay.style.display = "none";
-    }
-});
 
 
 function debounceWrapper(func, interval, initialTimer) {
@@ -972,7 +962,6 @@ function setupP5(offset=null) {
     canvasDiv.innerHTML = "";
     const canvas = createCanvas(canvasDiv.offsetWidth, canvasDiv.offsetHeight);
     canvas.parent("canvas-div");
-    canvasDiv.onwheel = wheelHandler;
 
     const mode = plot?.mode ?? Plot.modes.PLANE;
     plot = new Plot(canvasDiv.offsetWidth, canvasDiv.offsetHeight, null, mode, false);
@@ -1033,101 +1022,6 @@ function setup(offset=null) {
     registerMouseEvents();
 }
 
-function contextLost() {
-    const webGLToggle = document.querySelector("#webgl-toggle");
-    webGLToggle.checked = false;
-    webGLToggle.disabled = true;
-    alert("Your WebGL context has been lost :(");
-
-    setRenderer();
-}
-
-function wheelHandler(event) {
-    event.preventDefault();
-    const factor = 1 + Math.tanh(event.deltaY / 100) / 4;
-    plot.zoom(factor);
-}
-
-function mouseDragged(event) {
-    if (mouseIsDown) {
-        const rect = event.target.getBoundingClientRect();
-        const mouseX = (event.touches) ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
-        const mouseY = (event.touches) ? event.touches[0].clientY - rect.top : event.clientY - rect.top;
-        const canvasDiv = document.querySelector("#canvas-div");
-        
-        if ((0 <= mouseX && mouseX <= canvasDiv.offsetWidth) && (0 <= mouseY && mouseY <= canvasDiv.offsetHeight)) {
-            const diff = complex(lastMouseX - mouseX, lastMouseY - mouseY);
-            if (plot.mode === Plot.modes.PLANE) {
-                plot.pan(plot.pixelsToUnits(diff));
-            } else {
-                plot.pan(diff.eMult(complex(3 / canvasDiv.clientWidth, -3 / canvasDiv.clientHeight)));
-            }
-            lastMouseX = mouseX;
-            lastMouseY = mouseY;
-        }
-    }
-}
-
-function mousePressed(event) {
-    const rect = event.target.getBoundingClientRect();
-    const mouseX = (event.touches) ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
-    const mouseY = (event.touches) ? event.touches[0].clientY - rect.top : event.clientY - rect.top;
-	
-    lastMouseX = mouseX;
-	lastMouseY = mouseY;
-    mouseIsDown = true;
-}
-
-function exprBarMousePressed(event) {
-    resizeBarStart = true;
-}
-
-function mouseReleased(event) {
-	lastMouseX = 0;
-	lastMouseY = 0;
-    mouseIsDown = false;
-    resizeBarStart = false;
-}
-
-function exprBarResize(event, callback) {
-    if (mouseIsDown && resizeBarStart) {
-        const target = document.querySelector("#drag-expr-bar");
-        const rect = target.getBoundingClientRect();
-        const mouseX = (event.touches) ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
-        const dx = lastMouseX - mouseX;
-
-        let x = (rect.right - dx) / window.innerWidth;
-        x = Math.max(0.20, Math.min(0.75, x));
-        const p = 3 * x / (1 - x);
-
-        document.querySelector("#ui-container").style.flex = p.toString();
-        callback();
-    }
-}
-
-function registerMouseEvents() {
-    const canvasDiv = document.querySelector("#canvas-div");
-    const dragDiv = document.querySelector("#drag-expr-bar");
-
-    canvasDiv.addEventListener("wheel", wheelHandler);
-    canvasDiv.addEventListener("mousemove", mouseDragged);
-    canvasDiv.addEventListener("touchmove", mouseDragged);
-    document.addEventListener("mousedown", mousePressed);
-    document.addEventListener("touchstart", mousePressed);
-    document.addEventListener("mouseup", mouseReleased);
-    document.addEventListener("touchend", mouseReleased);
-    dragDiv.addEventListener("mousedown", exprBarMousePressed);
-    dragDiv.addEventListener("touchstart", exprBarMousePressed);
-    document.addEventListener("mousemove", (event) => exprBarResize(event, resizeDebounced));
-    document.addEventListener("touchmove", (event) => exprBarResize(event, resizeDebounced));
-}
-
-function windowResized() {
-    setTimeout(() => {
-        setup(plot.offset);
-    }, 100);
-}
-
 function draw() {
     if (plot) plot.update();
 }
@@ -1143,8 +1037,17 @@ function setRenderer() {
     }
 }
 
+function contextLost() {
+    const webGLToggle = document.querySelector("#webgl-toggle");
+    webGLToggle.checked = false;
+    webGLToggle.disabled = true;
+    alert("Your WebGL context has been lost :(");
+
+    setRenderer();
+}
+
 // there might be a better way to do this, but it's actually fine
-window.resizeDebounced = debounceWrapper(windowResized, 250, -1);
+window.resizeDebounced = debounceWrapper(() => windowResized(setup), 250, -1);
 window.preload = preload;
 window.displayOverlayMenu = displayOverlayMenu;
 window.tabSwitch = tabSwitch;
