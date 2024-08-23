@@ -1,6 +1,6 @@
 const { tracker } = require("../parsing/errors.js");
 const { Complex, complex } = require("../math/complex.js");
-const { Matrix, matrix } = require("../math/matrix.js");
+const { Matrix, matrix } = require("../math/matrix.js"); // removable
 const { Euclid } = require("../math/geometry.js");
 const { sscale, ssub, icosphere, icosphere_flat } = require("../math/icosphere.js"); // fix this garbage
 const { stereographic, inverseStereoProject, perspectiveProject } = require("../math/projection.js");
@@ -10,6 +10,7 @@ const { evaluate } = require("./evaluator.js");
 const { classifyInput, classifySliderInput, validateLines, populateUserScope, validateAST } = require("./expression_processor.js");
 const { translateToGLSL } = require("./translator.js");
 const { VariableDefinition, FunctionDefinition } = require("./input_expressions.js");
+const { GRADIENTS, colorFunctionMap } = require("./coloring.js");
 
 
 p5.disableFriendlyErrors = true; // ridiculous that this is on by default
@@ -31,29 +32,6 @@ const pValueArray = [
     9.9843695780195716e-6,
     1.5056327351493116e-7
 ];
-
-const GRADIENTS = {
-    "monokai": [
-        [0.97647059, 0.99215686, 1.0, 0.65098039, 0.4, 0.68235294],
-        [0.14901961, 0.59215686, 0.84705882, 0.88627451, 0.85098039, 0.50588235],
-        [0.44705882, 0.12156863, 0.4, 0.18039216, 0.9372549, 1.0],            
-    ],
-    "gradient 2": [
-        [0.796078431372549, 0.8666666666666667, 1.0, 0.7176470588235294, 0.6470588235294118, 0.4196078431372549],
-        [0.6, 0.7450980392156863, 0.9098039215686274, 0.7176470588235294, 0.6470588235294118, 0.4392156862745098],
-        [0.49411764705882355, 0.6627450980392157, 0.8392156862745098, 0.6431372549019608, 0.5529411764705883, 0.3607843137254902],
-    ],
-    "gradient 3": [
-        [1.0, 1.0, 0.996078431372549, 0.7254901960784313, 0.4745098039215686, 0.2235294117647059],
-        [0.34509803921568627, 0.5686274509803921, 0.788235294117647, 0.9333333333333333, 0.8274509803921568, 0.7215686274509804],
-        [0.5137254901960784, 0.6784313725490196, 0.8431372549019608, 0.8823529411764706, 0.7450980392156863, 0.6039215686274509],
-    ],
-    "viridis": [
-        [0.26666666666666666, 0.2549019607843137, 0.16470588235294117, 0.13333333333333333, 0.47843137254901963, 0.9921568627450981],
-        [0.00392156862745098, 0.26666666666666666, 0.47058823529411764, 0.6588235294117647, 0.8196078431372549, 0.9058823529411765],
-        [0.32941176470588235, 0.5294117647058824, 0.5568627450980392, 0.5176470588235295, 0.3176470588235294, 0.1450980392156863],
-    ],
-};
 
 
 /** MathQuill handling */
@@ -504,15 +482,6 @@ function pickDisplay(lines) {
         }
     }
 }
-
-const colorFunctionMap = {
-    "default": "getColorDefault",
-    "default-discrete": "getColorDiscreteDefault",
-    "gradient": "getColorGradient",
-    "gradient-discrete": "getColorDiscreteGradient",
-    "image-repeat": "getColorTextureRepeat",
-    "image-stretch": "getColorTextureStretch",
-};
 
 function colorGLSLFromSettings(id) {
     return `vec3 col;
