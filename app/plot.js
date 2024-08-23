@@ -3,6 +3,21 @@ const { Matrix, matrix } = require("../math/matrix.js");
 const { icosphere_flat } = require("../math/icosphere.js");
 const { inverseStereoProject, perspectiveProject } = require("../math/projection.js");
 const { GRADIENTS } = require("./coloring.js");
+const { loadImage } = require("./data_loading.js");
+const { generateSettingsHTML, addField, deleteField, tabSwitch } = require("./domhandler.js");
+
+
+const pValueArray = [
+    0.99999999999980993,
+    676.5203681218851,
+    -1259.1392167224028,
+    771.32342877765313,
+    -176.61502916214059,
+    12.507343278686905,
+    -0.13857109526572012,
+    9.9843695780195716e-6,
+    1.5056327351493116e-7
+];
 
 
 class Plot {
@@ -320,24 +335,6 @@ class Plot {
             strokeWeight(1);
             line(xAxisStart.re, xAxisStart.im, xAxisStop.re, xAxisStop.im);
             line(yAxisStart.re, yAxisStart.im, yAxisStop.re, yAxisStop.im);
-
-            pop();
-        } else {
-            return;
-            const xAxisStart = this.spaceToScreen([-2, 0, 0]);
-            const xAxisStop = this.spaceToScreen([2, 0, 0]);
-            const yAxisStart = this.spaceToScreen([0, -2, 0]);
-            const yAxisStop = this.spaceToScreen([0, 2, 0]);
-            const zAxisStart = this.spaceToScreen([0, 0, -2]);
-            const zAxisStop = this.spaceToScreen([0, 0, 2]);
-            
-            push();
-            
-            stroke(0);
-            strokeWeight(1);
-            line(xAxisStart.re, xAxisStart.im, xAxisStop.re, xAxisStop.im);
-            line(yAxisStart.re, yAxisStart.im, yAxisStop.re, yAxisStop.im);
-            line(zAxisStart.re, zAxisStart.im, zAxisStop.re, zAxisStop.im);
 
             pop();
         }

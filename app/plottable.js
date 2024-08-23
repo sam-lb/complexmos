@@ -5,6 +5,17 @@ const { rvec } = require("../math/rvector.js");
 const { Complex, complex } = require("../math/complex.js");
 
 
+
+function linspace(min, max, n) {
+	/* Returns n equally spaced values between min and max (including endpoints) */
+	const result = [];
+	const range = max - min;
+	for (let i=0; i<n; i++) {
+		result.push(min + range * i / (n-1));
+	}
+	return result;
+}
+
 class Plottable {
 
     static id = 0;
