@@ -33,16 +33,20 @@ function handleDisplayToggles(lines) {
     for (const line of lines) {
         if (!(line instanceof FunctionDefinition)) {
             fields[line.id]["settingsHTML"] = "";
+            fields[line.id]["displaySettings"]["display"] = false;
             continue;
         }
         const locals = Object.keys(scope.userGlobal[line.name].locals);
         if (locals.length !== 1 || locals[0] !== "z") {
             fields[line.id]["settingsHTML"] = "";
+            fields[line.id]["displaySettings"]["display"] = false;
             continue;
         }
 
         plottableIDs.push(line.id);
     }
+
+
 
     if (plottableIDs.length === 0) return;
     for (id of plottableIDs) {
@@ -220,10 +224,10 @@ function fieldEditHandler(mathField) {
     if (mathField === null || fields[mathField.id]) {
         const lines = validateInput();
         const sliderLines = validateSliderInput();
+        handleDisplayToggles(lines);
         populateValueScope(lines);
         setBoundCalculators(sliderLines);
         addSliders(lines);
-        handleDisplayToggles(lines);
         configureRenderers(lines);
     } else {
         // slider field
