@@ -97,6 +97,7 @@ function bottomHTML(target, bounds, id) {
         const calculatedBounds = (sliderFields[id]["getBounds"] ?? (() => [0, 1]))();
         slider.setAttribute("min", calculatedBounds[0].toString());
         slider.setAttribute("max", calculatedBounds[1].toString());
+        slider.setAttribute("step", `${(calculatedBounds[1] - calculatedBounds[0]) / 100}`);
         slider.value = fields[id].field.latex().split("=")[1];
         return;
     }

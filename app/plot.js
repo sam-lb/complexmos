@@ -4,7 +4,7 @@ const { icosphere_flat } = require("../math/icosphere.js");
 const { inverseStereoProject, perspectiveProject } = require("../math/projection.js");
 const { GRADIENTS } = require("./coloring.js");
 const { loadImage } = require("./data_loading.js");
-const { generateSettingsHTML, addField, deleteField, tabSwitch } = require("./domhandler.js");
+const { generateSettingsHTML, addField, deleteField, tabSwitch, bottomHTML } = require("./domhandler.js");
 
 
 const pValueArray = [
@@ -179,33 +179,48 @@ class Plot {
     }
 
     state() {
-        const latex = [];
+        const latex = {};
+        const sliderLatex = {};
         for (const id of Object.keys(fields)) {
-            if (fields[id]) latex.push(fields[id].field.latex());
+            if (fields[id]) latex[id] = fields[id].field.latex();
+            if (sliderFields[id]) {
+                sliderLatex[id] = {
+                    min: sliderFields[id].min.latex(),
+                    max: sliderFields[id].max.latex(),
+                };
+            }
         }
         return JSON.stringify({
             camera: this.camera,
             bounds: this.bounds,
             expressions: latex,
             mode: this.mode,
+            sliders: sliderLatex,
         }, null, 4);
     }
 
     loadState(state) {
         state = JSON.parse(state);
 
-        this.setCamera(state.camera);
-        this.configureWindow(this.dimensions.re, this.dimensions.im, state.bounds);
-        tabSwitch(state.mode-1);
+        if (state.camera) this.setCamera(state.camera);
+        if (state.bounds) this.configureWindow(this.dimensions.re, this.dimensions.im, state.bounds);
+        if (state.mode) tabSwitch(state.mode-1);
 
         for (const id of Object.keys(fields)) {
             deleteField(id, false);
         }
 
-        let lastField = null;
-        for (const expr of state.expressions) {
-            const newField = addField(lastField);
-            fields[newField].field.latex(expr);
+        if (state.expressions) {
+            let lastField = null;
+            for (const id in state.expressions) {
+                const expr = state.expressions[id];
+                const sliderBounds = state.sliders?.[id];
+                const newField = addField(lastField);
+                fields[newField].field.latex(expr);
+                if (sliderBounds) {
+                    bottomHTML(`math-input-bottom-div-${newField}`, sliderBounds, newField);
+                }
+            }
         }
     }
 
