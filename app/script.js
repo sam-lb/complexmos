@@ -5,7 +5,7 @@ const { classifyInput, classifySliderInput, validateLines, populateUserScope, va
 const { translateToGLSL, colorGLSLFromSettings } = require("./translator.js");
 const { VariableDefinition, FunctionDefinition } = require("./input_expressions.js");
 const {
-    menuHTML, displayOverlayMenu, generateSettingsHTML,
+    modifyMenuHTML, displayOverlayMenu, generateSettingsHTML,
     handleSlider, bottomHTML, addField, deleteField, advance,
     highlightExpression, tabSwitch, toggleSettingsPopup,
 } = require("./domhandler.js");
@@ -66,14 +66,12 @@ function debounceWrapper(func, interval, initialTimer) {
 }
 
 window.getCallbacks = (id) => {
-    const sideMenu = document.querySelector(`#math-input-side-menu-${id}`);
-
     const callback = (message, target) => {
-        sideMenu.innerHTML = menuHTML(id, message);
+        modifyMenuHTML(id, message);
     };
 
     const successCallback = (message, target) => {
-        sideMenu.innerHTML = menuHTML(id);        
+        modifyMenuHTML(id);
     };
 
     return {

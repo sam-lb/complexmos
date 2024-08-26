@@ -2,20 +2,35 @@ const { GRADIENTS } = require("./coloring.js");
 
 
 
-const menuHTML = (id, error=null) => {
+const buildMenuHTML = (target, id, error=null) => {
     let imageSrc, displayText;
-    if (error === null) {
-        imageSrc = "../data/settings_transparent.png";
-        displayText = "Settings";
-    } else {
-        imageSrc = "../data/error_transparent.png";
-        displayText = error;
-    }
-    return `<div>${id}</div>
-    <div style="display:flex;border-radius:5px;" id="icon-container-${id}">
-        <img src="${imageSrc}" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="${displayText}"></img>
-    </div>`;
+    const visibility = (error) ? ["none", "flex"] : ["flex", "none"];
+    const menuHTML = [
+        `<div>${id}</div>
+        <div style="display:${visibility[0]};border-radius:5px;" id="icon-valid-container-${id}">
+            <img src="../data/settings_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="Settings"></img>
+        </div>`,
+
+        `<div>${id}</div>
+        <div style="display:${visibility[1]};border-radius:5px;" id="icon-invalid-container-${id}">
+            <img src="../data/error_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="${error}"></img>
+        </div>`
+    ];
+    target.innerHTML = menuHTML[0] + menuHTML[1];
 };
+
+const modifyMenuHTML = (id, error=null) => {
+    const validEl = document.querySelector(`#icon-valid-container-${id}`);
+    const invalidEl = document.querySelector(`#icon-invalid-container-${id}`);
+    if (error) {
+        validEl.style.display = "none";
+        invalidEl.title = error;
+        invalidEl.style.display = "flex";
+    } else {
+        validEl.style.display = "flex";
+        invalidEl.style.display = "none";
+    }
+}
 
 function displayOverlayMenu(id) {
     const overlay = document.querySelector("#overlay-menu-container");
@@ -157,7 +172,7 @@ function addField(parent=null) {
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
     newMenu.setAttribute("id", `math-input-side-menu-${newField.id}`);
-    newMenu.innerHTML = menuHTML(newField.id);
+    buildMenuHTML(newMenu, newField.id, null);
 
     const bottomDiv = document.createElement("div");
     bottomDiv.setAttribute("id", `math-input-bottom-div-${newField.id}`);
@@ -238,7 +253,7 @@ function advance(id, direction) {
 
 function highlightExpression(id) {
     for (const exprID in fields) {
-        const icon = document.querySelector(`#icon-container-${exprID}`);
+        const icon = document.querySelector(`#icon-valid-container-${exprID}`) || document.querySelector(`#icon-invalid-container-${exprID}`);
         if (id === exprID) {
             icon.style.outline = "thick double darkslategray";
         } else {
@@ -281,7 +296,7 @@ function toggleSettingsPopup() {
 
 
 module.exports = {
-    menuHTML, displayOverlayMenu, generateSettingsHTML,
+    modifyMenuHTML, displayOverlayMenu, generateSettingsHTML,
     handleSlider, bottomHTML, addField, deleteField,
     advance, highlightExpression, tabSwitch, toggleSettingsPopup,
 };
