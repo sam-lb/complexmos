@@ -152,8 +152,18 @@ canvas {
     flex-direction:row;
     background-color:cadetblue;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
+    padding-right: 10px;
+}
+
+.expr-index {
+    font-size:small;
+    flex: 1;
+}
+
+.side-menu-image {
+    flex: 1;
 }
 
 .math-input-div:hover {

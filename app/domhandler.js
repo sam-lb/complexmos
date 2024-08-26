@@ -2,21 +2,18 @@ const { GRADIENTS } = require("./coloring.js");
 
 
 
-const buildMenuHTML = (target, id, error=null) => {
-    let imageSrc, displayText;
+const buildMenuHTML = (target, id, index, error=null) => {
     const visibility = (error) ? ["none", "flex"] : ["flex", "none"];
-    const menuHTML = [
-        `<div>${id}</div>
-        <div style="display:${visibility[0]};border-radius:5px;" id="icon-valid-container-${id}">
-            <img src="../data/settings_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="Settings"></img>
-        </div>`,
+    target.innerHTML = `<div id="valid-index-display-${id}" class="expr-index">${index}</div>
+                        <div class="side-menu-image" id="icon-container-${id}">
+                            <div style="display:${visibility[0]};border-radius:5px;" id="icon-valid-container-${id}">
+                                <img src="../data/settings_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});"></img>
+                            </div>
+                            <div style="display:${visibility[1]};border-radius:5px;" id="icon-invalid-container-${id}">
+                                <img src="../data/error_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});"></img>
+                            </div>
+                        </div>`;
 
-        `<div>${id}</div>
-        <div style="display:${visibility[1]};border-radius:5px;" id="icon-invalid-container-${id}">
-            <img src="../data/error_transparent.png" style="width:25px;height:25px;" onclick="displayOverlayMenu(${id});" title="${error}"></img>
-        </div>`
-    ];
-    target.innerHTML = menuHTML[0] + menuHTML[1];
 };
 
 const modifyMenuHTML = (id, error=null) => {
@@ -24,12 +21,18 @@ const modifyMenuHTML = (id, error=null) => {
     const invalidEl = document.querySelector(`#icon-invalid-container-${id}`);
     if (error) {
         validEl.style.display = "none";
-        invalidEl.title = error;
+        document.querySelector(`#icon-container-${id}`).setAttribute("title", error);
         invalidEl.style.display = "flex";
     } else {
         validEl.style.display = "flex";
         invalidEl.style.display = "none";
+        document.querySelector(`#icon-container-${id}`).setAttribute("title", "Settings");
     }
+}
+
+const modifyExpressionIndex = (id, index) => {
+    document.querySelector(`#valid-index-display-${id}`).innerHTML = index.toString();
+    fields[id].index = index;
 }
 
 function displayOverlayMenu(id) {
@@ -37,7 +40,7 @@ function displayOverlayMenu(id) {
     overlay.style.display = "block";
     const additionalSettings = fields[id]["settingsHTML"] ?? "";
     overlay.innerHTML = `
-    Settings for expression ${id}
+    Settings for expression ${fields[id].index}
     <hr>${additionalSettings}
     `;
 }
@@ -157,6 +160,8 @@ function bottomHTML(target, bounds, id) {
 function addField(parent=null) {
     /** add new math input field. parent: parent element */
 
+    const newIndex = Object.keys(fields).length + 1;
+
     const newDiv = document.createElement("div");
     newDiv.setAttribute("class", "math-input-div-container");
 
@@ -172,7 +177,7 @@ function addField(parent=null) {
     const newMenu = document.createElement("div");
     newMenu.setAttribute("class", "math-input-side-menu");
     newMenu.setAttribute("id", `math-input-side-menu-${newField.id}`);
-    buildMenuHTML(newMenu, newField.id, null);
+    buildMenuHTML(newMenu, newField.id, newIndex, null);
 
     const bottomDiv = document.createElement("div");
     bottomDiv.setAttribute("id", `math-input-bottom-div-${newField.id}`);
@@ -192,6 +197,7 @@ function addField(parent=null) {
             next: null,
             container: newDiv,
             displaySettings: {},
+            index: newIndex,
         };
     } else {
         const lastDiv = document.querySelector(`#math-input-div-container-${parent.id}`);
@@ -204,6 +210,7 @@ function addField(parent=null) {
             next: parent.next,
             container: newDiv,
             displaySettings: {},
+            index: newIndex,
         };
         fields[parent.field.id].next = newField;
 
@@ -233,7 +240,13 @@ function deleteField(id, preserve=true) {
     if (preserve) advance(id, (entry.last === null) ? 1 : -1);
 
     entry.container.parentNode.removeChild(entry.container);
+    const index = fields[id].index;
     delete fields[id];
+    for (const exprID in fields) {
+        if (fields[exprID].index > index) {
+            modifyExpressionIndex(exprID, fields[exprID].index - 1);
+        }        
+    }
 }
 
 function advance(id, direction) {
