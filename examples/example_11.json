@@ -1,0 +1,21 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.6278277680140594,
+        "roll": 0,
+        "yaw": 0.7420179533213676
+    },
+    "bounds": {
+        "xMin": -2.5,
+        "xMax": 2.5,
+        "yMin": -2.5538599640933572,
+        "yMax": 2.5538599640933572
+    },
+    "expressions": [
+        "f\\left(z\\right)=2\\left(\\operatorname{mod}\\left(\\frac{z}{2},1\\right)-\\frac{1}{2}-\\frac{i}{2}\\right)",
+        "g\\left(x\\right)=\\cos\\left(\\frac{3x}{1+x^{15}}\\right)",
+        "h\\left(z\\right)=\\operatorname{squeeze}\\left(g\\left(f\\left(z\\right)\\right),0.99,1\\right)"
+    ],
+    "mode": 1
+}

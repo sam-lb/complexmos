@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -1.7184825408916458,
+        "xMax": 1.7184825408916458,
+        "yMin": -1.018558922674319,
+        "yMax": 1.018558922674319
+    },
+    "expressions": [
+        "k\\left(z,c\\right)=\\frac{z}{1+\\frac{\\cos\\left(z\\right)}{1+\\frac{\\cos\\left(z\\right)}{1+\\cos\\left(z\\right)}}}+c",
+        "g\\left(z\\right)=k\\left(k\\left(k\\left(k\\left(k\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right)"
+    ],
+    "mode": 1
+}

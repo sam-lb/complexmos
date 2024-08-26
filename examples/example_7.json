@@ -1,0 +1,21 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.4706205798704686,
+        "roll": 0,
+        "yaw": -2.4822176535898013
+    },
+    "bounds": {
+        "xMin": -2.8675700538729827,
+        "xMax": 2.9300837063790914,
+        "yMin": -1.684974757575758,
+        "yMax": 1.7513429399069809
+    },
+    "expressions": [
+        "\\operatorname{sign}\\left(x\\right)=\\frac{x}{\\operatorname{norm}\\left(x\\right)}",
+        "f\\left(z\\right)=m\\left(\\operatorname{norm}\\left(z\\right)-1,0\\right)z",
+        "m\\left(x,y\\right)=\\frac{x+y}{2}-0.5\\operatorname{norm}\\left(x-y\\right)"
+    ],
+    "mode": 1
+}

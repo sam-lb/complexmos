@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.9117453601868123,
+        "roll": 0,
+        "yaw": 3.141592653589793
+    },
+    "bounds": {
+        "xMin": -2.631095746322834,
+        "xMax": 2.631095746322834,
+        "yMin": -1.5594723746434302,
+        "yMax": 1.5594723746434302
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\cos\\left(z^2\\right)\\cosh\\left(z\\right)",
+        "h\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

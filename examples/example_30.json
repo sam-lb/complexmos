@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -5.2965605029590375,
+        "xMax": 2.8345108657824074,
+        "yMin": -2.6613320829010307,
+        "yMax": 2.1580216762800912
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\cos\\left(\\frac{10}{1+z}\\right)",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

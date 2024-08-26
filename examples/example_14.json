@@ -1,0 +1,19 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -1602.0643375595532,
+        "xMax": 1602.0643375595532,
+        "yMin": -1012.860675634873,
+        "yMax": 1012.860675634873
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\exp\\left(i\\operatorname{norm}\\left(z\\right)^{0.2}\\right)z"
+    ],
+    "mode": 1
+}

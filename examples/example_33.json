@@ -1,0 +1,24 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.2605166959578211,
+        "roll": 0,
+        "yaw": 0.18449999999999955
+    },
+    "bounds": {
+        "xMin": -2.6002190138877617,
+        "xMax": 1.6450365189902159,
+        "yMin": -1.2315663186526213,
+        "yMax": 1.2846320128135964
+    },
+    "expressions": [
+        "\\operatorname{dot}\\left(z,w\\right)=\\operatorname{re}\\left(z\\right)\\operatorname{re}\\left(w\\right)+\\operatorname{im}\\left(z\\right)\\operatorname{im}\\left(w\\right)",
+        "\\operatorname{proj}\\left(z,w\\right)=\\frac{\\operatorname{dot}\\left(z,w\\right)}{\\operatorname{normSq}\\left(w\\right)}w",
+        "a=1.57",
+        "g\\left(z,c\\right)=z\\cdot z+c",
+        "n\\left(z\\right)=\\operatorname{proj}\\left(z,\\cos\\left(a\\right)+i\\sin\\left(a\\right)\\right)",
+        "f\\left(z\\right)=6\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(n\\left(g\\left(0,z\\right)\\right),n\\left(g\\left(g\\left(0,z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

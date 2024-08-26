@@ -1,0 +1,21 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.0277383303098355,
+        "roll": 0,
+        "yaw": 1.225125
+    },
+    "bounds": {
+        "xMin": -5.931052233902112,
+        "xMax": 6.148703369098203,
+        "yMin": -3.5798859052641556,
+        "yMax": 3.5798859052641556
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\frac{z^2\\cos\\left(z\\right)}{1+\\cosh\\left(z-i\\right)}",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)",
+        ""
+    ],
+    "mode": 1
+}

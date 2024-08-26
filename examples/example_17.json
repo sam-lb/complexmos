@@ -1,0 +1,23 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -4,
+        "xMax": 4,
+        "yMin": -2.370833333333333,
+        "yMax": 2.370833333333333
+    },
+    "expressions": [
+        "f\\left(z,c\\right)=g\\left(z\\right)+c",
+        "g\\left(z\\right)=z\\tan\\left(z\\right)",
+        "a=0.61",
+        "h\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(b,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)",
+        "b=\\cos\\left(\\tau a\\right)+i\\sin\\left(2\\tau a\\right)"
+    ],
+    "mode": 1
+}

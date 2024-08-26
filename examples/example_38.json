@@ -1,0 +1,22 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.011921107111241,
+        "roll": 0,
+        "yaw": 1.162625
+    },
+    "bounds": {
+        "xMin": -2.5,
+        "xMax": 2.5,
+        "yMin": -1.4817708333333333,
+        "yMax": 1.4817708333333333
+    },
+    "expressions": [
+        "f\\left(z,c\\right)=z+\\frac{c}{\\cos\\left(z\\right)}",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z,A\\right),A\\right),A\\right),A\\right),A\\right),A\\right),A\\right),A\\right)",
+        "a=6.28",
+        "A=\\cos\\left(a\\right)+i\\sin\\left(a\\right)"
+    ],
+    "mode": 2
+}

@@ -1,0 +1,21 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.0646451844398883,
+        "roll": 0,
+        "yaw": 2.4822176535897937
+    },
+    "bounds": {
+        "xMin": -7.383590393133899,
+        "xMax": 7.383590393133899,
+        "yMin": -4.376315555930402,
+        "yMax": 4.376315555930402
+    },
+    "expressions": [
+        "p=0",
+        "\\alpha=\\cos\\left(p\\right)+\\sin\\left(p\\right)i",
+        "f\\left(z\\right)=\\frac{z}{1+z^2}\\cos\\left(z\\right)\\cos\\left(\\alpha z\\right)"
+    ],
+    "mode": 1
+}

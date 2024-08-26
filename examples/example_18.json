@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.5540140597539543,
+        "roll": 0,
+        "yaw": 1.118875
+    },
+    "bounds": {
+        "xMin": -2.5,
+        "xMax": 2.5,
+        "yMin": -1.4817708333333333,
+        "yMax": 1.4817708333333333
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\frac{\\cos\\left(z\\right)\\sin\\left(iz\\right)}{1+z^2+z^4}",
+        "g\\left(z\\right)=\\operatorname{squeeze}\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right),0.99,10\\right)"
+    ],
+    "mode": 3
+}

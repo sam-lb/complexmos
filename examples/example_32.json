@@ -1,0 +1,24 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -2.6002190138877617,
+        "xMax": 1.6450365189902159,
+        "yMin": -1.2315663186526213,
+        "yMax": 1.2846320128135964
+    },
+    "expressions": [
+        "dot\\left(z,w\\right)=\\operatorname{re}\\left(z\\right)\\operatorname{re}\\left(w\\right)+\\operatorname{im}\\left(z\\right)\\operatorname{im}\\left(w\\right)",
+        "proj\\left(z,w\\right)=\\frac{\\operatorname{dot}\\left(z,w\\right)}{\\operatorname{normSq}\\left(w\\right)}w",
+        "a=0",
+        "g\\left(z,c\\right)=z^2+c",
+        "n\\left(z\\right)=\\operatorname{proj}\\left(z,1+ia\\right)",
+        "f\\left(z\\right)=\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(\\min\\left(n\\left(g\\left(0,z\\right)\\right),n\\left(g\\left(g\\left(0,z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right),n\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

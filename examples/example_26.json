@@ -1,0 +1,22 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.830128531120863,
+        "roll": 0,
+        "yaw": 1.1384676535897942
+    },
+    "bounds": {
+        "xMin": -10.850864521725507,
+        "xMax": 10.850864521725507,
+        "yMin": -6.431397825897717,
+        "yMax": 6.431397825897717
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\cos\\left(\\left(z+C\\right)\\exp\\left(i\\sin\\left(\\operatorname{norm}\\left(z\\right)\\right)\\right)\\right)",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)",
+        "c=0",
+        "C=\\cos\\left(\\tau c\\right)+i\\sin\\left(\\tau c\\right)"
+    ],
+    "mode": 1
+}

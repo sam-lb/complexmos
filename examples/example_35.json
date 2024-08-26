@@ -1,0 +1,22 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -2.3433177295964316,
+        "xMax": 2.2544286711654418,
+        "yMin": -1.5109723322472246,
+        "yMax": 1.7429054066004195
+    },
+    "expressions": [
+        "nsign\\left(z\\right)=.5\\left(.999+\\frac{z}{\\operatorname{norm}\\left(z\\right)}\\right)",
+        "f\\left(z\\right)=\\operatorname{nsign}\\left(\\operatorname{re}\\left(z\\right)\\right)",
+        "sq\\left(z,a\\right)=\\exp\\left(-a\\right)z\\operatorname{nsign}\\left(.25-\\max\\left(\\left(\\operatorname{re}\\left(z\\right)-.5\\right)\\left(\\operatorname{re}\\left(z\\right)-.5\\right),\\left(\\operatorname{im}\\left(z\\right)-.5\\right)\\left(\\operatorname{im}\\left(z\\right)-.5\\right)\\right)\\right)",
+        "g\\left(z\\right)=\\operatorname{sq}\\left(z,0\\right)"
+    ],
+    "mode": 1
+}

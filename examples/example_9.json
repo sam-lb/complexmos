@@ -1,0 +1,22 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -9.813548905656825,
+        "xMax": -1.8135489056568261,
+        "yMin": -4.9349735684637235,
+        "yMax": -0.01920682980281578
+    },
+    "expressions": [
+        "\\operatorname{sign}\\left(x\\right)=\\frac{x}{\\operatorname{norm}\\left(x\\right)}",
+        "f\\left(z\\right)=100m\\left(\\operatorname{sdf}\\left(z\\right),0\\right)\\cdot\\frac{z}{\\operatorname{norm}\\left(z\\right)}",
+        "m\\left(x,y\\right)=\\frac{x+y}{2}-0.5\\operatorname{norm}\\left(x-y\\right)",
+        "\\operatorname{sdf}\\left(z\\right)=\\max\\left(\\operatorname{norm}\\left(\\operatorname{re}\\left(z\\right)\\right),\\operatorname{norm}\\left(\\operatorname{im}\\left(z\\right)\\right)\\right)-1"
+    ],
+    "mode": 1
+}

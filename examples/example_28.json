@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.786,
+        "roll": 0,
+        "yaw": 0.672
+    },
+    "bounds": {
+        "xMin": -1.833239152046088,
+        "xMax": -1.6690247856027653,
+        "yMin": -0.1094535864246651,
+        "yMax": -0.009733229427598761
+    },
+    "expressions": [
+        "f\\left(z,c\\right)=\\left(\\operatorname{norm}\\left(\\operatorname{re}\\left(z\\right)\\right)+i\\operatorname{norm}\\left(\\operatorname{im}\\left(z\\right)\\right)\\right)\\left(\\operatorname{norm}\\left(\\operatorname{re}\\left(z\\right)\\right)+i\\operatorname{norm}\\left(\\operatorname{im}\\left(z\\right)\\right)\\right)+c",
+        "h\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(0,z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right),z\\right)"
+    ],
+    "mode": 1
+}

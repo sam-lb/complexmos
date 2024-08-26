@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.5118347978910377,
+        "roll": 0,
+        "yaw": 3.028249999999999
+    },
+    "bounds": {
+        "xMin": -2.880577384429459,
+        "xMax": 3.08132700867472,
+        "yMin": -1.8474508244139871,
+        "yMax": 1.686219591915409
+    },
+    "expressions": [
+        "f\\left(z\\right)=z+\\frac{1}{z}-\\frac{1}{1+z\\cdot z}",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

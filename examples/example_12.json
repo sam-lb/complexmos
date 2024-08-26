@@ -1,0 +1,21 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.1542761158985868,
+        "roll": 0,
+        "yaw": 0.149132262051917
+    },
+    "bounds": {
+        "xMin": -2.5,
+        "xMax": 2.5,
+        "yMin": -1.7583436341161929,
+        "yMax": 1.7583436341161929
+    },
+    "expressions": [
+        "f\\left(z\\right)=2\\left(\\operatorname{mod}\\left(\\frac{z}{2},1\\right)-\\frac{1}{2}-\\frac{i}{2}\\right)",
+        "g\\left(x\\right)=\\sin\\left(\\frac{3x}{1+x^{15}}\\right)",
+        "h\\left(z\\right)=g\\left(f\\left(z\\right)\\right)"
+    ],
+    "mode": 2
+}

@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 1.275541493754474,
+        "roll": 0,
+        "yaw": 2.5532499999999994
+    },
+    "bounds": {
+        "xMin": -2.5,
+        "xMax": 2.5,
+        "yMin": -1.4817708333333333,
+        "yMax": 1.4817708333333333
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\frac{\\cos\\left(z\\right)}{1+\\cos\\left(z\\right)}\\cosh\\left(iz\\right)",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 2
+}

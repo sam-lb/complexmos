@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.8809033391915643,
+        "roll": 0,
+        "yaw": 1.675967653589792
+    },
+    "bounds": {
+        "xMin": -4.530524007063994,
+        "xMax": 4.549440599995367,
+        "yMin": -3.454908151200908,
+        "yMax": 1.9268625377749053
+    },
+    "expressions": [
+        "g\\left(z\\right)=\\cos\\left(z+i\\cdot\\frac{1.2}{1+\\operatorname{im}\\left(z\\right)^2}\\right)",
+        "h\\left(z\\right)=g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(g\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}

@@ -1,0 +1,20 @@
+{
+    "camera": {
+        "alpha": 1,
+        "beta": 0,
+        "pitch": 0.6752794376098417,
+        "roll": 0,
+        "yaw": -0.24987500000000007
+    },
+    "bounds": {
+        "xMin": -3.2177436490367173,
+        "xMax": 3.0696897203866973,
+        "yMin": -1.854715333233649,
+        "yMax": 1.8718988201018083
+    },
+    "expressions": [
+        "f\\left(z\\right)=\\frac{\\cos\\left(\\frac{1}{1-z\\cdot z}\\right)}{1+z\\cdot z}",
+        "g\\left(z\\right)=f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(f\\left(z\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)\\right)"
+    ],
+    "mode": 1
+}
