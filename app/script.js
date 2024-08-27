@@ -210,7 +210,7 @@ function addSliders(lines) {
 }
 
 function pickDisplay(lines) {
-    const rev = Object.keys(fields).sort((a, b) => parseInt(b) - parseInt(a));
+    const rev = Object.keys(fields).sort((a, b) => fields[b].index - fields[a].index);
     for (const id of rev) {
         if (fields[id]["displaySettings"]["display"]) {
             return {id: id, name: lines.filter(l => l.id === id)[0]?.name };
