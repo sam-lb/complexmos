@@ -1,4 +1,5 @@
 const { complex } = require("../math/complex.js");
+const { hideOverlayMenu } = require("./domhandler.js");
 
 window.lastMouseX = undefined;
 window.lastMouseY = undefined;
@@ -94,7 +95,7 @@ function windowResized(callback) {
 document.addEventListener("mousedown", (event) => {
     const overlay = document.querySelector("#overlay-menu-container");
     if (!overlay.contains(event.target)) {
-        overlay.style.display = "none";
+        hideOverlayMenu();
     }
 });
 

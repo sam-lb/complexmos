@@ -4,7 +4,7 @@ const { icosphere_flat } = require("../math/icosphere.js");
 const { inverseStereoProject, perspectiveProject } = require("../math/projection.js");
 const { GRADIENTS } = require("./coloring.js");
 const { loadImage } = require("./data_loading.js");
-const { generateSettingsHTML, addField, deleteField, tabSwitch, bottomHTML } = require("./domhandler.js");
+const { generateSettingsHTML, addField, deleteField, tabSwitch, bottomHTML, displayOverlayMenu, hideOverlayMenu } = require("./domhandler.js");
 
 
 const pValueArray = [
@@ -181,6 +181,7 @@ class Plot {
     state() {
         const latex = {};
         const sliderLatex = {};
+        const styling = {};
         for (const id of Object.keys(fields)) {
             if (fields[id]) latex[id] = fields[id].field.latex();
             if (sliderFields[id]) {
@@ -189,6 +190,7 @@ class Plot {
                     max: sliderFields[id].max.latex(),
                 };
             }
+            if (fields[id].displaySettings) styling[id] = fields[id].displaySettings;
         }
         return JSON.stringify({
             camera: this.camera,
@@ -196,6 +198,7 @@ class Plot {
             expressions: latex,
             mode: this.mode,
             sliders: sliderLatex,
+            styling: styling,
         }, null, 4);
     }
 
@@ -219,6 +222,13 @@ class Plot {
                 fields[newField].field.latex(expr);
                 if (sliderBounds) {
                     bottomHTML(`math-input-bottom-div-${newField}`, sliderBounds, newField);
+                }
+                if (state.styling?.[id]) {
+                    fields[newField]["displaySettings"] = state.styling[id];
+                    fields[newField]["settingsHTML"] = -1; // just so generateSettingsHTML recognizes that there are pre-existing settings
+                    fields[newField]["settingsHTML"] = generateSettingsHTML(newField);
+                    displayOverlayMenu(newField);
+                    hideOverlayMenu();
                 }
             }
         }
@@ -492,11 +502,12 @@ class Plot {
         fieldEditHandler(null);
     }
 
-    setGradientMode(id) {
+    setGradientMode(id, redraw=false) {
         const select = document.querySelector(`#gradient-dropdown-${id}`);
+        if (!select) return;
         fields[id]["displaySettings"]["gradient"] = select.value;
         this.activeGradient = select.value;
-        fieldEditHandler(null);
+        if (redraw) fieldEditHandler(null);
     }
 
     drawFnPlane() {

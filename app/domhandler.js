@@ -28,12 +28,12 @@ const modifyMenuHTML = (id, error=null) => {
         invalidEl.style.display = "none";
         document.querySelector(`#icon-container-${id}`).setAttribute("title", "Settings");
     }
-}
+};
 
 const modifyExpressionIndex = (id, index) => {
     document.querySelector(`#valid-index-display-${id}`).innerHTML = index.toString();
     fields[id].index = index;
-}
+};
 
 function displayOverlayMenu(id) {
     const overlay = document.querySelector("#overlay-menu-container");
@@ -43,6 +43,11 @@ function displayOverlayMenu(id) {
     Settings for expression ${fields[id].index}
     <hr>${additionalSettings}
     `;
+}
+
+function hideOverlayMenu() {
+    const overlay = document.querySelector("#overlay-menu-container");
+    overlay.style.display = "none";
 }
 
 function generateSettingsHTML(id) {
@@ -71,7 +76,7 @@ function generateSettingsHTML(id) {
             gradientOptions += `<option value="${gradient}" ${checkedGrad}>${gradient}</option>`;
         }
         gradientDropdown = `<label for="gradient-dropdown-${id}">Gradient</label>
-                            <select id="gradient-dropdown-${id}" onchange="plot.setGradientMode(${id});">
+                            <select id="gradient-dropdown-${id}" onchange="plot.setGradientMode(${id}, true);">
                                 ${gradientOptions}
                             </select><br>`;
     }
@@ -309,7 +314,7 @@ function toggleSettingsPopup() {
 
 
 module.exports = {
-    modifyMenuHTML, displayOverlayMenu, generateSettingsHTML,
+    modifyMenuHTML, displayOverlayMenu, hideOverlayMenu, generateSettingsHTML,
     handleSlider, bottomHTML, addField, deleteField,
     advance, highlightExpression, tabSwitch, toggleSettingsPopup,
 };

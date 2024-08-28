@@ -174,6 +174,7 @@ function configureRenderers(lines) {
             if (emittedGLSL) {
                 plot.setShaderReplacement(emittedGLSL);
                 const displayName = pickDisplay(lines);
+                plot.setGradientMode(displayName?.id);
                 highlightExpression(displayName?.id);
                 if (displayName) {
                     plot.setDisplayReplacement(displayName.name, colorGLSLFromSettings(displayName.id));
