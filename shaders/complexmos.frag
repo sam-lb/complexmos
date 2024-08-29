@@ -34,6 +34,18 @@ float round(float x) {
     return floor(x);
 }
 
+float gridline_sdf(float x, float units) {
+    /*
+    8-16   : 1    : floor(log2(x)) - 3 : 0
+    4-8    : 1/2  :                    : -1
+    2-4    : 1/4  :                    : -2
+    1-2    : 1/8  :                    : -3
+    1/2-1  : 1/16 :                    : -4
+    */
+    float width = pow(2., 3.-floor(log2(units)));
+    return abs(mod(x * width - .5, 1.) - .5);
+}
+
 //IMPORT_COLORING
 
 void main() {
@@ -58,7 +70,8 @@ void main() {
 //DISPLAY_REPLACE_END
 
     float tolerance = 0.01;
-    if (abs(z.x - round(z.x)) < tolerance || abs(z.y - round(z.y)) < tolerance) {
+    // float tolerance = xUnits / 800.;
+    if (gridline_sdf(z.x, xUnits) < tolerance || gridline_sdf(z.y, xUnits) < tolerance) {
         col = vec3((0.25 + col.x) / 2., (0.25 + col.y) / 2., (0.25 + col.z) / 2.);
     }
 
