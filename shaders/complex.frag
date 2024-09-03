@@ -49,6 +49,10 @@ vec2 lnC(vec2 z) {
     return vec2(log(normC(z).x), argC(z).x);
 }
 
+vec2 powlogC(vec2 z, vec2 w) {
+    return expC(multC(lnC(z), lnC(w)));
+}
+
 vec2 sqrtC(vec2 z) {
     float normSqrt = sqrt(normC(z).x);
     float halfArg = 0.5 * argC(z).x;

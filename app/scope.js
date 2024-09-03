@@ -45,6 +45,11 @@ const scope = {
             shaderAlias: "lnC",
             locals: { "z": { isFunction: false, type: "complex", index: 0 } },
         },
+        "powlog": {
+            isFunction: true,
+            shaderAlias: "powlogC",
+            locals: { "z": { isFunction: false, type: "complex", index: 0, }, "w": { isFunction: false, type: "complex", index: 1, } },
+        },
         "sqrt": { 
             isFunction: true,
             shaderAlias: "sqrtC",
@@ -256,6 +261,7 @@ const defaultValueScope = {
     "inv": Complex.inv,
     "exp": Complex.exp,
     "ln": Complex.ln,
+    "powlog": Complex.powlog,
     "sqrt": Complex.sqrt,
     "sin": Complex.sin,
     "cos": Complex.cos,

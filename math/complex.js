@@ -124,6 +124,11 @@ class Complex {
 		return new Complex(Math.log(this.norm()), this.arg());
 	}
 
+	powlog(w) {
+		/** Computes the commutative binary hyperoperation of order 1 of the complex number and w */
+		return this.ln().mult(w.ln()).exp();
+	}
+
 	acos() {
 		/* Computes the principal branch of the inverse cosine */
 		return this.add(this.square().sub(new Complex(1, 0)).sqrt()).ln().div(complex(0, 1));
@@ -368,6 +373,10 @@ class Complex {
 
 	static ln(z) {
 		return z.ln();
+	}
+
+	static powlog(z, w) {
+		return z.powlog(w);
 	}
 
 	static sqrt(z) {
